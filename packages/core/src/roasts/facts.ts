@@ -25,7 +25,11 @@ export interface Facts {
   subagents: number;
   maxSubagentsInDay: number;
   /** Latest call by clock time; 00:00–05:59 counts as the night before (1:00 AM = 1500 minutes). */
-  lastCall: { label: string; minutes: number } | null;
+  lastCall: {
+    label: string;
+    minutes: number;
+    /** Local calendar day, YYYY-MM-DD. */ day: string;
+  } | null;
   longestSessionMin: number | null;
   /** Share of tokens on Saturdays and Sundays. */
   weekendShare: number;
@@ -100,10 +104,10 @@ export function buildFacts({
 
   let lastCall: Facts["lastCall"] = null;
   for (const e of usage) {
-    const { hour, minute } = at(e.ts);
+    const { hour, minute, day } = at(e.ts);
     const minutes = (hour < 6 ? hour + 24 : hour) * 60 + minute;
     if (!lastCall || minutes > lastCall.minutes)
-      lastCall = { label: clockLabel(hour, minute), minutes };
+      lastCall = { label: clockLabel(hour, minute), minutes, day };
   }
 
   const dayTokens = (d: (typeof daily)[number]) =>

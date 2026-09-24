@@ -190,7 +190,11 @@ importers:
 
   apps/web: {}
 
-  packages/cli: {}
+  packages/cli:
+    dependencies:
+      '@token-damage/core':
+        specifier: workspace:*
+        version: link:../core
 
   packages/core: {}
 

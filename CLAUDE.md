@@ -48,6 +48,7 @@ pnpm i                 # install
 pnpm test              # all tests
 pnpm -F core test      # core only
 pnpm -F token-damage dev  # run the CLI against your own ~/.claude
+pnpm -F core sample-month   # writes packages/core/fixtures/sample-month (gitignored): sample customer 0041
 pnpm -F token-damage dev -- --fixtures packages/core/fixtures/sample-month   # run against fixtures
 pnpm -F web dev        # static site
 pnpm check             # lint + typecheck + test (must pass before commit)

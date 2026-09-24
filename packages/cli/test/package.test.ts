@@ -6,7 +6,8 @@ const pkg = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
 );
 
-const ALLOWED_RUNTIME_DEPS = ["@resvg/resvg-js"];
+// Our own core package plus the one third-party dependency CLAUDE.md allows.
+const ALLOWED_RUNTIME_DEPS = ["@token-damage/core", "@resvg/resvg-js"];
 
 describe("cli package", () => {
   it("reports the version from package.json", () => {

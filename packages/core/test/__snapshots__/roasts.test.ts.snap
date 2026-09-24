@@ -20,9 +20,9 @@ exports[`sample customers > 0041: output is frozen 1`] = `
     {
       "family": "iceberg",
       "score": 0.6815172000231275,
-      "text": "You typed a paragraph. It read a library.",
+      "text": "For every word you typed, the machine read 80,558 tokens. That's The Great Gatsby, and a third of it again. Per word.",
       "tier": "measured",
-      "tone": "dry",
+      "tone": "absurd",
       "variant": 0,
     },
     {
@@ -93,15 +93,15 @@ exports[`sample customers > 0041: output is frozen 1`] = `
   "note": {
     "family": "iceberg",
     "score": 0.6815172000231275,
-    "text": "You typed a paragraph. It read a library.",
+    "text": "For every word you typed, the machine read 80,558 tokens. That's The Great Gatsby, and a third of it again. Per word.",
     "tier": "measured",
-    "tone": "dry",
+    "tone": "absurd",
     "variant": 0,
   },
   "verdicts": [
     "CLAIM #0041 · "It was research" · DENIED | DENIED. 1.18 billion tokens. Research rarely happens at 3:47 AM.",
     "CLAIM #0041 · "The agent did it by itself" · DENIED | DENIED. You typed 14,690 words of instructions. You're the manager.",
-    "CLAIM #0041 · "It was one last fix" · DENIED | DENIED. 6 sessions started after midnight. That's not one.",
+    "CLAIM #0041 · "It was one last fix" · DENIED | DENIED. 11 sessions started after midnight. That's not one.",
     "CLAIM #0041 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
     "CLAIM #0041 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
     "CLAIM #0041 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
@@ -131,9 +131,9 @@ exports[`sample customers > 0042: output is frozen 1`] = `
     {
       "family": "iceberg",
       "score": 0.6971416570277802,
-      "text": "You typed a paragraph. It read a library.",
+      "text": "For every word you typed, the machine read 95,419 tokens. That's The Great Gatsby, and half of it again. Per word.",
       "tier": "measured",
-      "tone": "dry",
+      "tone": "absurd",
       "variant": 0,
     },
     {
@@ -304,9 +304,9 @@ exports[`sample customers > 0044: output is frozen 1`] = `
     {
       "family": "iceberg",
       "score": 0.7818334298198931,
-      "text": "You typed a paragraph. It read a library.",
+      "text": "For every word you typed, the machine read 238,883 tokens. That's The Great Gatsby three times, and two thirds of it again. Per word.",
       "tier": "measured",
-      "tone": "dry",
+      "tone": "absurd",
       "variant": 0,
     },
     {

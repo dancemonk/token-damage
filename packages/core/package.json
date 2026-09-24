@@ -3,12 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:big": "TD_BIG_MB=512 vitest run test/claude/big-file.test.ts",
-    "sanitize-fixture": "node --experimental-strip-types scripts/sanitize-fixture.ts"
-  }
+    "sanitize-fixture": "node --experimental-strip-types scripts/sanitize-fixture.ts",
+    "sample-month": "node --experimental-strip-types scripts/sample-month.ts"
+  },
+  "files": [
+    "dist"
+  ]
 }

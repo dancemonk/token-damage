@@ -5,14 +5,12 @@
       "trans": "0041",
       "name": "Customer 0041",
       "expected": {
-        "note": "You typed a paragraph. It read a library.",
+        "note": "For every word you typed, the machine read 80,558 tokens. That's The Great Gatsby, and a third of it again. Per word.",
         "class": "ACT OF GOD"
       },
       "assumed": [
-        "prompts",
         "maxSubagentsInDay",
         "weekendShare",
-        "sessionsAfterMidnight",
         "longestIdleDays",
         "cacheLordWeek",
         "periodDays"
@@ -24,17 +22,21 @@
         "cacheRead": 1138200000,
         "output": 4700000,
         "words": 14690,
-        "prompts": 623,
+        "prompts": 612,
         "calls": 7480,
         "sessions": 94,
         "activeDays": 26,
         "periodDays": 30,
         "subagents": 212,
         "maxSubagentsInDay": 38,
-        "lastCall": { "label": "3:47 AM", "minutes": 1667 },
+        "lastCall": {
+          "label": "3:47 AM",
+          "minutes": 1667,
+          "day": "2026-09-18"
+        },
         "longestSessionMin": 554,
         "weekendShare": 0.22,
-        "sessionsAfterMidnight": 6,
+        "sessionsAfterMidnight": 11,
         "allSessionsEndBeforeNoon": false,
         "longestIdleDays": 1,
         "cacheLordWeek": true,
@@ -42,7 +44,10 @@
         "listPriceUsd": 809.65,
         "cacheSavingUsd": 4383.85,
         "planUsd": 200,
-        "kwh": { "low": 25.8382, "high": 122.2588 },
+        "kwh": {
+          "low": 25.8382,
+          "high": 122.2588
+        },
         "commits": null
       }
     },
@@ -77,7 +82,11 @@
         "periodDays": 1,
         "subagents": 12,
         "maxSubagentsInDay": 12,
-        "lastCall": { "label": "4:12 AM", "minutes": 1692 },
+        "lastCall": {
+          "label": "4:12 AM",
+          "minutes": 1692,
+          "day": "2026-09-18"
+        },
         "longestSessionMin": 420,
         "weekendShare": 0,
         "sessionsAfterMidnight": 2,
@@ -88,7 +97,10 @@
         "listPriceUsd": 129.2,
         "cacheSavingUsd": 749.94,
         "planUsd": null,
-        "kwh": { "low": 3.7146, "high": 17.5762 },
+        "kwh": {
+          "low": 3.7146,
+          "high": 17.5762
+        },
         "commits": 2
       }
     },
@@ -114,7 +126,11 @@
         "periodDays": 1,
         "subagents": 0,
         "maxSubagentsInDay": 0,
-        "lastCall": { "label": "11:40 AM", "minutes": 700 },
+        "lastCall": {
+          "label": "11:40 AM",
+          "minutes": 700,
+          "day": "2026-09-22"
+        },
         "longestSessionMin": 95,
         "weekendShare": 0,
         "sessionsAfterMidnight": 0,
@@ -125,7 +141,10 @@
         "listPriceUsd": 2.06,
         "cacheSavingUsd": 7.04,
         "planUsd": null,
-        "kwh": { "low": 0.093718, "high": 0.443452 },
+        "kwh": {
+          "low": 0.093718,
+          "high": 0.443452
+        },
         "commits": null
       }
     },
@@ -170,7 +189,11 @@
         "periodDays": 30,
         "subagents": 1900,
         "maxSubagentsInDay": 140,
-        "lastCall": { "label": "2:05 AM", "minutes": 1565 },
+        "lastCall": {
+          "label": "2:05 AM",
+          "minutes": 1565,
+          "day": "2026-09-19"
+        },
         "longestSessionMin": 700,
         "weekendShare": 0.3,
         "sessionsAfterMidnight": 40,
@@ -181,7 +204,10 @@
         "listPriceUsd": 6721.1,
         "cacheSavingUsd": 36385.95,
         "planUsd": 200,
-        "kwh": { "low": 215.279, "high": 1018.638 },
+        "kwh": {
+          "low": 215.279,
+          "high": 1018.638
+        },
         "commits": null
       }
     }

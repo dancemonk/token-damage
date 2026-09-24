@@ -85,9 +85,12 @@ ADJUSTER'S NOTE
 ✶ satire. economists were not consulted.
 ================================================
    ≡ list-price equiv · ≈ estimate · ✶ satire
-       method v1 · prices as of 2026-09-01
+      method v1 · prices as of 2026-06-24
 ```
-The "YOUR PLAN" block appears only with `--plan` or a configured plan.
+The "YOUR PLAN" block appears only with `--plan` or a configured plan. This is sample customer 0041:
+`pnpm -F core sample-month` writes a synthetic config dir that adds up to it, and a CLI test compares
+`token-damage --fixtures <it> --no-anim --plan 200` (UTC) with this block character for character.
+The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 
 ## Flags
 `--since 30d|YYYY-MM-DD`, `--plan 20|100|200|<usd>`, `--no-anim`, `--no-sound` (reserved), `--json` (schema in

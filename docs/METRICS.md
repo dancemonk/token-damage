@@ -84,7 +84,7 @@ Assumed mix: 96.2% cache reads, 0.4% output, ~12 model calls per prompt, model m
 
 | TRANS | Who | Typed words | Tokens | List price | Cache saved | Electricity | RAM-X | Class | Note |
 |---|---|---|---|---|---|---|---|---|---|
-| 0041 | Customer 0041 | 14,690 | 1,183,400,000 | $809.65 | $4,383.85 | 26–120 kWh | +$0.0000079 | ACT OF GOD | You typed a paragraph. It read a library. |
+| 0041 | Customer 0041 | 14,690 | 1,183,400,000 | $809.65 | $4,383.85 | 26–120 kWh | +$0.0000079 | ACT OF GOD | For every word you typed, the machine read 80,558 tokens. That's The Great Gatsby, and a third of it again. Per word. |
 | 0042 | The Night Shift | 1,960 | 187,022,000 | $129.20 | $749.94 | 4–19 kWh | +$0.0000012 | STRUCTURAL | 187 million tokens. Two commits. You're its night-shift supervisor. |
 | 0043 | The Restraint Award | 212 | 2,958,400 | $2.06 | $7.04 | 0.07–0.3 kWh | +$0.00000002 | FENDER BENDER | Two sessions, both done by lunch. Flagged for unusual restraint. |
 | 0044 | The Uninsurable | 41,200 | 9,842,000,000 | $6,721.10 | $36,385.95 | 220–1,000 kWh | +$0.000066 | UNINSURABLE | You are now the reason the policy exists. |

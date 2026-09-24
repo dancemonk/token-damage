@@ -134,6 +134,11 @@ export const FAMILIES: Family[] = [
     strength: { metric: "tokensPerWord", lo: 5e3, hi: 5e5, log: true },
     variants: [
       {
+        text: "For every word you typed, the machine read {ratio} tokens. That's {gatsby}. Per word.",
+        tone: "absurd",
+        band: { tokensPerWord: [62_600, ANY] },
+      },
+      {
         text: "You typed a paragraph. It read a library.",
         tone: "dry",
         band: { tokensPerWord: [2e4, ANY] },
@@ -142,11 +147,6 @@ export const FAMILIES: Family[] = [
         text: "You typed {words} words. Your agents read {tokens} tokens. For every word you wrote, the machine re-read a novella.",
         tone: "dry",
         band: { tokensPerWord: [3e4, ANY] },
-      },
-      {
-        text: "For every word you typed, the machine read {ratio} tokens. That's {gatsby} copies of The Great Gatsby. Per word.",
-        tone: "absurd",
-        band: { tokensPerWord: [62_600, ANY] },
       },
       {
         text: "{words} words in, {tokens} tokens read. The ratio is {ratio} to one.",

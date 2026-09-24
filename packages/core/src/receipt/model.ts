@@ -1,0 +1,210 @@
+import type { Aggregate } from "../aggregate/index.js";
+
+import { energy } from "../metrics/energy.js";
+import {
+  cacheSaving,
+  listPrice,
+  planMultiple,
+  PRICES,
+  withoutCache,
+  type PriceTable,
+} from "../metrics/pricing.js";
+import { ramX } from "../metrics/satire.js";
+import type { Achievement } from "../roasts/achievements.js";
+import type { Facts } from "../roasts/facts.js";
+import type { Observations } from "../roasts/engine.js";
+import type { TokenSums, Value } from "../types.js";
+
+/** Everything any output shows. Renderers format; they never compute. */
+export interface Receipt {
+  version: 1;
+  trans: string;
+  period: {
+    /** Local calendar days, YYYY-MM-DD, inclusive. */
+    start: string;
+    end: string;
+    days: number;
+    /** Days Claude Code keeps transcripts; `isDefault` when the user never changed it. */
+    retentionDays: number;
+    retentionIsDefault: boolean;
+  };
+  measured: {
+    words: Value;
+    prompts: Value;
+    calls: Value;
+    sessions: Value;
+    activeDays: Value;
+    subagents: Value;
+    tokensRead: Value;
+    cacheReadShare: Value;
+    tokensWritten: Value;
+    latestCall: Value<string> | null;
+    /** Local calendar day of the latest call. */
+    latestCallDay: string | null;
+    longestSessionMinutes: Value | null;
+  };
+  byModel: { name: string; tokens: Value; listPrice: Value }[];
+  priced: {
+    listPrice: Value;
+    plan: { usd: number; multiple: Value } | null;
+    cacheSaved: Value;
+    withoutCache: Value;
+    mostExpensiveDay: { day: string; listPrice: Value } | null;
+  };
+  estimated: {
+    electricityKwh: Value;
+    /** "a fridge running for 1–4 months", or phone charges when that would round to nothing. */
+    comparison: { kind: "fridge-months" | "phone-charges"; value: Value };
+    waterLiters: Value;
+    co2Kg: Value;
+  };
+  satire: { ramX: Value };
+  damageClass: { name: string; finePrint: string };
+  note: { family: string; text: string } | null;
+  achievements: Achievement[];
+  jokes: string[];
+  method: { version: "v1"; pricesAsOf: string };
+}
+
+export interface ReceiptInput {
+  trans: string;
+  period: Receipt["period"];
+  aggregate: Aggregate;
+  facts: Facts;
+  observations: Observations;
+  planUsd?: number;
+  prices?: PriceTable;
+}
+
+const measured = (value: number): Value => ({ value, tier: "measured" });
+const FAMILIES = ["fable", "mythos", "opus", "sonnet", "haiku"];
+const total = (t: TokenSums) => t.input + t.cacheWrite + t.cacheRead + t.output;
+
+// Receipt rows group model versions by family: "opus" covers claude-opus-5 and claude-opus-5-5.
+function byFamily(
+  byModel: Record<string, TokenSums>,
+  prices: PriceTable,
+): Receipt["byModel"] {
+  const groups = new Map<string, Record<string, TokenSums>>();
+  for (const [model, t] of Object.entries(byModel)) {
+    const name = FAMILIES.find((f) => model.includes(f)) ?? model;
+    groups.set(name, { ...groups.get(name), [model]: t });
+  }
+  return [...groups]
+    .map(([name, models]) => ({
+      name,
+      tokens: measured(Object.values(models).reduce((s, t) => s + total(t), 0)),
+      listPrice: listPrice(models, prices),
+    }))
+    .sort(
+      (a, b) => b.tokens.value - a.tokens.value || (a.name < b.name ? -1 : 1),
+    );
+}
+
+export function buildReceipt({
+  trans,
+  period,
+  aggregate,
+  facts,
+  observations,
+  planUsd,
+  prices = PRICES,
+}: ReceiptInput): Receipt {
+  const { totals, daily } = aggregate;
+  const t = totals.tokens;
+  const list = listPrice(totals.byModel, prices);
+  const kwh = energy(t);
+  const high = kwh.high ?? kwh.value;
+  const low = kwh.low ?? kwh.value;
+  const comparison: Receipt["estimated"]["comparison"] =
+    high / 33 >= 1
+      ? {
+          kind: "fridge-months",
+          value: {
+            value: kwh.value / 33,
+            tier: "estimated",
+            low: Math.max(1, Math.round(low / 33)),
+            high: Math.round(high / 33),
+          },
+        }
+      : {
+          kind: "phone-charges",
+          value: {
+            value: (kwh.value * 1000) / 15,
+            tier: "estimated",
+            low: (low * 1000) / 15,
+            high: (high * 1000) / 15,
+          },
+        };
+  let mostExpensiveDay: Receipt["priced"]["mostExpensiveDay"] = null;
+  for (const d of daily) {
+    const price = listPrice(d.byModel, prices);
+    if (
+      d.calls > 0 &&
+      (!mostExpensiveDay || price.value > mostExpensiveDay.listPrice.value)
+    ) {
+      mostExpensiveDay = { day: d.day, listPrice: price };
+    }
+  }
+  const all = total(t);
+  return {
+    version: 1,
+    trans,
+    period,
+    measured: {
+      words: measured(totals.wordsTyped),
+      prompts: measured(totals.prompts),
+      calls: measured(totals.calls),
+      sessions: measured(totals.sessions),
+      activeDays: measured(facts.activeDays),
+      subagents: measured(totals.subagents),
+      tokensRead: measured(t.input + t.cacheWrite + t.cacheRead),
+      cacheReadShare: measured(all > 0 ? t.cacheRead / all : 0),
+      tokensWritten: measured(t.output),
+      latestCall: facts.lastCall && {
+        value: facts.lastCall.label,
+        tier: "measured",
+      },
+      latestCallDay: facts.lastCall?.day ?? null,
+      longestSessionMinutes:
+        facts.longestSessionMin === null
+          ? null
+          : measured(facts.longestSessionMin),
+    },
+    byModel: byFamily(totals.byModel, prices),
+    priced: {
+      listPrice: list,
+      plan: planUsd
+        ? { usd: planUsd, multiple: planMultiple(list, planUsd) }
+        : null,
+      cacheSaved: cacheSaving(totals.byModel, prices),
+      withoutCache: withoutCache(totals.byModel, prices),
+      mostExpensiveDay,
+    },
+    estimated: {
+      electricityKwh: kwh,
+      comparison,
+      waterLiters: {
+        value: kwh.value * 1.1,
+        tier: "estimated",
+        low: low * 0.2,
+        high: high * 2,
+      },
+      co2Kg: {
+        value: kwh.value * 0.38,
+        tier: "estimated",
+        low: low * 0.34,
+        high: high * 0.42,
+      },
+    },
+    satire: { ramX: ramX(all) },
+    damageClass: observations.damageClass,
+    note: observations.note && {
+      family: observations.note.family,
+      text: observations.note.text,
+    },
+    achievements: observations.achievements,
+    jokes: observations.jokes,
+    method: { version: "v1", pricesAsOf: prices.asOf },
+  };
+}

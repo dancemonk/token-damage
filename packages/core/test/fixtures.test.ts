@@ -5,10 +5,14 @@ import { describe, expect, it } from "vitest";
 import { sanitizeLine } from "../scripts/sanitize-fixture.js";
 
 const root = fileURLToPath(new URL("../fixtures", import.meta.url));
-// Word counting needs real-looking prose, so this file's prompt text is invented (see its README).
+// Word counting needs real-looking prose, so these prompts are invented: the words fixture (see its README)
+// and the generated sample-month corpus (scripts/sample-month.ts).
 const INVENTED_TEXT = new Set(["claude/2.1.281/words-typed.jsonl"]);
 const files = readdirSync(root, { recursive: true, encoding: "utf8" }).filter(
-  (f) => f.endsWith(".jsonl") && !INVENTED_TEXT.has(f),
+  (f) =>
+    f.endsWith(".jsonl") &&
+    !INVENTED_TEXT.has(f) &&
+    !f.startsWith("sample-month/"),
 );
 
 describe("fixtures contain no real text", () => {

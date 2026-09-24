@@ -17,6 +17,9 @@
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json && node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "tsc -p tsconfig.build.json && vitest run"
+  },
+  "dependencies": {
+    "@token-damage/core": "workspace:*"
   }
 }

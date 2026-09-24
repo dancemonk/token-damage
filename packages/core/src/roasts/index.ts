@@ -28,7 +28,14 @@ export {
   type Tone,
   type Variant,
 } from "./families.js";
-export { duration, pct, render, slotsOf, tokenWords } from "./slots.js";
+export {
+  duration,
+  gatsbys,
+  pct,
+  render,
+  slotsOf,
+  tokenWords,
+} from "./slots.js";
 export {
   emptyState,
   loadState,

@@ -95,7 +95,8 @@ function randomFacts(next: () => number): Facts {
     periodDays,
     subagents: logUniform(1, 3000) - 1,
     maxSubagentsInDay: logUniform(1, 300) - 1,
-    lastCall: next() < 0.1 ? null : { label: `${hour}:00`, minutes },
+    lastCall:
+      next() < 0.1 ? null : { label: `${hour}:00`, minutes, day: "2026-09-01" },
     longestSessionMin: next() < 0.1 ? null : logUniform(1, 1440),
     weekendShare: next(),
     sessionsAfterMidnight: Math.floor(next() * sessions),
@@ -139,7 +140,7 @@ describe("severity bands", () => {
     expect(
       observe({
         ...base,
-        lastCall: { label: "12:59 AM", minutes: 1499 },
+        lastCall: { label: "12:59 AM", minutes: 1499, day: "2026-09-01" },
       }).candidates.map((c) => c.family),
     ).not.toContain("late-night");
     expect(damageClass(2e6).name).toBe("FENDER BENDER");
@@ -261,7 +262,7 @@ describe("buildFacts", () => {
       activeDays: 2,
       periodDays: 33,
       longestIdleDays: 31,
-      lastCall: { label: "11:59 PM", minutes: 1439 },
+      lastCall: { label: "11:59 PM", minutes: 1439, day: "2026-09-23" },
       allSessionsEndBeforeNoon: false,
       sessionSpansThreeDays: false,
       commits: null,
@@ -280,6 +281,10 @@ describe("buildFacts", () => {
       timeZone: "Asia/Tokyo",
     });
     // 23:59:23 UTC is 08:59 in Tokyo; 16:56 UTC is 01:56 the next day, which counts as later.
-    expect(facts.lastCall).toEqual({ label: "1:56 AM", minutes: 1556 });
+    expect(facts.lastCall).toEqual({
+      label: "1:56 AM",
+      minutes: 1556,
+      day: "2026-08-23",
+    });
   });
 });

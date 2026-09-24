@@ -8,12 +8,13 @@
   },
   "scripts": {
     "lint": "eslint . && prettier --check .",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test && vitest run --dir scripts",
+    "typecheck": "pnpm build && pnpm -r --if-present typecheck",
+    "test": "pnpm build && pnpm -r --if-present test && vitest run --dir scripts",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "format": "prettier --write .",
     "oracle": "pnpm -F @token-damage/core build && node scripts/oracle.mjs",
-    "oracle:fixtures": "pnpm -F @token-damage/core build && node scripts/oracle.mjs --fixtures"
+    "oracle:fixtures": "pnpm -F @token-damage/core build && node scripts/oracle.mjs --fixtures",
+    "build": "pnpm -F @token-damage/core build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
