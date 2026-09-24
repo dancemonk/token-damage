@@ -6,7 +6,7 @@ on:
 
 permissions:
   contents: read
-  # npm provenance: the registry verifies this build came from this repo and workflow.
+  # npm trusted publishing (OIDC) and provenance: the registry verifies this build came from this repo and workflow.
   id-token: write
 
 jobs:
@@ -20,7 +20,8 @@ jobs:
           node-version: 22
           cache: pnpm
           registry-url: https://registry.npmjs.org
-      # npm 11.5+ can publish through npm trusted publishing (OIDC) once it is set up for both packages.
+      # Trusted publishing needs npm 11.5.1+ and Node 22.14+. No long-lived npm token: npm trades this job's OIDC
+      # token for a short-lived publish token, which the registry grants only to release.yml in this repo.
       - run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
@@ -40,8 +41,6 @@ jobs:
           pnpm -F token-damage pack --pack-destination "$PWD/out"
           ls out
       - name: Publish core, then the CLI (skips versions already on npm)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           publish() {
             name=$(tar -xOzf "$1" package/package.json | node -p "JSON.parse(require('fs').readFileSync(0)).name")

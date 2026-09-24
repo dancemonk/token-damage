@@ -82,4 +82,6 @@ output and `--json`. Keep a table of tested versions in `DATA-SOURCES.md`.
 
 ## Release
 `pnpm check`, bump both package versions, push tag `vX.Y.Z`. The `release` workflow checks again and publishes
-`@token-damage/core`, then `token-damage`, with npm provenance.
+`@token-damage/core`, then `token-damage`, with npm provenance. It authenticates through npm trusted
+publishing (OIDC): no npm token is stored in the repo or its secrets. Each package's trusted publisher on npmjs.com
+names `dancemonk/token-damage` and `release.yml`; renaming the workflow file breaks publishing until both are updated.
