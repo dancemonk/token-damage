@@ -10,6 +10,7 @@ const event = (over: Partial<UsageEvent>): UsageEvent => ({
   model: "claude-x",
   input: 0,
   cacheWrite: 0,
+  cacheWrite1h: 0,
   cacheRead: 0,
   output: 0,
   messageId: "m1",

@@ -22,6 +22,7 @@ function merge(a: UsageEvent, b: UsageEvent): UsageEvent {
     ...(earlier(a, b) ? a : b),
     input: Math.max(a.input, b.input),
     cacheWrite: Math.max(a.cacheWrite, b.cacheWrite),
+    cacheWrite1h: Math.max(a.cacheWrite1h, b.cacheWrite1h),
     cacheRead: Math.max(a.cacheRead, b.cacheRead),
     output: Math.max(a.output, b.output),
   };

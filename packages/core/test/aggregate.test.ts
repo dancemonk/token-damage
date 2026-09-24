@@ -46,6 +46,7 @@ const event = (ts: number, over: Partial<UsageEvent> = {}): UsageEvent => ({
   model: "claude-x",
   input: 1,
   cacheWrite: 0,
+  cacheWrite1h: 0,
   cacheRead: 0,
   output: 1,
   messageId: `m${ts}`,

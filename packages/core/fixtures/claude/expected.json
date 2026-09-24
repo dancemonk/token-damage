@@ -4,6 +4,7 @@
     "tokens": {
       "input": 1212,
       "cacheWrite": 68329,
+      "cacheWrite1h": 35893,
       "cacheRead": 276450,
       "output": 2060
     },
@@ -11,12 +12,14 @@
       "claude-opus-5": {
         "input": 1202,
         "cacheWrite": 26733,
+        "cacheWrite1h": 0,
         "cacheRead": 18000,
         "output": 745
       },
       "claude-opus-5-5": {
         "input": 10,
         "cacheWrite": 41596,
+        "cacheWrite1h": 35893,
         "cacheRead": 258450,
         "output": 1315
       }
@@ -25,6 +28,7 @@
       "claude-code": {
         "input": 1212,
         "cacheWrite": 68329,
+        "cacheWrite1h": 35893,
         "cacheRead": 276450,
         "output": 2060
       }
@@ -49,6 +53,7 @@
         "claude-opus-5": {
           "input": 2,
           "cacheWrite": 26733,
+          "cacheWrite1h": 0,
           "cacheRead": 0,
           "output": 395
         }
@@ -57,6 +62,7 @@
         "claude-code": {
           "input": 2,
           "cacheWrite": 26733,
+          "cacheWrite1h": 0,
           "cacheRead": 0,
           "output": 395
         }
@@ -75,12 +81,14 @@
         "claude-opus-5": {
           "input": 1200,
           "cacheWrite": 0,
+          "cacheWrite1h": 0,
           "cacheRead": 18000,
           "output": 350
         },
         "claude-opus-5-5": {
           "input": 10,
           "cacheWrite": 41596,
+          "cacheWrite1h": 35893,
           "cacheRead": 258450,
           "output": 1315
         }
@@ -89,6 +97,7 @@
         "claude-code": {
           "input": 1210,
           "cacheWrite": 41596,
+          "cacheWrite1h": 35893,
           "cacheRead": 276450,
           "output": 1665
         }

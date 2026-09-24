@@ -39,10 +39,16 @@ const count = (v: unknown): number =>
 
 function tokens(
   usage: Json,
-): Pick<UsageEvent, "input" | "cacheWrite" | "cacheRead" | "output"> {
+): Pick<
+  UsageEvent,
+  "input" | "cacheWrite" | "cacheWrite1h" | "cacheRead" | "output"
+> {
   return {
     input: count(usage.input_tokens),
     cacheWrite: count(usage.cache_creation_input_tokens),
+    cacheWrite1h: isObject(usage.cache_creation)
+      ? count(usage.cache_creation.ephemeral_1h_input_tokens)
+      : 0,
     cacheRead: count(usage.cache_read_input_tokens),
     output: count(usage.output_tokens),
   };

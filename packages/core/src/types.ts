@@ -1,5 +1,16 @@
 export type Source = "claude-code" | "codex";
 
+/** Truth tiers (docs/METRICS.md): plain, ≡, ≈ (always a range), ✶ (always red, always "made up"). */
+export type Tier = "measured" | "priced" | "estimated" | "satire";
+
+export interface Value<T = number> {
+  value: T;
+  tier: Tier;
+  low?: number;
+  high?: number;
+  note?: string;
+}
+
 /** One model response's token usage. Field meanings: docs/DATA-SOURCES.md. */
 export interface UsageEvent {
   kind: "usage";
@@ -13,6 +24,8 @@ export interface UsageEvent {
   isFallbackModel?: boolean;
   input: number;
   cacheWrite: number;
+  /** Part of cacheWrite written with the 1-hour TTL, priced at 2x input instead of 1.25x. */
+  cacheWrite1h: number;
   cacheRead: number;
   output: number;
   /** API message id; the sidechain rule in DATA-SOURCES §Dedupe matches on it alone. */
@@ -38,6 +51,7 @@ export interface PromptEvent {
 export interface TokenSums {
   input: number;
   cacheWrite: number;
+  cacheWrite1h: number;
   cacheRead: number;
   output: number;
 }

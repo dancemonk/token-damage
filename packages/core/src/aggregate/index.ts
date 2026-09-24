@@ -31,6 +31,7 @@ export interface Aggregate {
 const zero = (): TokenSums => ({
   input: 0,
   cacheWrite: 0,
+  cacheWrite1h: 0,
   cacheRead: 0,
   output: 0,
 });
@@ -38,6 +39,7 @@ const zero = (): TokenSums => ({
 function plus(sums: TokenSums, t: TokenSums): void {
   sums.input += t.input;
   sums.cacheWrite += t.cacheWrite;
+  sums.cacheWrite1h += t.cacheWrite1h;
   sums.cacheRead += t.cacheRead;
   sums.output += t.output;
 }

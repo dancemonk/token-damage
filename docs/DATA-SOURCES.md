@@ -41,6 +41,8 @@ Assume breakage every few months. Keep fixtures per tool version and a regressio
 ```
 - Token fields: `input_tokens` (fresh, **excludes** cache), `cache_creation_input_tokens`, `cache_read_input_tokens`,
   `output_tokens`. Any may be missing → treat as 0.
+- `usage.cache_creation` splits cache writes by TTL: `ephemeral_5m_input_tokens` and `ephemeral_1h_input_tokens`
+  (priced at 1.25× and 2× input). Main-thread writes are 1-hour, subagent writes 5-minute (2.1.2xx).
 - `costUSD` was removed in v1.0.9. Never expect it. Price from our own table.
 - `message.model === "<synthetic>"` are error/auth placeholder rows: **exclude**.
 - `usage.iterations[]` with `type: "advisor_message"` carry their own `model` and tokens: count each as a

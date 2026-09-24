@@ -22,10 +22,18 @@ Every receipt is stamped `method v1 · prices as of <date>`.
 `prices.json` (in `core`), with an `asOf` date. Per model: `input`, `cacheWrite`, `cacheRead`, `output`
 in USD per 1M tokens. **Verify against the providers' price pages before every release**; the values in
 the mockups are illustrative: Opus 5 / 6.25 / 0.50 / 25, Sonnet 3 / 3.75 / 0.30 / 15, Haiku 1 / 1.25 / 0.10 / 5.
-Unknown model → nearest family by name, flag `isFallback`, show "≡ (est. model)".
+Unknown model → nearest version in the same family by name, flag `isFallback`, show "≡ (est. model)"; no family
+→ not priced, and the receipt says so. `packages/core/src/metrics/prices.json` holds the real per-model prices
+(`asOf` 2026-06-24); the mockup values above are Opus 4.x/5, Sonnet 4.6 and Haiku 4.5 prices (Sonnet 5 is 2 / 2.5 / 0.20 / 10).
+
+Cache writes have two prices: 5-minute TTL 1.25× input, 1-hour TTL 2× input. Claude Code writes the main thread with
+the 1-hour TTL (87% of cache writes on real logs; a single write price understated list price by 7.6%), so
+`cacheWrite1h` (from `usage.cache_creation.ephemeral_1h_input_tokens`) is priced separately. With no 1-hour
+writes the formulas below are unchanged.
 
 - `listPrice = Σ tokens × price / 1e6` per type and model
-- `cacheSaving = Σ cacheRead × (input − cacheRead price) − Σ cacheWrite × (cacheWrite − input price)`
+- `cacheSaving = Σ cacheRead × (input − cacheRead price) − Σ cacheWrite5m × (cacheWrite − input price)
+  − Σ cacheWrite1h × (cacheWrite1h − input price)`
   ("You saved … with your Cache Rewards card"). `withoutCache = listPrice + cacheSaving`.
 - `planMultiple = listPrice / planPrice` when the user gives `--plan 200` (or config). Label:
   "value extracted: 4.0× your plan". Never say the user paid the list price.

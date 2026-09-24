@@ -34,7 +34,7 @@ interface UsageEvent {
   kind: "usage"; source: Source; sessionId: string; parentSessionId?: string; agentId?: string;
   ts: number;                      // epoch ms, UTC
   model: string; isFallbackModel?: boolean;
-  input: number; cacheWrite: number; cacheRead: number; output: number;   // tokens
+  input: number; cacheWrite: number; cacheWrite1h: number /* part of cacheWrite */; cacheRead: number; output: number;
   messageId: string;               // API message id; the sidechain rule matches on it alone
   dedupeKey: string;               // see DATA-SOURCES §Dedupe
   isSidechain?: boolean;
@@ -42,7 +42,7 @@ interface UsageEvent {
 }
 // A typed prompt: only the count survives ingest, never the text. Deduped by line uuid.
 interface PromptEvent { kind: "prompt"; source: Source; sessionId: string; ts: number; words: number; dedupeKey: string }
-interface TokenSums { input: number; cacheWrite: number; cacheRead: number; output: number }
+interface TokenSums { input: number; cacheWrite: number; cacheWrite1h: number; cacheRead: number; output: number }
 interface Span { start: number; end: number }   // epoch ms
 interface DailyTotals { day: string /* local YYYY-MM-DD */; byModel: Record<string, TokenSums>;
   bySource: Partial<Record<Source, TokenSums>>; calls: number;
