@@ -17,3 +17,6 @@ docs/ROADMAP.md
 docs/QUIZ.md
 docs/DESIGN.md
 docs/WEBSITE.md
+
+# Cloudflare wrangler's local state (wrangler dev)
+.wrangler/

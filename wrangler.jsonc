@@ -1,0 +1,15 @@
+// tokendamage.com on Cloudflare Workers: static files only, no Worker code. The dashboard's build runs
+// `pnpm build:site`, then `npx wrangler deploy` publishes apps/web/dist with these rules.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Must match the Worker's name in the Cloudflare dashboard.
+  "name": "token-damage",
+  "compatibility_date": "2026-09-24",
+  "assets": {
+    "directory": "./apps/web/dist",
+    // Unknown paths get the nearest 404.html (/ru/… gets /ru/404.html) with a 404 status.
+    "not_found_handling": "404-page",
+    // /quiz serves quiz.html; /quiz.html redirects to /quiz.
+    "html_handling": "auto-trailing-slash",
+  },
+}
