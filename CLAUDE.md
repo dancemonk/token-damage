@@ -51,6 +51,8 @@ pnpm -F token-damage dev  # run the CLI against your own ~/.claude
 pnpm -F token-damage dev -- --fixtures packages/core/fixtures/sample-month   # run against fixtures
 pnpm -F web dev        # static site
 pnpm check             # lint + typecheck + test (must pass before commit)
+pnpm oracle            # compare our daily totals with ccusage on your logs (fetches ccusage via npx)
+pnpm oracle:fixtures   # same on the fixture corpus (runs in CI)
 ```
 
 ## Working style

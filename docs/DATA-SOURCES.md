@@ -143,4 +143,14 @@ Gemini CLI and Copilot CLI (ccusage parses both), Cursor/OpenCode (SQLite; Curso
 only), ChatGPT/Claude.ai exports (no token counts; tokenize locally and label `≈`).
 
 ## Known divergences from ccusage
-Keep this list current. Empty at project start.
+Keep this list current. Check with `pnpm oracle` (local logs) and `pnpm oracle:fixtures` (CI).
+
+**None on token totals** as of ccusage 20.0.24 (2026-09-24): the fixture corpus matches exactly (348,051 tokens,
+2 days), and so did 24 days of real logs (3.79B tokens) in every field. ccusage has fixed #888 (first-seen
+undercount) and #913 (`/btw` overcount), and handles advisor iterations and missing `requestId` the same way.
+
+Not compared, because ccusage does not report them: words typed and prompts. A day with prompts but no model
+call exists only on our side, with zero tokens; the oracle skips all-zero days.
+
+Use `ccusage claude daily`, not `ccusage daily`: since v20 the top-level report also includes Codex, Gemini,
+OpenCode and Amp logs from the home directory.
