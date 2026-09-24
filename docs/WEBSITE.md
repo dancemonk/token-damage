@@ -1,4 +1,4 @@
-# Website — tokendamage.dev
+# Website — tokendamage.com
 
 Static. No backend, no accounts, no cookies, no analytics (a cookieless page-view counter at most).
 Hosting: GitHub Pages or Cloudflare Pages. Mockups: `design/canvas/WebHome.dc.html`, `WebMobile.dc.html`,
@@ -33,7 +33,7 @@ Hosting: GitHub Pages or Cloudflare Pages. Mockups: `design/canvas/WebHome.dc.ht
 
 ## Share links (zero data custody)
 - Payload = whitelisted aggregates only (see below), compact JSON → base64url → URL **fragment**:
-  `https://tokendamage.dev/r#v1.<payload>`. Browsers never send the fragment to the server, so the site can host
+  `https://tokendamage.com/r#v1.<payload>`. Browsers never send the fragment to the server, so the site can host
   virality without ever receiving a number.
 - Consequence: link previews (OG image) can't show the real numbers. Use a generic card:
   "Guess my AI damage." That is better; the number is the game.
@@ -45,7 +45,7 @@ Hosting: GitHub Pages or Cloudflare Pages. Mockups: `design/canvas/WebHome.dc.ht
 
 ## Quiz
 Content in `QUIZ.md`. Works with no install. End screen: score, stamp (Blissfully Unaware / Mildly Informed /
-Knows Too Much), the command, "Share score" (text: "I got 2/5 on the AI Damage Quiz · tokendamage.dev/quiz").
+Knows Too Much), the command, "Share score" (text: "I got 2/5 on the AI Damage Quiz · tokendamage.com/quiz").
 
 ## World check strip (optional, below the fold on `/method` only)
 Three dated real facts (see `METRICS.md` §World check). Not on the home page; the home page is the receipt only.

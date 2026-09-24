@@ -5,7 +5,7 @@ criteria; do not start the next task until they pass. Ship after task 9.
 
 ## Task 0 — Register names (human, 10 minutes)
 - `npm` package `token-damage` (publish a placeholder 0.0.1 with a README that says "coming soon").
-- Domains: `tokendamage.com`, `tokendamage.dev`. GitHub repo `token-damage`.
+- Domain: `tokendamage.com`. GitHub repo `token-damage`.
 - These were free on 2026-09-24. Do this first.
 
 ## Task 1 — Scaffold
@@ -70,7 +70,7 @@ dispute prompt → keys `c` copy image, `s` share link, `d` daily slips, `q` qui
 Render the receipt as SVG (1080×1920, layout per `design/canvas/ShareCard.dc.html`, fonts embedded as
 base64 woff2, IBM Plex Mono + Special Elite) and rasterize with `@resvg/resvg-js` to
 `~/token-damage/receipt-YYYY-MM-DD.png`. Share link: whitelisted aggregates → compact JSON → base64url in the
-URL **fragment** of `https://tokendamage.dev/r#...`. Privacy preview lists every field before writing anything.
+URL **fragment** of `https://tokendamage.com/r#...`. Privacy preview lists every field before writing anything.
 **Accept:** PNG matches the mockup layout; the share payload contains only whitelisted fields (test asserts
 no key outside the whitelist); no project names, paths, prompts anywhere in either artifact.
 
