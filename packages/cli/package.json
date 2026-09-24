@@ -1,6 +1,6 @@
 {
   "name": "token-damage",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The receipt your AI agent never gave you. Reads Claude Code's local logs and prints an itemized receipt; uploads nothing.",
   "keywords": [
     "claude-code",
