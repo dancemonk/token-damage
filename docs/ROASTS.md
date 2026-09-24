@@ -113,5 +113,16 @@ use seed 0). The site keeps one deck per browser in `localStorage` `td.deck`, sh
 
 **Placement.** CLI: two receipt jokes, one ✶ line under RAM-X, one "meanwhile" news line before the footer;
 `--json` carries `jokes`, `poolSatire`, `news`; the PNG card is unchanged. Site: every printed receipt (home, `/r`)
-gets one ✶ line and one joke; the page chrome gets one news line with its source (home footer, under the `/r`
-result, quiz end). The home page's no-JS receipt shows the first lines of a seed-0 deck.
+gets one ✶ line and one joke; one news line with its source sits off the paper, never on it (real figures there
+would read as the bill): on the home page in "the wire" under the paper, a new one with every print; under the
+`/r` result; on the quiz end screen. The home page's no-JS receipt shows the first lines of a seed-0 deck.
+
+**Freshness.** News rotates from the twelve months before "now" (`freshNews` in `deck.ts`): the receipt's month
+in the CLI, the visitor's month on the site. When fewer than six qualify, all news rotates, so a stale pool shows
+old news rather than the same few lines. Old lines stay: their date keeps them true, and `/method` lists them.
+
+**Refresh, monthly, by hand.** No feed, no API: the CLI never touches the network, and a feed would print
+claims nobody checked. Each month: find the month's AI events, check the primary source, write the English
+line and a fresh Russian one, put them on a review page for the owner, then commit. `pnpm pool:age` (run by
+the release workflow; it never fails) warns when fewer than eight news lines are under six months old, or when a
+language lacks a line the English pool has.

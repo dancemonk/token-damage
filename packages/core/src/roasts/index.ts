@@ -50,6 +50,7 @@ export {
 export {
   draw,
   freshDeck,
+  freshNews,
   isDeck,
   newDeck,
   roundOrder,

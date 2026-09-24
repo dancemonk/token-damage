@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   draw,
   emptyState,
+  freshNews,
   newDeck,
   nextState,
   observe,
@@ -115,5 +116,54 @@ describe("pool lines on receipts", () => {
     const o = observe(customers[0]!.facts);
     expect(o.satire?.text).toMatch(/\d\.\d*\d/);
     expect(o.satire?.text).not.toContain("{share}");
+  });
+});
+
+describe("fresh news", () => {
+  const news = (id: string, date: string) => ({
+    id,
+    kind: "news",
+    source: { date, url: "https://example.org" },
+  });
+  const pool = [
+    news("a", "2026-08"),
+    news("b", "2026-01"),
+    news("c", "2025-10"),
+    news("d", "2025-09"),
+    news("e", "2025"),
+    news("f", "-"),
+    news("g", "2026-10"),
+    { id: "s", kind: "satire", source: { date: "2020-01", url: "" } },
+  ];
+  const ids = (asOf: string, min = 3) =>
+    freshNews(pool, asOf, { min }).map((l) => l.id);
+
+  it("keeps the last twelve months, standing facts and every other kind", () => {
+    // 2025-09 is 13 months before 2026-09; 2026-10 hasn't happened yet; "2025" counts as its December.
+    expect(ids("2026-09")).toEqual(["a", "b", "c", "e", "f", "s"]);
+  });
+
+  it("rotates all the news when too few are fresh", () => {
+    // Only the standing fact is fresh in 2028: rather than one line on repeat, all the news rotates.
+    expect(ids("2028-01")).toEqual(pool.map((l) => l.id));
+  });
+
+  it("dates a receipt's news by its own month", () => {
+    const o = (asOf: string) => {
+      const out = new Set<string>();
+      let state = emptyState();
+      for (let i = 0; i < 30; i++) {
+        const next = observe(customers[0]!.facts, state, POOL_EN, asOf);
+        out.add(next.news!.source!.date);
+        state = nextState(state, next);
+      }
+      return [...out];
+    };
+    const dates = o("2026-09");
+    const fresh = freshNews(POOL_EN, "2026-09").filter(
+      (l) => l.kind === "news",
+    );
+    if (fresh.length >= 6)
+      for (const d of dates) expect(d === "-" || d >= "2025-10", d).toBe(true);
   });
 });

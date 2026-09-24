@@ -79,9 +79,19 @@ const fmt = receiptFormat(catalog.meta.locale);
 const countUp = (target: number) =>
   countUpIn(receipt.querySelector(".r-n") as HTMLElement, target, fmt.int);
 
+/** The wire under the paper: one dated AI fact, a new one with every print. */
+function wire(animate: boolean) {
+  const line = next(catalog.pool, "news");
+  if (!line) return;
+  const news = el("news");
+  news.innerHTML = newsLine(line, t);
+  if (animate) restart(news, "swap");
+}
+
 function print(i: number, withSound: boolean) {
   const view = sampleView(i, t, catalog.meta.locale, new Date(), noteFor(i));
   Object.assign(view, poolLines(catalog.pool, view.tokens, fmt));
+  wire(true);
   receipt.innerHTML = receiptPaper(view, t, { count: "0", slam: true });
   feed.style.visibility = "";
   restart(feed, "feed");
@@ -284,8 +294,7 @@ const firstSatire = receipt.querySelector(".pool-satire");
 if (firstSatire && first.satire) firstSatire.textContent = `✶ ${first.satire}`;
 const firstJoke = receipt.querySelector(".pool-joke");
 if (firstJoke && first.joke) firstJoke.textContent = first.joke;
-const news = next(catalog.pool, "news");
-if (news) el("news").innerHTML = newsLine(news, t);
+wire(false);
 // Once, after the first print, the paper dips 6px so people find the pull.
 if (!reducedMotion())
   later(2700, () => {

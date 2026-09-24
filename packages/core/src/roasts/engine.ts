@@ -5,7 +5,7 @@ import { metricsOf, type Facts } from "./facts.js";
 import { FAMILIES, type Band, type Family, type Tone } from "./families.js";
 import { sig2 } from "../metrics/format.js";
 import { satireShare } from "../metrics/satire.js";
-import { draw, newDeck, type Deck } from "./deck.js";
+import { draw, freshNews, newDeck, type Deck } from "./deck.js";
 import { POOL_EN, type PoolLine } from "./pool.js";
 import { render, slotsOf } from "./slots.js";
 import { emptyState, type RoastState } from "./state.js";
@@ -76,6 +76,8 @@ export function observe(
   facts: Facts,
   state: RoastState = emptyState(),
   pool: readonly PoolLine[] = POOL_EN,
+  /** The receipt's month (YYYY-MM): news rotates from the twelve months before it (deck.ts freshNews). */
+  asOf?: string,
 ): Observations {
   const metrics = metricsOf(facts);
   const slots = slotsOf(facts);
@@ -116,7 +118,8 @@ export function observe(
 
   // Pool lines rotate through a deck: no repeats until every line that fits has been printed.
   let deck = state.deck ?? newDeck(0);
-  const byId = new Map(pool.map((l) => [l.id, l]));
+  const lines = asOf ? freshNews(pool, asOf) : pool;
+  const byId = new Map(lines.map((l) => [l.id, l]));
   const text = (line: PoolLine) =>
     line.band && !inBand(metrics, line.band)
       ? undefined
@@ -125,7 +128,7 @@ export function observe(
           share: sig2(satireShare(facts.tokens, line.size)),
         });
   const take = (kind: PoolLine["kind"], avoid: string[] = []) => {
-    const ids = pool.filter((l) => l.kind === kind).map((l) => l.id);
+    const ids = lines.filter((l) => l.kind === kind).map((l) => l.id);
     const fits = (id: string) => {
       const t = text(byId.get(id)!);
       return t !== undefined && t !== note?.text && !avoid.includes(t);

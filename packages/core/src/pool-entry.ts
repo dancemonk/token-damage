@@ -7,6 +7,7 @@ export type { PoolKind, PoolLine } from "./roasts/pool.js";
 export {
   draw,
   freshDeck,
+  freshNews,
   isDeck,
   newDeck,
   roundOrder,

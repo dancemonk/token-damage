@@ -105,8 +105,8 @@ whatever our chatbot promised, we honor. a
 5% off if your ai pilot paid for itself. 95%
   don't.
 ------------------------------------------------
-meanwhile, oct 2024: google and amazon
-  signed deals for small nuclear reactors.
+meanwhile, oct 2025: openai was valued at
+  $500 billion.
 ================================================
    ≡ list-price equiv · ≈ estimate · ✶ satire
       method v1 · prices as of 2026-09-24

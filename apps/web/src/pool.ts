@@ -3,6 +3,7 @@
 import {
   draw,
   freshDeck,
+  freshNews,
   isDeck,
   satireShare,
   type Deck,
@@ -31,7 +32,9 @@ export function next(
   pool: readonly PoolEntry[] | undefined,
   kind: PoolEntry["kind"],
 ): PoolEntry | null {
-  const lines = (pool ?? []).filter((l) => l.kind === kind);
+  // News rotates from the last twelve months (core freshNews), dated by the visitor's clock.
+  const month = new Date().toISOString().slice(0, 7);
+  const lines = freshNews(pool ?? [], month).filter((l) => l.kind === kind);
   const drawn = draw(
     current(),
     kind,

@@ -334,8 +334,11 @@ function sources(t) {
  * fixed deck. The page script swaps in the next lines from the visitor's own deck.
  */
 function staticPool(catalog, tokens, locale) {
+  const month = new Date().toISOString().slice(0, 7);
   const first = (kind) => {
-    const lines = catalog.pool.filter((l) => l.kind === kind && onSite(l));
+    const lines = core
+      .freshNews(catalog.pool, month)
+      .filter((l) => l.kind === kind && onSite(l));
     const { id } = core.draw(
       core.newDeck(0),
       kind,

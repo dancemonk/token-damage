@@ -408,6 +408,44 @@ a:hover {
   text-transform: uppercase;
   opacity: 0.8;
 }
+/* The wire on the home page: under the paper, above the footer. Below the stage, so a torn receipt falls in
+   front of it. */
+.wire {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  padding: 26px 16px 0;
+  color: var(--desk-muted);
+  text-align: center;
+  text-shadow:
+    0 1px 6px var(--desk),
+    0 0 14px var(--desk);
+}
+.wire .news {
+  font-size: 12.5px;
+}
+/* The wire already holds the air under the stub. */
+.wire + .home-foot {
+  padding-top: 14px;
+}
+.wire .news-k {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 6px;
+}
+.wire .news-k::before,
+.wire .news-k::after {
+  content: "";
+  width: 28px;
+  border-top: 1px solid currentColor;
+  opacity: 0.5;
+}
+.news.swap {
+  animation: tdFade 0.6s ease-out;
+}
 .result + .news {
   margin: 10px auto 0;
   color: var(--desk-muted);

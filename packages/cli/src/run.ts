@@ -288,7 +288,7 @@ export async function run(options: Options, io: Io): Promise<number> {
   const state = loaded.deck
     ? loaded
     : { ...loaded, deck: options.fixtures ? newDeck(0) : freshDeck() };
-  const observations = observe(facts, state);
+  const observations = observe(facts, state, undefined, p.end.slice(0, 7));
   const kept = await retention(roots);
   const receipt: Receipt = buildReceipt({
     trans: String(state.runs + 1).padStart(4, "0"),

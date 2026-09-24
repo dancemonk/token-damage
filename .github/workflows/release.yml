@@ -25,6 +25,8 @@ jobs:
       - run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
+      - name: Pool age (a reminder, never fails)
+        run: pnpm pool:age
       - name: Tag matches package versions
         run: |
           tag="${GITHUB_REF_NAME#v}"

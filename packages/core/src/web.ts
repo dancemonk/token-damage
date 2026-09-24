@@ -30,6 +30,7 @@ export { damageClass } from "./roasts/classes.js";
 export {
   draw,
   freshDeck,
+  freshNews,
   isDeck,
   newDeck,
   satireShare,

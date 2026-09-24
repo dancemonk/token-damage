@@ -108,3 +108,27 @@ export function draw(
     },
   };
 }
+
+/** "2025-10" → months since year 0; "2025" counts as its December; "-" (a standing fact) has no age. */
+const monthIndex = (date: string): number | null => {
+  const m = /^(\d{4})(?:-(\d{2}))?$/.exec(date);
+  return m ? Number(m[1]) * 12 + (m[2] ? Number(m[2]) - 1 : 11) : null;
+};
+
+/**
+ * The news lines still worth a "meanwhile": dated within `months` before `asOf` (YYYY-MM) and not after it.
+ * When fewer than `min` qualify, all of them rotate, so a stale pool shows old news rather than the same few.
+ * Other kinds pass through untouched.
+ */
+export function freshNews<
+  L extends { kind: string; source?: { date: string } },
+>(lines: readonly L[], asOf: string, { months = 12, min = 6 } = {}): L[] {
+  const now = monthIndex(asOf);
+  const news = lines.filter((l) => l.kind === "news");
+  const fresh = news.filter((l) => {
+    const at = l.source ? monthIndex(l.source.date) : null;
+    return now === null || at === null || (at <= now && now - at < months);
+  });
+  const keep = new Set(fresh.length >= min ? fresh : news);
+  return lines.filter((l) => l.kind !== "news" || keep.has(l));
+}
