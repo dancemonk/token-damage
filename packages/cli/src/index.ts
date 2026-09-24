@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 import { setTimeout as sleep } from "node:timers/promises";
-import { parseOptions } from "./args.js";
+import { parseOptions, USAGE } from "./args.js";
 import { run } from "./run.js";
+import { VERSION } from "./version.js";
 
 try {
   const options = parseOptions(process.argv.slice(2));
+  if (options.help || options.version) {
+    process.stdout.write(
+      `${options.help ? USAGE : `token-damage ${VERSION}`}\n`,
+    );
+    process.exit(0);
+  }
   const tty = Boolean(process.stdout.isTTY);
   process.exitCode = await run(
     { ...options, anim: options.anim && tty },

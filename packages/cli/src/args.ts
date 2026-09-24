@@ -9,7 +9,25 @@ export interface Options {
   configDir: string | undefined;
   fixtures: boolean;
   strict: boolean;
+  help: boolean;
+  version: boolean;
 }
+
+export const USAGE = `token-damage: the receipt your AI agent never gave you
+
+usage: npx token-damage [options]
+
+  --plan <usd>          your monthly plan, e.g. 200
+  --since <30d|date>    period to cover (default 30d) or a start date, YYYY-MM-DD
+  --json                print the receipt as JSON
+  --no-anim             print everything at once
+  --config-dir <path>   Claude Code config dir (default ~/.claude, or CLAUDE_CONFIG_DIR)
+  --fixtures <dir>      read a fixture corpus instead of your own logs
+  --strict              exit 3 if your Claude Code is newer than anything tested
+  -v, --version         print the version
+  -h, --help            print this
+
+reads ~/.claude on this machine · uploads nothing · no network calls`;
 
 export function parseOptions(argv: string[]): Options {
   const { values } = parseArgs({
@@ -23,6 +41,8 @@ export function parseOptions(argv: string[]): Options {
       fixtures: { type: "string" },
       "config-dir": { type: "string" },
       strict: { type: "boolean", default: false },
+      help: { type: "boolean", short: "h", default: false },
+      version: { type: "boolean", short: "v", default: false },
     },
     strict: true,
   });
@@ -43,6 +63,8 @@ export function parseOptions(argv: string[]): Options {
     configDir: values.fixtures ?? values["config-dir"],
     fixtures: values.fixtures !== undefined,
     strict: values.strict,
+    help: values.help,
+    version: values.version,
   };
 }
 

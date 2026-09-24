@@ -3,21 +3,18 @@
 ## Repo
 ```
 token-damage/
-  CLAUDE.md
-  docs/                    specs (this folder)
-  design/                  mockup sources, prototype, brand kit
-  packages/core/           parsing, dedupe, metrics, roasts — zero runtime deps, pure functions
+  packages/core/           parsing, dedupe, metrics, roasts; zero runtime deps
     src/adapters/claude/   discovery, parser, dedupe
-    src/adapters/codex/    (V1)
     src/aggregate/         events → daily totals, sessions
     src/metrics/           prices.json, pricing, energy, satire
-    src/roasts/            detectors, scoring, templates, achievements, disputes
-    src/receipt/           receipt model (tiered values) → text (48 col) and SVG
-    fixtures/              sanitized JSONL corpora + expected JSON per tool version
-  packages/cli/            bin: token-damage — prompts, animation, PNG (@resvg/resvg-js), share link, files
-  apps/web/                static site
+    src/roasts/            facts, note families, scoring, achievements, disputes
+    src/receipt/           receipt model → 48-column text, share card SVG, share link
+    fixtures/              sanitized transcript lines + expected totals
+    scripts/               fixture sanitizer, sample-month generator
+  packages/cli/            bin: token-damage (flow, prompts, PNG via @resvg/resvg-js, bundled fonts)
   schema/receipt.schema.json
-  scripts/oracle.mjs       ccusage comparison
+  scripts/oracle.mjs       compares daily totals with ccusage
+  docs/                    how it works: data sources, metrics, roasts, CLI, privacy
 ```
 
 ## Pipeline
@@ -79,5 +76,5 @@ Record `version` from the transcript lines. Unknown major/minor → mark parser 
 output and `--json`. Keep a table of tested versions in `DATA-SOURCES.md`.
 
 ## Release
-`pnpm check` → changeset → `npm publish --provenance` from CI (trusted publishing). Tag `vX.Y.Z`.
-The site deploys from `apps/web` on push to `main`.
+`pnpm check`, bump both package versions, push tag `vX.Y.Z`. The `release` workflow checks again and publishes
+`@token-damage/core`, then `token-damage`, with npm provenance.

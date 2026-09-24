@@ -6,3 +6,14 @@ dist/
 coverage/
 *.tsbuildinfo
 packages/core/fixtures/sample-month/
+
+# Kept locally, not published: agent instructions, planning docs, design sources.
+CLAUDE.md
+design/
+docs/PRODUCT.md
+docs/TASKS.md
+docs/LAUNCH.md
+docs/ROADMAP.md
+docs/QUIZ.md
+docs/DESIGN.md
+docs/WEBSITE.md

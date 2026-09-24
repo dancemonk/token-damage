@@ -1,6 +1,5 @@
 # CLI — `npx token-damage`
 
-Mockup: `design/canvas/Main.dc.html` (animated terminal run). Behaviour below is the spec.
 
 ## Flow
 ```
@@ -105,11 +104,11 @@ The "YOUR PLAN" block appears only with `--plan` or a configured plan. This is s
 The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 
 ## Image and link
-- PNG: `receiptSvg` (core) builds the 1080×1920 card of `design/canvas/ShareCard.dc.html` as an SVG string;
+- PNG: `receiptSvg` (core) builds the 1080×1920 share card as an SVG string;
   `@resvg/resvg-js` rasterizes it with the bundled fonts in `packages/cli/assets/fonts` (IBM Plex Mono, OFL;
   Special Elite, Apache-2.0). System fonts are never loaded, so every machine renders the same card. Plex Mono has no
   `≡` or `✶`, so those are drawn as shapes. resvg reads TTF, not woff2, so the fonts ship as TTF files.
-- Link: `sharePayload` keeps only the fields in `SHARE_WHITELIST` (docs/WEBSITE.md §Share links); `decodeShare`
+- Link: `sharePayload` keeps only the fields in `SHARE_WHITELIST`; `decodeShare`
   rejects any other key.
 
 ## Flags

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Oracle: compares our daily token totals with ccusage on the same Claude Code logs (docs/TASKS.md Task 5).
+// Oracle: compares our daily token totals with ccusage on the same Claude Code logs.
 // Usage: pnpm oracle [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
 // Exits 1 when any day's field differs by more than 1%, 2 when ccusage cannot run.
 // Dev tool only: it fetches ccusage through npx. The CLI itself never touches the network.

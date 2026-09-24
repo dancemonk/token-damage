@@ -5,7 +5,7 @@ import type { Receipt } from "./model.js";
 export const SHARE_BASE = "https://tokendamage.com/r#v1.";
 
 /**
- * Everything a share link may carry (docs/WEBSITE.md §Share links). Aggregates only: no text, no paths, no project
+ * Everything a share link may carry. Aggregates only: no text, no paths, no project
  * names, no time zone. A key outside this list is a bug; `decodeShare` rejects it.
  */
 export const SHARE_WHITELIST = [

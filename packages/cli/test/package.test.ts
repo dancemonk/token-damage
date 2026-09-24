@@ -6,7 +6,7 @@ const pkg = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
 );
 
-// Our own core package plus the one third-party dependency CLAUDE.md allows.
+// Our own core package plus the one third-party runtime dependency the project allows.
 const ALLOWED_RUNTIME_DEPS = ["@token-damage/core", "@resvg/resvg-js"];
 
 describe("cli package", () => {

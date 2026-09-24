@@ -4,7 +4,7 @@ import type { Receipt } from "./model.js";
 
 export const WIDTH = 48;
 
-/** One printed line and how to colour it (docs/DESIGN.md §Terminal). */
+/** One printed line and how to colour it: rules muted, estimates ochre, satire and the stamp red. */
 export interface Line {
   text: string;
   style?: "muted" | "ochre" | "red" | "stamp";

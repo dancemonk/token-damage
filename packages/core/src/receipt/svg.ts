@@ -2,7 +2,7 @@ import { formatRange, formatUsd, sig2 } from "../metrics/format.js";
 import { WORLD_CHECK } from "../metrics/world.js";
 import type { Receipt } from "./model.js";
 
-// Layout from design/canvas/ShareCard.dc.html, reproduced box by box: a 1080×1920 card, an 800 px paper strip
+// Layout of the share card mockup, reproduced box by box: a 1080×1920 card, an 800 px paper strip
 // with 56 px side padding. IBM Plex Mono is monospaced (0.6 em per character), so widths are exact.
 const W = 1080;
 const H = 1920;
@@ -211,7 +211,7 @@ function statementPeriod(p: Receipt["period"]): string {
     : `${monthDay(p.start)}, ${sy} – ${monthDay(p.end)}, ${ey}`;
 }
 
-/** The 1080×1920 share card (design/canvas/ShareCard.dc.html). Pure: same receipt, same SVG. */
+/** The 1080×1920 share card. Pure: same receipt, same SVG. */
 export function receiptSvg(r: Receipt): string {
   const body: string[] = [];
   let y = 0;

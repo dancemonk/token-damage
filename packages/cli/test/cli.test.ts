@@ -128,6 +128,13 @@ describe("exit codes", () => {
     expect(run.stdout).toContain("CLAUDE_CODE_SKIP_PROMPT_HISTORY");
   });
 
+  it("prints help and version", () => {
+    const help = cli("--help");
+    expect(help.status).toBe(0);
+    expect(help.stdout).toContain("usage: npx token-damage [options]");
+    expect(cli("-v").stdout.trim()).toBe(`token-damage ${VERSION}`);
+  });
+
   it("exits 1 on a bad flag", () => {
     expect(cli("--plan", "free").status).toBe(1);
   });

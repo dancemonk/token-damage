@@ -93,4 +93,4 @@ Customer 0041 detail: 94 sessions, 26 active days, 212 subagents, 7,480 model ca
 1,178,700,000 (input 2.1M, cache write 38.4M, cache read 1,138.2M), output 4.7M; Opus 840.2M / $665.34,
 Sonnet 284.0M / $134.94, Haiku 59.2M / $9.37; latest call 3:47 AM Sep 18; longest session 9h 14m; most
 expensive day Sep 17 ($129.20); 80,558 tokens per typed word ("The Great Gatsby, and a third of it again").
-`design/sample-numbers.py` reproduces these.
+`packages/core/test/metrics.test.ts` and `packages/core/fixtures/samples.json` reproduce these.
