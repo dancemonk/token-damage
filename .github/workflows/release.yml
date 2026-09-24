@@ -43,7 +43,9 @@ jobs:
         run: |
           publish() {
             name=$(tar -xOzf "$1" package/package.json | node -p "JSON.parse(require('fs').readFileSync(0)).name")
-            if npm view "$name@${GITHUB_REF_NAME#v}" version >/dev/null 2>&1; then
+            # Ask for the exact version: the package document can stay cached as 404 for minutes after a first publish.
+            path=$(node -p "encodeURIComponent(process.argv[1]).replace('%40', '@')" "$name")
+            if curl -sf "https://registry.npmjs.org/$path/${GITHUB_REF_NAME#v}" >/dev/null; then
               echo "$name@${GITHUB_REF_NAME#v} is already on npm, skipping"
             else
               npm publish "$1" --provenance --access public
