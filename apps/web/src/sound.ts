@@ -3,7 +3,7 @@
 import { soundOn } from "./prefs.js";
 import { crackS, snapS, TEAR } from "./timeline.js";
 
-/** The whole site's level. Tuned by ear by the owner; change it here and nowhere else. */
+/** The whole site's level, set by the owner on 2026-09-24. Change it here and nowhere else. */
 export const MASTER_GAIN = 0.45;
 
 export const reducedMotion = () =>
