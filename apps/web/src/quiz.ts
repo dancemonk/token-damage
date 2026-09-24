@@ -160,6 +160,5 @@ function render() {
   root.replaceChildren(...(q < TOTAL ? question() : end()));
 }
 
-document.getElementById("quiz-static")?.remove();
-root.hidden = false;
+// The build printed question 1 in this same markup, so taking over moves nothing on screen.
 render();

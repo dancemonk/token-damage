@@ -2,6 +2,7 @@
 import { spawnSync } from "node:child_process";
 import {
   cpSync,
+  existsSync,
   mkdtempSync,
   readFileSync,
   rmSync,
@@ -83,6 +84,29 @@ describe.each(LANGS)("built /%s", (lang) => {
         "notes",
         "notesEn",
       ]);
+  });
+
+  it.each(SLUGS)("page %s has a preview image in its language", (slug) => {
+    const m = /<meta property="og:image" content="([^"]+)"/.exec(
+      page(lang, slug),
+    );
+    expect(m![1]).toBe(`${ORIGIN}/og/${lang}${slug === "r" ? "-r" : ""}.png`);
+    expect(existsSync(join(DIST, new URL(m![1]!).pathname))).toBe(true);
+  });
+
+  it("is in the sitemap with every alternate, /r excepted", () => {
+    const xml = readFileSync(join(DIST, "sitemap.xml"), "utf8");
+    for (const slug of SLUGS.filter((s) => s !== "r")) {
+      const entry = new RegExp(
+        `<url><loc>${ORIGIN}${pathOf(lang, slug)}</loc>(.*?)</url>`,
+      ).exec(xml);
+      expect(entry, slug).not.toBeNull();
+      for (const l of LANGS)
+        expect(entry![1]).toContain(
+          `hreflang="${l}" href="${ORIGIN}${pathOf(l, slug)}"`,
+        );
+    }
+    expect(xml).not.toContain(`${ORIGIN}${pathOf(lang, "r")}<`);
   });
 
   it("links the language switcher to the same page in every language", () => {

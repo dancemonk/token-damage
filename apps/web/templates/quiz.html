@@ -5,8 +5,8 @@
       <h1 class="t">{{t:quiz.title}}</h1>
       <div class="s">{{t:quiz.subtitle}}</div>
     </header>
-    <div class="quiz" id="quiz" hidden></div>
-    <div class="quiz quiz-static" id="quiz-static">{{h:staticQuiz}}</div>
+    <div class="quiz js-only" id="quiz">{{h:quizFirst}}</div>
+    <noscript><div class="quiz quiz-static">{{h:staticQuiz}}</div></noscript>
     <p class="q-source">{{v:asOf}}</p>
   </div>
   <div class="sheet-edge"></div>

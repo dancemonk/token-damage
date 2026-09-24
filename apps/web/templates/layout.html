@@ -16,7 +16,11 @@
     <meta property="og:description" content="{{v:description}}" />
     <meta property="og:url" content="{{v:canonical}}" />
     <meta property="og:locale" content="{{v:ogLocale}}" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="{{v:ogImage}}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="{{v:ogAlt}}" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#0e0e0d" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link
@@ -27,6 +31,13 @@
       crossorigin
     />
     <link rel="stylesheet" href="/assets/site.css" />
+    <noscript
+      ><style>
+        .js-only {
+          display: none !important;
+        }
+      </style></noscript
+    >
     {{h:scripts}}
   </head>
   <body>

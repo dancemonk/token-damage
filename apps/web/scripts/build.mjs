@@ -208,6 +208,17 @@ function noteOf(catalog, key) {
   return en.notes[key] ? { text: en.notes[key], lang: "en" } : undefined;
 }
 
+/** Question 1 exactly as quiz.ts renders it, so the script takes over without a layout shift. */
+function quizFirst(t) {
+  const options = ["a", "b", "c"]
+    .map(
+      (o) =>
+        `<li><button type="button" class="opt">${esc(t(`quiz.q1.${o}`))}</button></li>`,
+    )
+    .join("");
+  return `<div class="q-progress"><span>${esc(t("quiz.progress", { n: 1, total: fixed.quiz.answers.length }))}</span><span>${esc(t("quiz.score.running", { score: 0 }))}</span></div><p class="q-text" tabindex="-1">${esc(t("quiz.q1.question"))}</p><ul class="q-options">${options}</ul>`;
+}
+
 function staticQuiz(catalog, t) {
   const opts = ["a", "b", "c"];
   const items = fixed.quiz.answers.map((answer, i) => {
@@ -263,6 +274,31 @@ function sources() {
   return `<ul class="sources">${items.join("")}</ul>`;
 }
 
+/**
+ * Every JS module a page script reaches, as site paths, so the page can preload them all at once
+ * instead of discovering the import chain one round trip at a time.
+ */
+function moduleGraph(entry) {
+  const found = new Set();
+  const walk = (file, url) => {
+    if (found.has(url)) return;
+    found.add(url);
+    for (const m of readFileSync(file, "utf8").matchAll(IMPORT)) {
+      const spec = m[1] ?? m[2];
+      if (spec.endsWith(".json")) continue;
+      if (spec === "@token-damage/core/web")
+        walk(join(DIST, "assets/core/web.js"), "/assets/core/web.js");
+      else if (spec.startsWith("."))
+        walk(
+          resolve(dirname(file), spec),
+          new URL(spec, `http://x${url}`).pathname,
+        );
+    }
+  };
+  walk(join(JS, entry), `/assets/js/${entry}`);
+  return [...found];
+}
+
 const BUILD_CLOCK = "09/24/26 · 11:58 PM";
 
 for (const lang of LANGS) {
@@ -278,6 +314,8 @@ for (const lang of LANGS) {
       description: t(`${name}.meta.description`),
       canonical: urlOf(lang, slug),
       ogLocale: locale.replace("-", "_"),
+      ogImage: `${fixed.origin}/og/${lang}${slug === "r" ? "-r" : ""}.png`,
+      ogAlt: slug === "r" ? t("r.meta.description") : t("og.home"),
       quizHref: pathOf(lang, "quiz"),
       github: fixed.github,
       asOf: t("quiz.asOf", { date: monthYear(fixed.quiz.asOf, locale) }),
@@ -302,7 +340,10 @@ for (const lang of LANGS) {
     }
     if (slug === "r")
       html.stub = stub(t("home.stub.copy"), t("home.stub.copy.label"));
-    if (slug === "quiz") html.staticQuiz = staticQuiz(catalog, t);
+    if (slug === "quiz") {
+      html.staticQuiz = staticQuiz(catalog, t);
+      html.quizFirst = quizFirst(t);
+    }
     if (slug === "method") {
       html.prices = pricesTable(locale, t);
       html.energy = energyTable(locale, t);
@@ -314,6 +355,9 @@ for (const lang of LANGS) {
             ? `<script type="importmap">${inlineJson({ imports: { "@token-damage/core/web": "/assets/core/web.js" } })}</script>`
             : "",
           `<script type="application/json" id="i18n">${inlineJson(pageData(catalog, page))}</script>`,
+          ...moduleGraph(page.script).map(
+            (url) => `<link rel="modulepreload" href="${url}" />`,
+          ),
           `<script type="module" src="/assets/js/${page.script}"></script>`,
         ]
           .filter(Boolean)
@@ -332,6 +376,32 @@ for (const lang of LANGS) {
     writeFileSync(out, fillTemplate(template("layout.html"), t, vars, html));
   }
 }
+
+// 5. Crawlers: every page with content, each with its language alternates. /r has none of its own.
+const listed = PAGES.filter((p) => p.slug !== "r");
+writeFileSync(
+  join(DIST, "sitemap.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${LANGS.flatMap((lang) =>
+  listed.map(
+    (p) =>
+      `<url><loc>${urlOf(lang, p.slug)}</loc>${LANGS.map((l) => `<xhtml:link rel="alternate" hreflang="${l}" href="${urlOf(l, p.slug)}"/>`).join("")}<xhtml:link rel="alternate" hreflang="x-default" href="${urlOf("en", p.slug)}"/></url>`,
+  ),
+).join("\n")}
+</urlset>
+`,
+);
+writeFileSync(
+  join(DIST, "robots.txt"),
+  `User-agent: *\nAllow: /\nSitemap: ${fixed.origin}/sitemap.xml\n`,
+);
+for (const lang of LANGS)
+  for (const suffix of ["", "-r"])
+    if (!existsSync(join(DIST, `og/${lang}${suffix}.png`)))
+      throw new Error(
+        `og/${lang}${suffix}.png missing: run node scripts/og.mjs --langs ${LANGS.join(",")}`,
+      );
 
 const count = readdirSync(DIST, { recursive: true }).filter((f) =>
   String(f).endsWith(".html"),
