@@ -22,6 +22,9 @@ const result = el("result");
 const cta = el("cta");
 const status = el("copy-status");
 
+// Opening another friend's link in this tab only changes the fragment: start over with it.
+window.addEventListener("hashchange", () => location.reload());
+
 // Switching language keeps the friend's receipt: the fragment rides along.
 if (location.hash)
   document
