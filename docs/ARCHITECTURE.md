@@ -35,8 +35,10 @@ interface UsageEvent {
   ts: number;                      // epoch ms, UTC
   model: string; isFallbackModel?: boolean;
   input: number; cacheWrite: number; cacheRead: number; output: number;   // tokens
+  messageId: string;               // API message id; the sidechain rule matches on it alone
   dedupeKey: string;               // see DATA-SOURCES §Dedupe
   isSidechain?: boolean;
+  version?: string;                // tool version that wrote the line (version sniffing)
 }
 interface DailyTotals { day: string /* local YYYY-MM-DD */; byModel: Record<string, TokenSums>; calls: number;
   sessions: number; subagents: number; wordsTyped: number; firstCall: number; lastCall: number; }

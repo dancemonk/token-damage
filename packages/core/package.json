@@ -6,6 +6,8 @@
   "exports": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:big": "TD_BIG_MB=512 vitest run test/claude/big-file.test.ts",
+    "sanitize-fixture": "node --experimental-strip-types scripts/sanitize-fixture.ts"
   }
 }

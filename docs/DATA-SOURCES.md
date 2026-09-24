@@ -124,6 +124,11 @@ Lines have `timestamp`, `type`, `payload`.
 ### Not comparable across providers
 Tokenizers and cache semantics differ. Show raw tokens per provider; compare in `≡` dollars and `≈` Wh.
 
+## Tested versions
+| Tool | Versions | Fixtures |
+| --- | --- | --- |
+| Claude Code | 2.1.237, 2.1.281 (real logs 2.1.205–2.1.281 scanned) | `packages/core/fixtures/claude/` |
+
 ## Later sources
 Gemini CLI and Copilot CLI (ccusage parses both), Cursor/OpenCode (SQLite; Cursor needs a cloud token → opt-in
 only), ChatGPT/Claude.ai exports (no token counts; tokenize locally and label `≈`).
