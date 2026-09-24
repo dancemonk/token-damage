@@ -4,6 +4,7 @@ import { createInterface } from "node:readline";
 import type { PromptEvent, UsageEvent } from "../../types.js";
 import { findRollouts } from "./discover.js";
 import {
+  aliasModel,
   burstStart,
   dropReplay,
   metaOf,
@@ -174,6 +175,7 @@ export async function* scanCodex(
         raw.reasoning,
         raw.total,
       ].join("|");
+      const priceAs = aliasModel(record.model, record.ts);
       stats.events++;
       if (record.isFallbackModel) stats.fallback++;
       stats.versions[version ?? "unknown"] =
@@ -186,6 +188,7 @@ export async function* scanCodex(
         ts: record.ts,
         model: record.model,
         ...(record.isFallbackModel && { isFallbackModel: true }),
+        ...(priceAs && { priceAs }),
         // Codex input includes cached input and cache writes; output already includes reasoning.
         input: raw.input - raw.cached - raw.cacheWrite,
         cacheWrite: raw.cacheWrite,

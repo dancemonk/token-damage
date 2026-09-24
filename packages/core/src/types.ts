@@ -22,6 +22,8 @@ export interface UsageEvent {
   ts: number;
   model: string;
   isFallbackModel?: boolean;
+  /** The model whose price applies when `model` is a routing alias (Codex `codex-auto-review`); a guess. */
+  priceAs?: string;
   input: number;
   cacheWrite: number;
   /** Part of cacheWrite written with the 1-hour TTL, priced at 2x input instead of 1.25x. */

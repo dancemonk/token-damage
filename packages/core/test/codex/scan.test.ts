@@ -60,12 +60,14 @@ describe("scanCodex", () => {
     ]);
   });
 
-  it("keeps the auto-review alias as the model name", async () => {
+  it("keeps the auto-review alias as the model name and prices it by date", async () => {
     const { usage } = await scanFixtures();
     expect(usage.filter((e) => e.model === "codex-auto-review")).toMatchObject([
       {
         sessionId: "019f4c2a-3591-7420-8e6b-20ca621cf67e",
         parentSessionId: "019f4c29-7a09-77e0-97c5-0f104d86a576",
+        // 2026-07-10: before the move to GPT-5.6 Luna.
+        priceAs: "gpt-5.4",
       },
     ]);
   });

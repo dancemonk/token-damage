@@ -164,6 +164,24 @@ function tierOf(value: string): ServiceTier | undefined {
   return undefined;
 }
 
+// Codex routes `codex-auto-review` on the server and never logs the model it ran. ccusage 20.0.24's curated
+// timeline, newest first: OpenAI moved it from GPT-5.4 to GPT-5.6 Luna on 2026-07-30.
+const AUTO_REVIEW: [since: string, model: string][] = [
+  ["2026-07-30", "gpt-5.6-luna"],
+  ["2026-03-05", "gpt-5.4"],
+  ["2026-02-05", "gpt-5.3-codex"],
+  ["2025-12-11", "gpt-5.2-codex"],
+  ["2025-11-13", "gpt-5.1-codex"],
+  ["2025-09-15", "gpt-5-codex"],
+];
+
+/** The model an alias probably ran on at `ts` (UTC day), for pricing; undefined for a real model name. */
+export function aliasModel(model: string, ts: number): string | undefined {
+  if (model !== "codex-auto-review") return undefined;
+  const day = new Date(ts).toISOString().slice(0, 10);
+  return AUTO_REVIEW.find(([since]) => day >= since)?.[1] ?? "gpt-5";
+}
+
 /** Reads a rollout's first line. */
 export function metaOf(line: string | undefined): RolloutMeta {
   let row: unknown;

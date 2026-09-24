@@ -26,6 +26,19 @@ Unknown model → nearest version in the same family by name, flag `isFallback`,
 → not priced, and the receipt says so. `packages/core/src/metrics/prices.json` holds the real per-model prices
 (`asOf` 2026-09-24); the mockup values above are Opus 4.x/5, Sonnet 4.6 and Haiku 4.5 prices (Sonnet 5 is 2 / 2.5 / 0.20 / 10).
 
+OpenAI rows come from the provider's page too, with three per-call variants `byModel` keeps apart
+(`modelKey`: `gpt-5.6-terra|long`, `|fast`, `|as=<model>`, `|est`):
+- **Long context:** a Codex call with more than 272K input tokens (cached included) is priced entirely at the
+  model's long-context row. Models without one (gpt-5.4-mini) have no premium.
+- **Fast mode** (priority processing before 2026-07-30): calls whose rollout recorded `service_tier` fast or
+  priority use the Fast mode row; a model without one is priced standard and marked `est. model`. No recorded
+  tier → standard.
+- **Aliases:** `codex-auto-review` is priced as the model it probably ran on that day (the Codex adapter's dated
+  table) and always marked `est. model`. Usage with no recorded model is priced as `gpt-5`, marked the same.
+Codex models OpenAI no longer lists (`gpt-5.2-codex`) are priced as their base model (`gpt-5.2`), marked. Where
+OpenAI lists no cache-write price, cache writes are ordinary input and cost the input price. `gpt-5.6-sol` is a
+promotional price (through at least 2026-11-21).
+
 Cache writes have two prices: 5-minute TTL 1.25× input, 1-hour TTL 2× input. Claude Code writes the main thread with
 the 1-hour TTL (87% of cache writes on real logs; a single write price understated list price by 7.6%), so
 `cacheWrite1h` (from `usage.cache_creation.ephemeral_1h_input_tokens`) is priced separately. With no 1-hour

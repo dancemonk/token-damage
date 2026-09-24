@@ -9,6 +9,8 @@ import {
   formatUsd,
   listPrice,
   listPriceByModel,
+  modelKey,
+  modelName,
   planMultiple,
   priceFor,
   ramX,
@@ -17,6 +19,7 @@ import {
   withoutCache,
   type PriceTable,
   type TokenSums,
+  type UsageEvent,
 } from "../src/index.js";
 
 // docs/METRICS.md §Sample data, customer 0041, with the mockups' illustrative family prices.
@@ -227,6 +230,105 @@ describe("1-hour cache writes", () => {
   it("carry their larger premium into the cache saving", () => {
     expect(cacheSaving(writes(0)).value).toBe(-1.25);
     expect(cacheSaving(writes(1e6)).value).toBe(-5);
+  });
+});
+
+describe("OpenAI prices", () => {
+  const call = (over: Partial<UsageEvent> = {}): UsageEvent => ({
+    kind: "usage",
+    source: "codex",
+    sessionId: "s",
+    ts: Date.parse("2026-09-01T00:00:00Z"),
+    model: "gpt-5.6-terra",
+    input: 1000,
+    cacheWrite: 0,
+    cacheWrite1h: 0,
+    cacheRead: 200_000,
+    output: 500,
+    messageId: "m",
+    dedupeKey: "m",
+    ...over,
+  });
+  const million = {
+    input: 1e6,
+    cacheWrite: 0,
+    cacheWrite1h: 0,
+    cacheRead: 1e6,
+    output: 1e6,
+  };
+
+  it("keys calls by what changes their price", () => {
+    expect(modelKey(call())).toBe("gpt-5.6-terra");
+    // 272,001 input tokens, cached ones included.
+    expect(modelKey(call({ input: 72_001 }))).toBe("gpt-5.6-terra|long");
+    expect(modelKey(call({ serviceTier: "fast" }))).toBe("gpt-5.6-terra|fast");
+    expect(modelKey(call({ serviceTier: "standard" }))).toBe("gpt-5.6-terra");
+    expect(
+      modelKey(call({ model: "codex-auto-review", priceAs: "gpt-5.4" })),
+    ).toBe("codex-auto-review|as=gpt-5.4");
+    expect(modelKey(call({ model: "gpt-5", isFallbackModel: true }))).toBe(
+      "gpt-5|est",
+    );
+    // Only OpenAI charges by context size here.
+    expect(modelKey(call({ source: "claude-code", input: 900_000 }))).toBe(
+      "gpt-5.6-terra",
+    );
+    expect(modelName("codex-auto-review|as=gpt-5.4|fast")).toBe(
+      "codex-auto-review",
+    );
+  });
+
+  it("prices standard, long-context, Fast mode and fast long-context calls from their own rows", () => {
+    const usd = (key: string) => listPrice({ [key]: million }).value;
+    // input + cached input + output, per 1M.
+    expect(usd("gpt-5.6-terra")).toBeCloseTo(2 + 0.2 + 12);
+    expect(usd("gpt-5.6-terra|long")).toBeCloseTo(4 + 0.4 + 18);
+    expect(usd("gpt-5.6-terra|fast")).toBeCloseTo(4 + 0.4 + 24);
+    expect(usd("gpt-5.6-terra|fast|long")).toBeCloseTo(8 + 0.8 + 36);
+    expect(usd("gpt-5.5|long")).toBeCloseTo(10 + 1 + 45);
+    // No long-context row: a long call costs what a short one does.
+    expect(usd("gpt-5.4-mini|long")).toBeCloseTo(0.75 + 0.075 + 4.5);
+  });
+
+  it("marks guesses: aliases, unrecorded models, and tiers without a listed price", () => {
+    expect(priceFor("codex-auto-review|as=gpt-5.4")).toMatchObject({
+      isFallback: true,
+      price: { input: 2.5, cacheRead: 0.25, output: 15 },
+    });
+    expect(priceFor("gpt-5|est")?.isFallback).toBe(true);
+    // gpt-5.5 lists no Fast mode long-context row: the standard long row, marked.
+    expect(priceFor("gpt-5.5|fast|long")).toMatchObject({
+      isFallback: true,
+      price: { input: 10 },
+    });
+    expect(priceFor("gpt-5.6-terra|fast|long")?.isFallback).toBe(false);
+    const v = listPrice({
+      "codex-auto-review|as=gpt-5.4": million,
+      "codex-auto-review|as=gpt-5.6-luna": million,
+      "gpt-5.6-sol": million,
+    });
+    expect(v.note).toBe(
+      "est. model: codex-auto-review as gpt-5.4, codex-auto-review as gpt-5.6-luna",
+    );
+  });
+
+  it("prices Codex models OpenAI no longer lists as their base model, marked", () => {
+    expect(priceFor("gpt-5.2-codex")).toMatchObject({
+      isFallback: true,
+      price: { input: 1.75, output: 14 },
+    });
+    expect(priceFor("gpt-5.3-codex")).toMatchObject({
+      isFallback: false,
+      price: { input: 1.75 },
+    });
+    expect(priceFor("gpt-5.1-codex-max")).toBeUndefined();
+  });
+
+  it("bills cache writes as input where OpenAI lists no cache-write price", () => {
+    const writes = { ...million, cacheRead: 0, output: 0, input: 0 };
+    writes.cacheWrite = 1e6;
+    expect(listPrice({ "gpt-5.5": writes }).value).toBe(5);
+    expect(listPrice({ "gpt-5.6-sol": writes }).value).toBe(5);
   });
 });
 

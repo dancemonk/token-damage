@@ -8,6 +8,7 @@ import type {
   Totals,
   UsageEvent,
 } from "../types.js";
+import { modelKey } from "../metrics/pricing.js";
 
 /** Idle gaps longer than this split a session when measuring its longest stretch. */
 export const IDLE_SPLIT_MS = 60 * 60 * 1000;
@@ -134,7 +135,8 @@ export function aggregate(
     const sessionId = e.parentSessionId ?? e.sessionId;
     const agentKey = e.agentId && `${sessionId}/${e.agentId}`;
     const d = dayState(e.ts);
-    add(d.byModel, e.model, e);
+    // Keyed by price variant (fast, long context, alias) so list price stays exact per call.
+    add(d.byModel, modelKey(e), e);
     add<Source>(d.bySource, e.source, e);
     d.calls++;
     d.firstCall = Math.min(d.firstCall ?? e.ts, e.ts);

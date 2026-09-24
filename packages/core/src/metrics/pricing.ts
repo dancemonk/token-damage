@@ -1,4 +1,4 @@
-import type { TokenSums, Value } from "../types.js";
+import type { Source, TokenSums, UsageEvent, Value } from "../types.js";
 import prices from "./prices.json" with { type: "json" };
 
 /** USD per 1M tokens. */
@@ -10,17 +10,73 @@ export interface ModelPrice {
   output: number;
 }
 
+/** A model's standard price, plus the rows some providers charge per call. */
+export interface ModelPrices extends ModelPrice {
+  /** Calls over the long-context threshold (OpenAI: 272K input tokens). */
+  longContext?: ModelPrice;
+  /** OpenAI Fast mode, called priority processing before 2026-07-30. */
+  fast?: ModelPrice;
+  fastLongContext?: ModelPrice;
+}
+
 export interface PriceTable {
   asOf: string;
-  models: Record<string, ModelPrice>;
+  models: Record<string, ModelPrices>;
 }
 
 export const PRICES: PriceTable = prices;
 
 export interface PriceMatch {
   price: ModelPrice;
-  /** Priced as the nearest known model of the same family: show "≡ (est. model)". */
+  /**
+   * Priced as a guess: the nearest known model of the same family, the model a routing alias probably
+   * ran on, a model the log did not record, or a tier or context size without a listed price.
+   * Show "≡ (est. model)".
+   */
   isFallback: boolean;
+}
+
+/** Input tokens per call above which a source's provider charges long-context rates. */
+export const LONG_CONTEXT_INPUT: Partial<Record<Source, number>> = {
+  codex: 272_000,
+};
+
+/**
+ * Key an event's tokens are summed under in `byModel`: the model, plus what changes its price per call
+ * (`|as=<model>`, `|fast`, `|long`, `|est`). Plain model names for everything priced the normal way.
+ */
+export function modelKey(e: UsageEvent): string {
+  let key = e.model;
+  if (e.priceAs) key += `|as=${e.priceAs}`;
+  if (e.serviceTier === "fast") key += "|fast";
+  const threshold = LONG_CONTEXT_INPUT[e.source];
+  if (
+    threshold !== undefined &&
+    e.input + e.cacheRead + e.cacheWrite > threshold
+  )
+    key += "|long";
+  if (e.isFallbackModel) key += "|est";
+  return key;
+}
+
+/** The model name in a `byModel` key. */
+export const modelName = (key: string): string => key.split("|")[0] ?? key;
+
+function parseKey(key: string) {
+  const [name = key, ...flags] = key.split("|");
+  return {
+    name,
+    as: flags.find((f) => f.startsWith("as="))?.slice(3),
+    fast: flags.includes("fast"),
+    long: flags.includes("long"),
+    est: flags.includes("est"),
+  };
+}
+
+/** How a key reads in "est. model" and "not priced" notes. */
+function label(key: string): string {
+  const { name, as } = parseKey(key);
+  return as ? `${name} as ${as}` : name;
 }
 
 const FAMILIES = ["fable", "mythos", "opus", "sonnet", "haiku"];
@@ -36,12 +92,16 @@ function version(model: string): number {
 const withoutDate = (model: string) => model.replace(/-\d{8}$/, "");
 
 /** Exact price, else the nearest version in the same family, else undefined (not priced). */
-export function priceFor(
+function modelPrices(
   model: string,
-  table: PriceTable = PRICES,
-): PriceMatch | undefined {
+  table: PriceTable,
+): { prices: ModelPrices; isFallback: boolean } | undefined {
   const exact = table.models[withoutDate(model)];
-  if (exact) return { price: exact, isFallback: false };
+  if (exact) return { prices: exact, isFallback: false };
+  // Codex models OpenAI no longer lists: "gpt-5.2-codex" → gpt-5.2.
+  const base = table.models[model.replace(/-codex(?=-|$)/, "")];
+  if (model.startsWith("gpt-") && base)
+    return { prices: base, isFallback: true };
   const family = FAMILIES.find((f) => model.includes(f));
   if (!family) return undefined;
   const target = version(model);
@@ -53,8 +113,37 @@ export function priceFor(
         version(b) - version(a),
     )[0];
   return nearest
-    ? { price: table.models[nearest] as ModelPrice, isFallback: true }
+    ? { prices: table.models[nearest] as ModelPrices, isFallback: true }
     : undefined;
+}
+
+/**
+ * Price of a `byModel` key (see `modelKey`). A long call on a model without a long-context price is a
+ * normal call; a fast call without a Fast mode price is priced at its non-fast rate and marked estimated.
+ */
+export function priceFor(
+  key: string,
+  table: PriceTable = PRICES,
+): PriceMatch | undefined {
+  const k = parseKey(key);
+  const match = modelPrices(k.as ?? k.name, table);
+  if (!match) return undefined;
+  const { prices } = match;
+  // No long-context row: the model has no long-context premium.
+  const long = k.long ? prices.longContext : undefined;
+  const fast = k.fast
+    ? long
+      ? prices.fastLongContext
+      : prices.fast
+    : undefined;
+  return {
+    price: fast ?? long ?? prices,
+    isFallback:
+      match.isFallback ||
+      k.as !== undefined ||
+      k.est ||
+      (k.fast && fast === undefined),
+  };
 }
 
 function cost(t: TokenSums, p: ModelPrice): number {
@@ -86,20 +175,20 @@ function priced(
   f: (t: TokenSums, p: ModelPrice) => number,
 ): Value {
   let value = 0;
-  const estimated: string[] = [];
-  const unpriced: string[] = [];
-  for (const [model, t] of Object.entries(byModel)) {
-    const match = priceFor(model, table);
+  const estimated = new Set<string>();
+  const unpriced = new Set<string>();
+  for (const [key, t] of Object.entries(byModel)) {
+    const match = priceFor(key, table);
     if (!match) {
-      unpriced.push(model);
+      unpriced.add(modelName(key));
       continue;
     }
-    if (match.isFallback) estimated.push(model);
+    if (match.isFallback) estimated.add(label(key));
     value += f(t, match.price);
   }
   const notes = [
-    estimated.length ? `est. model: ${estimated.join(", ")}` : "",
-    unpriced.length ? `not priced: ${unpriced.join(", ")}` : "",
+    estimated.size ? `est. model: ${[...estimated].join(", ")}` : "",
+    unpriced.size ? `not priced: ${[...unpriced].join(", ")}` : "",
   ].filter(Boolean);
   return {
     value,

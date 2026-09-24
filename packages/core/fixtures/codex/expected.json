@@ -9,7 +9,7 @@
       "output": 20369
     },
     "byModel": {
-      "gpt-5": {
+      "gpt-5|est": {
         "input": 8000,
         "cacheWrite": 0,
         "cacheWrite1h": 0,
@@ -30,7 +30,7 @@
         "cacheRead": 51712,
         "output": 296
       },
-      "codex-auto-review": {
+      "codex-auto-review|as=gpt-5.4": {
         "input": 3025,
         "cacheWrite": 0,
         "cacheWrite1h": 0,
@@ -78,7 +78,7 @@
     {
       "day": "2025-09-06",
       "byModel": {
-        "gpt-5": {
+        "gpt-5|est": {
           "input": 8000,
           "cacheWrite": 0,
           "cacheWrite1h": 0,
@@ -141,7 +141,7 @@
     {
       "day": "2026-07-10",
       "byModel": {
-        "codex-auto-review": {
+        "codex-auto-review|as=gpt-5.4": {
           "input": 3025,
           "cacheWrite": 0,
           "cacheWrite1h": 0,

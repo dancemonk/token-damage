@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { emptyCodexStats, readLines } from "../../src/index.js";
 import {
+  aliasModel,
   burstStart,
   dropReplay,
   metaOf,
@@ -239,6 +240,24 @@ describe("readRollout", () => {
       [4, "01a0c5f1-0000-7000-8000-000000000003:item-1"],
       [3, undefined],
     ]);
+  });
+});
+
+describe("aliasModel", () => {
+  const at = (day: string) =>
+    aliasModel("codex-auto-review", Date.parse(`${day}T12:00:00Z`));
+
+  it("dates the model codex-auto-review probably ran on", () => {
+    expect(at("2026-09-24")).toBe("gpt-5.6-luna");
+    expect(at("2026-07-30")).toBe("gpt-5.6-luna");
+    expect(at("2026-07-29")).toBe("gpt-5.4");
+    expect(at("2026-02-05")).toBe("gpt-5.3-codex");
+    expect(at("2025-09-15")).toBe("gpt-5-codex");
+    expect(at("2025-09-01")).toBe("gpt-5");
+  });
+
+  it("leaves real model names alone", () => {
+    expect(aliasModel("gpt-5.4", Date.now())).toBeUndefined();
   });
 });
 

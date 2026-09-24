@@ -151,9 +151,9 @@ output = `output`. Never add reasoning again.
    rewritten), check the head of the file: when its first two `token_count` lines with usage are ≤ 1 s apart, the
    copy is a rewritten burst; drop events while each is ≤ 1 s after the previous one. In real logs this dropped
    826 events (4 prefix-matched forks, 8 bursts).
-6. `codex-auto-review` is a server-routed alias. We keep it as the model name; ccusage resolves it by date
-   (`gpt-5.4` from 2026-03-05, `gpt-5.6-luna` from 2026-07-30) for pricing. Pricing must do the same and mark it
-   as estimated.
+6. `codex-auto-review` is a server-routed alias. We keep it as the model name and set `priceAs` to the model
+   it probably ran on that UTC day (ccusage's timeline: `gpt-5.4` from 2026-03-05, `gpt-5.6-luna` from
+   2026-07-30, older `*-codex` models before, `gpt-5` first). Priced as that model, always marked `est. model`.
 7. The same response can appear in several files (archive copies, forks). Dedupe globally on
    `(timestamp ms, model, input, cached, cacheWrite, output, reasoning, total)`; conflicting tiers keep standard.
 
@@ -183,7 +183,9 @@ undercount) and #913 (`/btw` overcount), and handles advisor iterations and miss
 
 Codex (`ccusage codex daily`, 2026-09-24): the fixture corpus matches exactly (1,100,054 tokens, 9 days), and so
 did 44 days of real logs (1.96B tokens) in every field. Model names differ on purpose: ccusage reports
-`codex-auto-review` usage under its dated guess (`gpt-5.4`, `gpt-5.6-luna`); we keep the alias. We do not read
+`codex-auto-review` usage under its dated guess (`gpt-5.4`, `gpt-5.6-luna`); we keep the alias. List price on
+the same logs: $1,031.65 ours, $1,021.69 ccusage; the difference is exactly our $9.96 of `gpt-6-sol`, which
+ccusage does not price. We do not read
 the "headless" `codex exec --json` shapes ccusage also accepts (a top-level `usage` object); none appear in rollouts.
 
 Not compared, because ccusage does not report them: words typed and prompts. A day with prompts but no model

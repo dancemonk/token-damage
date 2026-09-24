@@ -1,6 +1,6 @@
 {
   "asOf": "2026-09-24",
-  "source": "Anthropic API list prices, USD per 1M tokens, checked against https://platform.claude.com/docs/en/about-claude/pricing on 2026-09-24. Verify before every release.",
+  "source": "API list prices, USD per 1M tokens. Anthropic: checked against https://platform.claude.com/docs/en/about-claude/pricing on 2026-09-24. OpenAI: standard, long-context (over 272K input tokens) and Fast mode rows checked against https://developers.openai.com/api/docs/pricing on 2026-09-24; where OpenAI lists no cache-write price, cache writes are input tokens and priced as input. gpt-5.6-sol is a promotional price, available at least through 2026-11-21. Verify before every release.",
   "models": {
     "claude-fable-5-1": {
       "input": 10,
@@ -127,6 +127,300 @@
       "cacheWrite1h": 1.6,
       "cacheRead": 0.08,
       "output": 4
+    },
+    "gpt-6-astra": {
+      "input": 10,
+      "cacheWrite": 12.5,
+      "cacheWrite1h": 12.5,
+      "cacheRead": 1,
+      "output": 50,
+      "longContext": {
+        "input": 20,
+        "cacheWrite": 25,
+        "cacheWrite1h": 25,
+        "cacheRead": 2,
+        "output": 75
+      },
+      "fast": {
+        "input": 20,
+        "cacheWrite": 25,
+        "cacheWrite1h": 25,
+        "cacheRead": 2,
+        "output": 100
+      },
+      "fastLongContext": {
+        "input": 40,
+        "cacheWrite": 50,
+        "cacheWrite1h": 50,
+        "cacheRead": 4,
+        "output": 150
+      }
+    },
+    "gpt-6-sol": {
+      "input": 2,
+      "cacheWrite": 2.5,
+      "cacheWrite1h": 2.5,
+      "cacheRead": 0.2,
+      "output": 10,
+      "longContext": {
+        "input": 4,
+        "cacheWrite": 5,
+        "cacheWrite1h": 5,
+        "cacheRead": 0.4,
+        "output": 15
+      },
+      "fast": {
+        "input": 4,
+        "cacheWrite": 5,
+        "cacheWrite1h": 5,
+        "cacheRead": 0.4,
+        "output": 20
+      },
+      "fastLongContext": {
+        "input": 8,
+        "cacheWrite": 10,
+        "cacheWrite1h": 10,
+        "cacheRead": 0.8,
+        "output": 30
+      }
+    },
+    "gpt-6-luna": {
+      "input": 0.1,
+      "cacheWrite": 0.125,
+      "cacheWrite1h": 0.125,
+      "cacheRead": 0.01,
+      "output": 0.5,
+      "longContext": {
+        "input": 0.2,
+        "cacheWrite": 0.25,
+        "cacheWrite1h": 0.25,
+        "cacheRead": 0.02,
+        "output": 0.75
+      },
+      "fast": {
+        "input": 0.2,
+        "cacheWrite": 0.25,
+        "cacheWrite1h": 0.25,
+        "cacheRead": 0.02,
+        "output": 1
+      },
+      "fastLongContext": {
+        "input": 0.4,
+        "cacheWrite": 0.5,
+        "cacheWrite1h": 0.5,
+        "cacheRead": 0.04,
+        "output": 1.5
+      }
+    },
+    "gpt-5.6-sol": {
+      "input": 4,
+      "cacheWrite": 5,
+      "cacheWrite1h": 5,
+      "cacheRead": 0.4,
+      "output": 20,
+      "longContext": {
+        "input": 8,
+        "cacheWrite": 10,
+        "cacheWrite1h": 10,
+        "cacheRead": 0.8,
+        "output": 30
+      },
+      "fast": {
+        "input": 8,
+        "cacheWrite": 10,
+        "cacheWrite1h": 10,
+        "cacheRead": 0.8,
+        "output": 40
+      },
+      "fastLongContext": {
+        "input": 16,
+        "cacheWrite": 20,
+        "cacheWrite1h": 20,
+        "cacheRead": 1.6,
+        "output": 60
+      }
+    },
+    "gpt-5.6-terra": {
+      "input": 2,
+      "cacheWrite": 2.5,
+      "cacheWrite1h": 2.5,
+      "cacheRead": 0.2,
+      "output": 12,
+      "longContext": {
+        "input": 4,
+        "cacheWrite": 5,
+        "cacheWrite1h": 5,
+        "cacheRead": 0.4,
+        "output": 18
+      },
+      "fast": {
+        "input": 4,
+        "cacheWrite": 5,
+        "cacheWrite1h": 5,
+        "cacheRead": 0.4,
+        "output": 24
+      },
+      "fastLongContext": {
+        "input": 8,
+        "cacheWrite": 10,
+        "cacheWrite1h": 10,
+        "cacheRead": 0.8,
+        "output": 36
+      }
+    },
+    "gpt-5.6-luna": {
+      "input": 0.2,
+      "cacheWrite": 0.25,
+      "cacheWrite1h": 0.25,
+      "cacheRead": 0.02,
+      "output": 1.2,
+      "longContext": {
+        "input": 0.4,
+        "cacheWrite": 0.5,
+        "cacheWrite1h": 0.5,
+        "cacheRead": 0.04,
+        "output": 1.8
+      },
+      "fast": {
+        "input": 0.4,
+        "cacheWrite": 0.5,
+        "cacheWrite1h": 0.5,
+        "cacheRead": 0.04,
+        "output": 2.4
+      },
+      "fastLongContext": {
+        "input": 0.8,
+        "cacheWrite": 1,
+        "cacheWrite1h": 1,
+        "cacheRead": 0.08,
+        "output": 3.6
+      }
+    },
+    "gpt-5.5": {
+      "input": 5,
+      "cacheWrite": 5,
+      "cacheWrite1h": 5,
+      "cacheRead": 0.5,
+      "output": 30,
+      "longContext": {
+        "input": 10,
+        "cacheWrite": 10,
+        "cacheWrite1h": 10,
+        "cacheRead": 1,
+        "output": 45
+      },
+      "fast": {
+        "input": 12.5,
+        "cacheWrite": 12.5,
+        "cacheWrite1h": 12.5,
+        "cacheRead": 1.25,
+        "output": 75
+      }
+    },
+    "gpt-5.4": {
+      "input": 2.5,
+      "cacheWrite": 2.5,
+      "cacheWrite1h": 2.5,
+      "cacheRead": 0.25,
+      "output": 15,
+      "longContext": {
+        "input": 5,
+        "cacheWrite": 5,
+        "cacheWrite1h": 5,
+        "cacheRead": 0.5,
+        "output": 22.5
+      },
+      "fast": {
+        "input": 5,
+        "cacheWrite": 5,
+        "cacheWrite1h": 5,
+        "cacheRead": 0.5,
+        "output": 30
+      }
+    },
+    "gpt-5.4-mini": {
+      "input": 0.75,
+      "cacheWrite": 0.75,
+      "cacheWrite1h": 0.75,
+      "cacheRead": 0.075,
+      "output": 4.5,
+      "fast": {
+        "input": 1.5,
+        "cacheWrite": 1.5,
+        "cacheWrite1h": 1.5,
+        "cacheRead": 0.15,
+        "output": 9
+      }
+    },
+    "gpt-5.3-codex": {
+      "input": 1.75,
+      "cacheWrite": 1.75,
+      "cacheWrite1h": 1.75,
+      "cacheRead": 0.175,
+      "output": 14,
+      "fast": {
+        "input": 3.5,
+        "cacheWrite": 3.5,
+        "cacheWrite1h": 3.5,
+        "cacheRead": 0.35,
+        "output": 28
+      }
+    },
+    "gpt-5.2": {
+      "input": 1.75,
+      "cacheWrite": 1.75,
+      "cacheWrite1h": 1.75,
+      "cacheRead": 0.175,
+      "output": 14,
+      "fast": {
+        "input": 3.5,
+        "cacheWrite": 3.5,
+        "cacheWrite1h": 3.5,
+        "cacheRead": 0.35,
+        "output": 28
+      }
+    },
+    "gpt-5.1": {
+      "input": 1.25,
+      "cacheWrite": 1.25,
+      "cacheWrite1h": 1.25,
+      "cacheRead": 0.125,
+      "output": 10,
+      "fast": {
+        "input": 2.5,
+        "cacheWrite": 2.5,
+        "cacheWrite1h": 2.5,
+        "cacheRead": 0.25,
+        "output": 20
+      }
+    },
+    "gpt-5": {
+      "input": 1.25,
+      "cacheWrite": 1.25,
+      "cacheWrite1h": 1.25,
+      "cacheRead": 0.125,
+      "output": 10,
+      "fast": {
+        "input": 2.5,
+        "cacheWrite": 2.5,
+        "cacheWrite1h": 2.5,
+        "cacheRead": 0.25,
+        "output": 20
+      }
+    },
+    "gpt-5-mini": {
+      "input": 0.25,
+      "cacheWrite": 0.25,
+      "cacheWrite1h": 0.25,
+      "cacheRead": 0.025,
+      "output": 2,
+      "fast": {
+        "input": 0.45,
+        "cacheWrite": 0.45,
+        "cacheWrite1h": 0.45,
+        "cacheRead": 0.045,
+        "output": 3.6
+      }
     }
   }
 }

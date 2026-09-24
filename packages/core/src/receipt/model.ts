@@ -4,6 +4,7 @@ import { energy } from "../metrics/energy.js";
 import {
   cacheSaving,
   listPrice,
+  modelName,
   planMultiple,
   PRICES,
   withoutCache,
@@ -99,7 +100,7 @@ function byFamily(
 ): Receipt["byModel"] {
   const groups = new Map<string, Record<string, TokenSums>>();
   for (const [model, t] of Object.entries(byModel)) {
-    const name = FAMILIES.find((f) => model.includes(f)) ?? model;
+    const name = FAMILIES.find((f) => model.includes(f)) ?? modelName(model);
     groups.set(name, { ...groups.get(name), [model]: t });
   }
   return [...groups]
