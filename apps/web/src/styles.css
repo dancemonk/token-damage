@@ -131,6 +131,36 @@ a:hover {
   text-decoration: none;
 }
 
+/* The speaker toggle. Its slot keeps a fixed width whether or not the button is shown (no JS), so the nav
+   never moves when the page comes to life. */
+.sound-slot {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 44px;
+}
+.sound {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--link);
+  cursor: pointer;
+}
+.sound:hover {
+  color: var(--bright);
+}
+.sound .off,
+.sound[aria-pressed="false"] .on {
+  display: none;
+}
+.sound[aria-pressed="false"] .off {
+  display: block;
+}
+
 /* ---------- home: printer, strip, stage ---------- */
 .home {
   position: relative;
@@ -184,13 +214,15 @@ a:hover {
   background: var(--amber);
   box-shadow: 0 0 8px var(--amber);
 }
+/* Paper still in the printer. It reaches up inside the printer (hidden behind it) so it can follow a pull
+   without showing its top edge; what shows is the same 14px as before. */
 .strip {
   position: absolute;
   left: 50%;
   margin-left: calc(var(--receipt-w) / -2);
-  top: 96px;
+  top: 62px;
   width: var(--receipt-w);
-  height: 14px;
+  height: 48px;
   background: var(--paper);
   z-index: 5;
 }
@@ -199,7 +231,7 @@ a:hover {
   position: absolute;
   left: 24px;
   right: 24px;
-  top: 6px;
+  top: 40px;
   border-top: 2px dashed rgba(23, 22, 15, 0.5);
 }
 .strip::after {
@@ -207,7 +239,7 @@ a:hover {
   position: absolute;
   left: 0;
   right: 0;
-  top: 14px;
+  top: 48px;
   height: 12px;
   background:
     linear-gradient(135deg, var(--paper) 50%, transparent 50%) left top / 20px
@@ -241,6 +273,9 @@ a:hover {
 }
 .drag.dip {
   animation: tdDip 0.9s ease-in-out;
+}
+.strip.recoil-strip {
+  animation: tdStripRecoil 0.25s ease-out;
 }
 .falling {
   position: absolute;
@@ -1108,7 +1143,7 @@ a:hover {
   .strip {
     left: 16px;
     margin-left: 0;
-    top: 90px;
+    top: 56px;
   }
   .stage {
     margin-top: 104px;
@@ -1226,6 +1261,15 @@ a:hover {
     transform: translateY(calc(var(--dy) + var(--fall)))
       translateX(calc(var(--dir) * 40px))
       rotate(calc(var(--rot) + var(--dir) * 11deg)) rotateX(12deg);
+  }
+}
+@keyframes tdStripRecoil {
+  0%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: translateY(-2px);
   }
 }
 @keyframes tdSpk {

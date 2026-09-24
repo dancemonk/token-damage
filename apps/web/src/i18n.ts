@@ -8,6 +8,8 @@ export interface Catalog {
   notes: Record<string, string>;
   /** English site notes a page needs, for keys this language hasn't written; pages only. */
   notesEn?: Record<string, string>;
+  /** Saint Petersburg asides for the home page's sample receipts; optional per language (docs/I18N.md). */
+  asides?: Record<string, string>;
 }
 
 /** Fills `{name}` slots. An unknown slot stays visible, so a bad template shows up in review. */

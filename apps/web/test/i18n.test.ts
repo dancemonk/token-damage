@@ -156,3 +156,28 @@ describe("never-translated data", () => {
           );
   });
 });
+
+describe.each([{ file: "en.json", catalog: en }, ...others])(
+  "asides in $file",
+  ({ catalog }) => {
+    const asides = Object.entries(catalog.asides ?? {});
+    // Topics are the city and its drinking, never drugs (docs/I18N.md), and no brands.
+    const OFF_LIMITS =
+      /закладк|нарк|кокаин|гашиш|травк|мефедрон|соль\b|drug|weed|cocaine|stoned|high\b|балтик|невское|жигул|heineken|guinness|absolut/i;
+
+    it("use spb.N ids", () => {
+      for (const [id] of asides) expect(id).toMatch(/^spb\.\d+$/);
+    });
+
+    it.each(asides.filter(([, text]) => text.trim()))(
+      "%s follows the voice and fits two receipt lines",
+      (_, text) => {
+        expect(text).not.toContain("!");
+        expect(text).not.toMatch(OFF_LIMITS);
+        const lines = text.split("\n");
+        expect(lines.length).toBeLessThanOrEqual(2);
+        for (const line of lines) expect(line.length).toBeLessThanOrEqual(42);
+      },
+    );
+  },
+);

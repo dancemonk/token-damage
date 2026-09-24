@@ -108,6 +108,7 @@ for (const lang of LANGS) {
     meta: own.meta,
     strings: { ...en.strings, ...own.strings },
     notes: own.notes,
+    asides: own.asides ?? {},
   };
 }
 
@@ -124,7 +125,7 @@ const PAGES = [
     slug: "r",
     template: "r.html",
     script: "r.js",
-    keys: ["r.", "home.stub."],
+    keys: ["r.", "home.stub.", "nav."],
     notes: /./,
     core: true,
   },
@@ -163,12 +164,18 @@ function fillTemplate(src, t, vars, html) {
 
 const MARK = `<svg width="20" height="20" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M7 27V11L9 9L11 11L13 9L14 10Q15 4 16 2Q17 6 19 6Q20 5 21 4Q22 8 24 9L25 11V27L24 29L23 27L22 29L21 27L20 29L19 27L18 29L17 27L16 29L15 27L14 29L13 27L12 29L11 27L10 29L9 27L8 29Z" fill="#f6f2e9"></path><path d="M10 15H22V16.5H10ZM10 19H22V20.5H10ZM10 23H17V24.5H10Z" fill="#17160f"></path><path d="M7 11L9 9L11 11L13 9L14 10Q15 4 16 2Q17 6 19 6Q20 5 21 4Q22 8 24 9L25 11Q16 14 7 11Z" fill="#e0331b"></path></svg>`;
 
-function header(lang, t, home) {
+const SPEAKER = `<svg class="on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg><svg class="off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>`;
+
+function header(lang, t, home, withSound) {
   const word = `${MARK}<span>${esc(fixed.brand)}</span>`;
   const wordmark = home
     ? `<button type="button" class="wordmark" id="replay" aria-label="${esc(t("nav.wordmark.replay"))}">${word}</button>`
     : `<a class="wordmark" href="${pathOf(lang, "")}" aria-label="${esc(t("nav.wordmark.home"))}">${word}</a>`;
-  return `<header class="top">${wordmark}<nav><a href="${pathOf(lang, "quiz")}">${esc(t("nav.quiz"))}</a><a href="${fixed.github}">${esc(t("nav.github"))}</a></nav></header>`;
+  // Pages that make sound get the speaker; its slot is fixed-width so the nav never shifts (see styles.css).
+  const speaker = withSound
+    ? `<span class="sound-slot"><button type="button" class="sound js-only" id="sound" aria-pressed="true" aria-label="${esc(t("nav.sound"))}" title="${esc(t("nav.sound"))}">${SPEAKER}</button></span>`
+    : "";
+  return `<header class="top">${wordmark}<nav><a href="${pathOf(lang, "quiz")}">${esc(t("nav.quiz"))}</a><a href="${fixed.github}">${esc(t("nav.github"))}</a>${speaker}</nav></header>`;
 }
 
 function langs(lang, slug, t) {
@@ -199,6 +206,10 @@ function pageData(catalog, page) {
     ),
     notes: pickKeys(catalog.notes, (k) => page.notes.test(k)),
     notesEn: pickKeys(en.notes, (k) => page.notes.test(k)),
+    // Saint Petersburg asides ride only on the home page's sample receipts, never on /r or real receipts.
+    ...(page.slug === "" && {
+      asides: pickKeys(catalog.asides, (k) => catalog.asides[k].trim() !== ""),
+    }),
   };
 }
 
@@ -327,7 +338,7 @@ for (const lang of LANGS) {
       }),
     };
     const html = {
-      header: header(lang, t, slug === ""),
+      header: header(lang, t, slug === "", slug === "" || slug === "r"),
       langs: langs(lang, slug, t),
       alternates: alternates(slug),
     };

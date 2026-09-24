@@ -3,9 +3,13 @@
 import fixed from "./fixed.json" with { type: "json" };
 import { receiptClock } from "./format.js";
 import { pageCatalog, translator } from "./i18n.js";
+import { pickAside } from "./asides.js";
 import { countUp as countUpIn, restart } from "./motion.js";
+import { lastAside, setLastAside } from "./prefs.js";
 import { receiptPaper, sampleView, type ReceiptView } from "./receipt.js";
 import { buzz, reducedMotion, sound } from "./sound.js";
+import { crackS, snapS, TEAR } from "./timeline.js";
+import { wireSoundToggle } from "./toggle.js";
 
 const catalog = pageCatalog();
 const t = translator(catalog);
@@ -18,14 +22,20 @@ const receipt = el("receipt");
 const falling = el("falling");
 const specks = el("specks");
 const led = el("led");
+const strip = document.querySelector(".strip") as HTMLElement;
 const hint = el("hint");
 const copied = el("copied");
 const stub = group.querySelector(".stub") as HTMLElement;
 
 const PULL = 110;
+// How far the strip can follow before its top would leave the printer (styles.css .strip: 34px hidden).
+const STRIP_MAX = 32;
 const fall = () => (matchMedia("(max-width: 520px)").matches ? 820 : 880);
 
 let idx = 0;
+// The build printed the first receipt; asides only ever replace a later one, at most once per visit.
+let printed = 1;
+let asideShown = false;
 let busy = false;
 let dragging = false;
 let touched = false;
@@ -37,6 +47,21 @@ const timers: number[] = [];
 const later = (ms: number, fn: () => void) => {
   timers.push(window.setTimeout(fn, ms));
 };
+
+/** The sample's note, or now and then a Saint Petersburg aside (asides.ts), in the page language. */
+function noteFor(i: number): ReceiptView["note"] {
+  const asides = catalog.asides ?? {};
+  const id = pickAside(
+    asides,
+    { printed, shown: asideShown, last: lastAside() },
+    Math.random,
+  );
+  printed++;
+  if (!id) return note(i);
+  asideShown = true;
+  setLastAside(id);
+  return { text: asides[id]!, lang: catalog.meta.lang };
+}
 
 function note(i: number): ReceiptView["note"] {
   const key = `sample.${fixed.samples[i % fixed.samples.length]!.trans}`;
@@ -50,7 +75,7 @@ const countUp = (target: number) =>
   countUpIn(receipt.querySelector(".r-n") as HTMLElement, target);
 
 function print(i: number, withSound: boolean) {
-  const view = sampleView(i, receiptClock(new Date()), note(i));
+  const view = sampleView(i, receiptClock(new Date()), noteFor(i));
   receipt.innerHTML = receiptPaper(view, { count: "0", slam: true });
   feed.style.visibility = "";
   restart(feed, "feed");
@@ -74,6 +99,9 @@ function apply() {
     ? "none"
     : "transform .7s cubic-bezier(.2,1.5,.3,1)";
   drag.style.transform = `translateY(${v.visY.toFixed(1)}px) rotate(${v.rot.toFixed(2)}deg) scaleY(${v.sy.toFixed(3)})`;
+  // The paper still in the printer comes along: nothing separates until it actually tears.
+  strip.style.transition = drag.style.transition;
+  strip.style.transform = `translateY(${Math.min(v.visY, STRIP_MAX).toFixed(1)}px)`;
   drag.classList.toggle("dragging", dragging);
   hint.textContent = dragging
     ? dy > PULL
@@ -84,20 +112,22 @@ function apply() {
     : "";
 }
 
-function showSpecks() {
+/** Paper specks thrown off where the rip passes: from the pull side to the pivot corner, over the crack's run. */
+function showSpecks(dir: number) {
   const pts: [number, number, number, number, number][] = [
-    [12, -26, 150, 220, 6],
-    [30, 14, 190, -160, 6],
-    [47, -8, 130, 300, 4],
-    [61, 30, 210, -260, 6],
-    [78, 10, 160, 140, 5],
     [90, 34, 120, -90, 3],
+    [78, 10, 160, 140, 5],
+    [61, 30, 210, -260, 6],
+    [47, -8, 130, 300, 4],
+    [30, 14, 190, -160, 6],
+    [12, -26, 150, 220, 6],
   ];
   specks.innerHTML = pts
-    .map(
-      ([left, x, d, r, w], i) =>
-        `<span class="spk" style="left:${left}%;width:${w}px;--sx:${x}px;--sd:${d}px;--sr:${r}deg;animation-delay:${(i % 3) * 0.02}s"></span>`,
-    )
+    .map(([left, x, d, r, w], i) => {
+      const at = dir === 1 ? left : 100 - left;
+      const delay = (i / (pts.length - 1)) * crackS;
+      return `<span class="spk" style="left:${at}%;width:${w}px;--sx:${x * dir}px;--sd:${d}px;--sr:${r * dir}deg;animation-delay:${delay.toFixed(3)}s"></span>`;
+    })
     .join("");
   later(1100, () => (specks.innerHTML = ""));
 }
@@ -129,14 +159,23 @@ function printNext(v: { visY: number; sy: number; rot: number; dir: number }) {
   drag.style.transform = "";
   hint.textContent = "";
   led.className = "led wait";
-  sound("tear");
+  sound("tear", { dir: v.dir });
   buzz([10, 30, 14]);
-  showSpecks();
-  later(560, () => {
+  showSpecks(v.dir);
+  // It holds at the pivot corner until the last fibre goes, then the strip springs back into the printer.
+  strip.style.transition = "none";
+  strip.style.transform = `translateY(${Math.min(v.visY, STRIP_MAX).toFixed(1)}px)`;
+  later(snapS * 1000, () => {
+    if (v.visY > 2) {
+      strip.style.transition = "transform .28s cubic-bezier(.2,1.6,.4,1)";
+      strip.style.transform = "";
+    } else restart(strip, "recoil-strip");
+  });
+  later(TEAR.nextMs, () => {
     idx = next;
     print(idx, true);
   });
-  later(1220, () => {
+  later(TEAR.removeMs, () => {
     falling.replaceChildren();
     busy = false;
   });
@@ -155,7 +194,10 @@ drag.addEventListener("pointerdown", (e) => {
 drag.addEventListener("pointermove", (e) => {
   if (!dragging) return;
   const ny = Math.max(0, e.clientY - sy);
-  if (ny > PULL && dy <= PULL) buzz(6);
+  if (ny > PULL && dy <= PULL) {
+    buzz(6);
+    sound("strain");
+  }
   dy = Math.min(ny, 320);
   dx = Math.max(-200, Math.min(200, e.clientX - sx));
   apply();
@@ -221,6 +263,8 @@ el("replay").addEventListener("click", () => {
   led.className = "led wait";
   later(260, () => print(0, true));
 });
+
+wireSoundToggle();
 
 // First paint came from the build; bring the clock and the meter to life.
 (receipt.querySelector(".r-date") as HTMLElement).textContent = receiptClock(

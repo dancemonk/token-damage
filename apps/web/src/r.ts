@@ -6,6 +6,7 @@ import { countUp, restart } from "./motion.js";
 import { receiptPaper, sampleView, type ReceiptView } from "./receipt.js";
 import { readShare, shareView, totalTokens } from "./share-view.js";
 import { buzz, sound } from "./sound.js";
+import { wireSoundToggle } from "./toggle.js";
 
 const catalog = pageCatalog();
 const t = translator(catalog);
@@ -21,6 +22,8 @@ const receipt = el("receipt");
 const result = el("result");
 const cta = el("cta");
 const status = el("copy-status");
+
+wireSoundToggle();
 
 // Opening another friend's link in this tab only changes the fragment: start over with it.
 window.addEventListener("hashchange", () => location.reload());

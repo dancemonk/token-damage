@@ -174,7 +174,8 @@ export function shareNote(
   lang: string,
   notes: Record<string, string>,
 ): { text: string; lang: string } | undefined {
-  if (!p.note) return undefined;
+  // Only core note ids: an aside, a sample note or anything else a link names is never printed.
+  if (!p.note || !NOTE_IDS.includes(p.note)) return undefined;
   const own = notes[p.note];
   const slots = SLOTS[lang];
   if (own && slots) {

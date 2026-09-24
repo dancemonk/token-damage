@@ -9,6 +9,7 @@
     "nav.wordmark.home": "Token Damage home",
     "nav.quiz": "Quiz",
     "nav.github": "GitHub",
+    "nav.sound": "Sound",
     "footer.local": "Runs on your computer · nothing leaves it · open source",
     "footer.affiliation": "Not affiliated with Anthropic, OpenAI or Google.",
     "footer.language": "Language",
@@ -141,7 +142,7 @@
     "privacy.leaves.heading": "What leaves your computer",
     "privacy.leaves.body": "Only a receipt you choose to share: an image, or a link whose numbers live in the link itself, after the #. Browsers never send that part to any server, so this site never sees your numbers.",
     "privacy.site.heading": "This website",
-    "privacy.site.body": "No cookies, no analytics, no accounts. Fonts are served from this site.",
+    "privacy.site.body": "No cookies, no analytics, no accounts. Fonts are served from this site. It remembers two things in your browser: whether sound is on, and which aside it showed last, so it doesn't repeat.",
     "privacy.affiliation": "Token Damage is not affiliated with Anthropic, OpenAI, Google or the makers of OpenCode. Product names are used to describe compatibility.",
     "privacy.source": "The code is open source, so you can check all of this yourself."
   },
@@ -151,5 +152,10 @@
     "sample.0043": "Two sessions, both done by lunch.\nFlagged for unusual restraint.",
     "sample.0044": "You are now the reason\nthe policy exists.",
     "quiz.q3": "Your share of this: +$0.0000079 per stick. Made up. The +95% is real."
+  },
+  "asides": {
+    "spb.1": "Petersburg raised its bridges at 1:25.\nThe model stayed on this side.",
+    "spb.2": "White nights: the sun never set.\nNeither did the model.",
+    "spb.3": "Three weeks of rain.\nThe agent never went outside either."
   }
 }
