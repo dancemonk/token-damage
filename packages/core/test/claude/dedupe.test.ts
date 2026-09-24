@@ -3,6 +3,7 @@ import { dedupe, type UsageEvent } from "../../src/index.js";
 import { corpusEvents, parseFixture } from "./support.js";
 
 const event = (over: Partial<UsageEvent>): UsageEvent => ({
+  kind: "usage",
   source: "claude-code",
   sessionId: "s1",
   ts: 1_000,

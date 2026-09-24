@@ -1,5 +1,6 @@
 import type {
   DailyTotals,
+  PromptEvent,
   SessionSummary,
   Source,
   Span,
@@ -14,6 +15,11 @@ export const IDLE_SPLIT_MS = 60 * 60 * 1000;
 export interface AggregateOptions {
   /** IANA time zone for calendar days; defaults to the machine's. */
   timeZone?: string;
+}
+
+export interface AggregateInput {
+  usage: readonly UsageEvent[];
+  prompts?: readonly PromptEvent[];
 }
 
 export interface Aggregate {
@@ -90,7 +96,7 @@ interface SessionState {
 
 /** Deduped events → daily totals, overall totals and sessions. Subagent events count toward their parent session. */
 export function aggregate(
-  events: readonly UsageEvent[],
+  { usage, prompts = [] }: AggregateInput,
   options: AggregateOptions = {},
 ): Aggregate {
   const dayOf = dayFormatter(
@@ -99,11 +105,8 @@ export function aggregate(
   const days = new Map<string, DayState>();
   const sessions = new Map<string, SessionState>();
   const allAgents = new Set<string>();
-
-  for (const e of events) {
-    const sessionId = e.parentSessionId ?? e.sessionId;
-    const agentKey = e.agentId && `${sessionId}/${e.agentId}`;
-    const day = dayOf(e.ts);
+  const dayState = (ts: number): DayState => {
+    const day = dayOf(ts);
     let d = days.get(day);
     if (!d) {
       d = {
@@ -113,19 +116,27 @@ export function aggregate(
         calls: 0,
         sessions: 0,
         subagents: 0,
+        prompts: 0,
         wordsTyped: 0,
-        firstCall: e.ts,
-        lastCall: e.ts,
+        firstCall: null,
+        lastCall: null,
         sessionKeys: new Set(),
         agentKeys: new Set(),
       };
       days.set(day, d);
     }
+    return d;
+  };
+
+  for (const e of usage) {
+    const sessionId = e.parentSessionId ?? e.sessionId;
+    const agentKey = e.agentId && `${sessionId}/${e.agentId}`;
+    const d = dayState(e.ts);
     add(d.byModel, e.model, e);
     add<Source>(d.bySource, e.source, e);
     d.calls++;
-    d.firstCall = Math.min(d.firstCall, e.ts);
-    d.lastCall = Math.max(d.lastCall, e.ts);
+    d.firstCall = Math.min(d.firstCall ?? e.ts, e.ts);
+    d.lastCall = Math.max(d.lastCall ?? e.ts, e.ts);
     d.sessionKeys.add(sessionId);
 
     let s = sessions.get(sessionId);
@@ -137,6 +148,11 @@ export function aggregate(
       s.agentKeys.add(agentKey);
       allAgents.add(agentKey);
     }
+  }
+  for (const p of prompts) {
+    const d = dayState(p.ts);
+    d.prompts++;
+    d.wordsTyped += p.words;
   }
 
   const daily: DailyTotals[] = [...days.values()]
@@ -162,6 +178,7 @@ export function aggregate(
     (a, b) => a.start - b.start || (a.sessionId < b.sessionId ? -1 : 1),
   );
 
+  const called = daily.filter((d) => d.calls > 0);
   const totals: Totals = {
     tokens: zero(),
     byModel: {},
@@ -170,13 +187,15 @@ export function aggregate(
     sessions: summaries.length,
     activeDays: daily.length,
     subagents: allAgents.size,
+    prompts: 0,
     wordsTyped: 0,
-    firstCall: daily[0]?.firstCall ?? null,
-    lastCall: daily.at(-1)?.lastCall ?? null,
+    firstCall: called[0]?.firstCall ?? null,
+    lastCall: called.at(-1)?.lastCall ?? null,
     longestSession: null,
   };
   for (const d of daily) {
     totals.calls += d.calls;
+    totals.prompts += d.prompts;
     totals.wordsTyped += d.wordsTyped;
     for (const [model, t] of Object.entries(d.byModel)) {
       add(totals.byModel, model, t);

@@ -1,4 +1,4 @@
-import type { UsageEvent } from "../../types.js";
+import type { PromptEvent, UsageEvent } from "../../types.js";
 
 /** Subagent transcripts are attributed to the session that spawned them. */
 export interface SubagentRef {
@@ -9,6 +9,7 @@ export interface SubagentRef {
 export interface ParseStats {
   lines: number;
   events: number;
+  prompts: number;
   /** Not JSON, or a usage line without the message id, session or timestamp it needs. */
   malformed: number;
   synthetic: number;
@@ -18,6 +19,7 @@ export interface ParseStats {
 
 export type LineResult =
   | { kind: "events"; events: UsageEvent[] }
+  | { kind: "prompt"; prompt: PromptEvent }
   | { kind: "skipped" }
   | { kind: "synthetic" }
   | { kind: "malformed" };
@@ -47,20 +49,115 @@ function tokens(
 }
 
 export function emptyStats(): ParseStats {
-  return { lines: 0, events: 0, malformed: 0, synthetic: 0, versions: {} };
+  return {
+    lines: 0,
+    events: 0,
+    prompts: 0,
+    malformed: 0,
+    synthetic: 0,
+    versions: {},
+  };
+}
+
+// Text blocks in user lines that Claude Code wrote, not the user: tool output, notifications, markers.
+const SYSTEM_TEXT =
+  /^\s*(?:\[Request interrupted|<(?:task-notification|local-command-stdout|local-command-caveat|bash-stdout|bash-stderr|system-reminder)>)/;
+
+/** Whitespace-separated tokens with at least one letter or digit. */
+export function countWords(text: string): number {
+  let words = 0;
+  for (const token of text.split(/\s+/))
+    if (/[\p{L}\p{N}]/u.test(token)) words++;
+  return words;
+}
+
+/** Words the user wrote in one text block, or undefined when Claude Code wrote the block. */
+export function typedWords(block: string): number | undefined {
+  if (SYSTEM_TEXT.test(block)) return undefined;
+  // Slash commands expand into a template; only the arguments are the user's.
+  if (block.includes("<command-name>")) {
+    return countWords(
+      /<command-args>([\s\S]*?)<\/command-args>/.exec(block)?.[1] ?? "",
+    );
+  }
+  const bash = /^\s*<bash-input>([\s\S]*?)<\/bash-input>/.exec(block);
+  if (bash) return countWords(bash[1] ?? "");
+  // Pasted text is the user's; hook context is not.
+  return countWords(
+    block
+      .replace(/<system-reminder>[\s\S]*?<\/system-reminder>/g, " ")
+      .replace(/<\/?pasted>/g, " "),
+  );
+}
+
+// A user line → the prompt's word count. Subagent and sidechain prompts are written by the agent.
+function parsePrompt(row: Json, subagent: SubagentRef | undefined): LineResult {
+  if (
+    subagent ||
+    row.isSidechain === true ||
+    row.isMeta === true ||
+    row.isCompactSummary === true
+  )
+    return SKIPPED;
+  // Only people type. Newer lines say who wrote the prompt; older ones only say an SDK script sent it.
+  const origin = isObject(row.origin) ? text(row.origin.kind) : undefined;
+  const script =
+    row.promptSource === "sdk" ||
+    text(row.entrypoint)?.startsWith("sdk-") === true;
+  if (origin !== undefined ? origin !== "human" : script) return SKIPPED;
+  const content = isObject(row.message) ? row.message.content : undefined;
+  const blocks: unknown[] =
+    typeof content === "string"
+      ? [content]
+      : Array.isArray(content)
+        ? content
+        : [];
+  let words = 0;
+  let typed = false;
+  for (const block of blocks) {
+    if (isObject(block) && block.type === "tool_result") return SKIPPED;
+    const body =
+      typeof block === "string"
+        ? block
+        : isObject(block) && block.type === "text"
+          ? text(block.text)
+          : undefined;
+    const count = body === undefined ? undefined : typedWords(body);
+    if (count === undefined) continue;
+    typed = true;
+    words += count;
+  }
+  if (!typed) return SKIPPED;
+  const sessionId = text(row.sessionId);
+  const ts = Date.parse(text(row.timestamp) ?? "");
+  if (!sessionId || Number.isNaN(ts)) return MALFORMED;
+  const dedupeKey = text(row.uuid) ?? `${sessionId}|${ts}`;
+  return {
+    kind: "prompt",
+    prompt: {
+      kind: "prompt",
+      source: "claude-code",
+      sessionId,
+      ts,
+      words,
+      dedupeKey,
+    },
+  };
 }
 
 /** One transcript line → usage events (the response, plus one per advisor iteration). */
 export function parseLine(line: string, subagent?: SubagentRef): LineResult {
-  // Most lines are prompts, tool results and attachments; skip them without parsing.
-  if (!line.includes('"usage"')) return SKIPPED;
+  // Attachments, titles and other bookkeeping lines are skipped without parsing.
+  if (!line.includes('"usage"') && !line.includes('"user"')) return SKIPPED;
   let row: unknown;
   try {
     row = JSON.parse(line);
   } catch {
     return MALFORMED;
   }
-  if (!isObject(row) || row.type !== "assistant") return SKIPPED;
+  if (!isObject(row)) return SKIPPED;
+  if (row.type === "user") return parsePrompt(row, subagent);
+  if (row.type !== "assistant") return SKIPPED;
   const message = row.message;
   if (!isObject(message) || !isObject(message.usage)) return SKIPPED;
   const usage = message.usage;
@@ -81,6 +178,7 @@ export function parseLine(line: string, subagent?: SubagentRef): LineResult {
   const agentId = text(row.agentId) ?? subagent?.agentId;
   const version = text(row.version);
   const shared = {
+    kind: "usage" as const,
     source: "claude-code" as const,
     sessionId,
     ...(subagent && { parentSessionId: subagent.parentSessionId }),
@@ -114,13 +212,16 @@ export async function* parseLines(
   lines: AsyncIterable<string>,
   stats: ParseStats,
   subagent?: SubagentRef,
-): AsyncGenerator<UsageEvent> {
+): AsyncGenerator<UsageEvent | PromptEvent> {
   for await (const line of lines) {
     stats.lines++;
     const result = parseLine(line, subagent);
     if (result.kind === "malformed") stats.malformed++;
     else if (result.kind === "synthetic") stats.synthetic++;
-    else if (result.kind === "events") {
+    else if (result.kind === "prompt") {
+      stats.prompts++;
+      yield result.prompt;
+    } else if (result.kind === "events") {
       const version = result.events[0]?.version ?? "unknown";
       stats.versions[version] = (stats.versions[version] ?? 0) + 1;
       stats.events += result.events.length;

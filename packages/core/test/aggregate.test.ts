@@ -3,11 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   aggregate,
   dedupe,
+  dedupePrompts,
   IDLE_SPLIT_MS,
   type Aggregate,
   type UsageEvent,
 } from "../src/index.js";
-import { corpusEvents, FIXTURES } from "./claude/support.js";
+import { corpusEvents, corpusPrompts, FIXTURES } from "./claude/support.js";
 
 const iso = (ts: number | null) =>
   ts === null ? null : new Date(ts).toISOString();
@@ -38,6 +39,7 @@ function readable({ totals, daily, sessions }: Aggregate) {
 }
 
 const event = (ts: number, over: Partial<UsageEvent> = {}): UsageEvent => ({
+  kind: "usage",
   source: "claude-code",
   sessionId: "s1",
   ts,
@@ -56,19 +58,28 @@ describe("aggregate", () => {
     const { timeZone, ...expected } = JSON.parse(
       readFileSync(`${FIXTURES}expected.json`, "utf8"),
     );
-    const result = aggregate(dedupe(await corpusEvents()), { timeZone });
+    const result = aggregate(
+      {
+        usage: dedupe(await corpusEvents()),
+        prompts: dedupePrompts(await corpusPrompts()),
+      },
+      { timeZone },
+    );
     expect(readable(result)).toEqual(expected);
   });
 
   it("assigns days in the given time zone", async () => {
     const events = dedupe(await corpusEvents());
     expect(
-      aggregate(events, { timeZone: "Asia/Tokyo" }).daily.map((d) => d.day),
-    ).toEqual(["2026-08-23", "2026-09-24"]);
-    expect(
-      aggregate(events, { timeZone: "America/Los_Angeles" }).daily.map(
+      aggregate({ usage: events }, { timeZone: "Asia/Tokyo" }).daily.map(
         (d) => d.day,
       ),
+    ).toEqual(["2026-08-23", "2026-09-24"]);
+    expect(
+      aggregate(
+        { usage: events },
+        { timeZone: "America/Los_Angeles" },
+      ).daily.map((d) => d.day),
     ).toEqual(["2026-08-22", "2026-09-23"]);
   });
 
@@ -77,7 +88,14 @@ describe("aggregate", () => {
     const half = IDLE_SPLIT_MS / 2;
     const resumed = half + IDLE_SPLIT_MS + 1;
     const { sessions, totals } = aggregate(
-      [event(0), event(half), event(resumed), event(resumed + IDLE_SPLIT_MS)],
+      {
+        usage: [
+          event(0),
+          event(half),
+          event(resumed),
+          event(resumed + IDLE_SPLIT_MS),
+        ],
+      },
       { timeZone: "UTC" },
     );
     expect(sessions[0]?.longestStretch).toEqual({
@@ -88,23 +106,28 @@ describe("aggregate", () => {
   });
 
   it("does not split on a gap of exactly the limit", () => {
-    const { totals } = aggregate([event(0), event(IDLE_SPLIT_MS)], {
-      timeZone: "UTC",
-    });
+    const { totals } = aggregate(
+      { usage: [event(0), event(IDLE_SPLIT_MS)] },
+      {
+        timeZone: "UTC",
+      },
+    );
     expect(totals.longestSession).toEqual({ start: 0, end: IDLE_SPLIT_MS });
   });
 
   it("attaches subagent events to the parent session", () => {
     const { totals, sessions } = aggregate(
-      [
-        event(0),
-        event(10, {
-          sessionId: "child",
-          parentSessionId: "s1",
-          agentId: "a1",
-          isSidechain: true,
-        }),
-      ],
+      {
+        usage: [
+          event(0),
+          event(10, {
+            sessionId: "child",
+            parentSessionId: "s1",
+            agentId: "a1",
+            isSidechain: true,
+          }),
+        ],
+      },
       { timeZone: "UTC" },
     );
     expect(totals).toMatchObject({ sessions: 1, subagents: 1, calls: 2 });
@@ -116,7 +139,7 @@ describe("aggregate", () => {
   it("counts a subagent active on two days once overall", () => {
     const day = 86_400_000;
     const { totals, daily } = aggregate(
-      [event(0, { agentId: "a1" }), event(day, { agentId: "a1" })],
+      { usage: [event(0, { agentId: "a1" }), event(day, { agentId: "a1" })] },
       { timeZone: "UTC" },
     );
     expect(daily.map((d) => d.subagents)).toEqual([1, 1]);
@@ -124,7 +147,10 @@ describe("aggregate", () => {
   });
 
   it("returns empty totals for no events", () => {
-    const { totals, daily, sessions } = aggregate([], { timeZone: "UTC" });
+    const { totals, daily, sessions } = aggregate(
+      { usage: [] },
+      { timeZone: "UTC" },
+    );
     expect(daily).toEqual([]);
     expect(sessions).toEqual([]);
     expect(totals).toMatchObject({

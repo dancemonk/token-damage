@@ -31,7 +31,7 @@ I/O, prompts, and animation.
 ```ts
 type Source = "claude-code" | "codex";
 interface UsageEvent {
-  source: Source; sessionId: string; parentSessionId?: string; agentId?: string;
+  kind: "usage"; source: Source; sessionId: string; parentSessionId?: string; agentId?: string;
   ts: number;                      // epoch ms, UTC
   model: string; isFallbackModel?: boolean;
   input: number; cacheWrite: number; cacheRead: number; output: number;   // tokens
@@ -40,15 +40,18 @@ interface UsageEvent {
   isSidechain?: boolean;
   version?: string;                // tool version that wrote the line (version sniffing)
 }
+// A typed prompt: only the count survives ingest, never the text. Deduped by line uuid.
+interface PromptEvent { kind: "prompt"; source: Source; sessionId: string; ts: number; words: number; dedupeKey: string }
 interface TokenSums { input: number; cacheWrite: number; cacheRead: number; output: number }
 interface Span { start: number; end: number }   // epoch ms
 interface DailyTotals { day: string /* local YYYY-MM-DD */; byModel: Record<string, TokenSums>;
   bySource: Partial<Record<Source, TokenSums>>; calls: number;
-  sessions: number; subagents: number; wordsTyped: number; firstCall: number; lastCall: number; }
+  sessions: number; subagents: number; prompts: number; wordsTyped: number;
+  firstCall: number | null; lastCall: number | null; /* null: prompts but no model call that day */ }
 interface SessionSummary { sessionId: string; start: number; end: number; calls: number; subagents: number;
   longestStretch: Span /* split on idle gaps > 1h */ }
 interface Totals { tokens: TokenSums; byModel: Record<string, TokenSums>; bySource: Partial<Record<Source, TokenSums>>;
-  calls: number; sessions: number; activeDays: number; subagents: number; wordsTyped: number;
+  calls: number; sessions: number; activeDays: number; subagents: number; prompts: number; wordsTyped: number;
   firstCall: number | null; lastCall: number | null; longestSession: Span | null }
 type Tier = "measured" | "priced" | "estimated" | "satire";
 interface Value<T = number> { value: T; tier: Tier; low?: number; high?: number; note?: string }

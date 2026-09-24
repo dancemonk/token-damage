@@ -16,6 +16,7 @@ One folder per Claude Code version the lines were written by.
 | Missing `requestId` | `2.1.281/missing-request-id.jsonl` | Constructed: the normal line without `requestId`. Real logs only lacked it on synthetic rows. |
 | Advisor iterations | `2.1.281/advisor-iterations.jsonl` | Constructed per DATA-SOURCES §Line shape. No `advisor_message` iteration seen in real logs yet. |
 | Sidechain replay (`/btw`) | `2.1.281/sidechain-replay.jsonl` | Constructed: the normal line, then a replay with `isSidechain: true` and a new `requestId`. Not seen in real logs yet. |
+| Words typed | `2.1.281/words-typed.jsonl` | Real line structure, **invented text** (word counting needs prose; excluded from the sanitization test by name). 7 typed prompts, 1 Claude Desktop prompt, 10 lines Claude Code or a script wrote, 1 resumed-session copy. |
 | Malformed | `2.1.281/malformed.jsonl` | Constructed to match a real breakage: one record split over two lines mid-string, then a valid line. |
 
 Observed in real logs (2.1.205–2.1.281, 2026-09):
@@ -26,6 +27,7 @@ Observed in real logs (2.1.205–2.1.281, 2026-09):
 ## `expected.json`
 
 Hand-computed totals for the whole corpus, deduped, in UTC. Derivation:
+- Words: 8 + 6 + 11 + 3 + 0 + 3 + 4 + 4 = 39 over 8 prompts on 2026-09-23; the resumed copy is dropped.
 - 16 parsed events share 8 dedupe keys. Streaming (3 copies), parallel tool use (3 + the valid line in
   `malformed.jsonl`), and the normal line (repeated in the advisor and replay cases) each collapse to one; its split copy in `malformed.jsonl` is not an event.
 - The replay (`isSidechain`, new `requestId`) is dropped: its `message.id` has a main-thread copy.

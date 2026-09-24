@@ -72,6 +72,15 @@ User prompts are `type: "user"` lines. Count words only when:
   keep only the user's own argument text if present).
 - Pasted content is the user's text: count it. Split on whitespace; count tokens containing at least one
   letter or digit. Discard the text immediately after counting.
+- A person wrote it. When `origin` is present, count only `origin.kind === "human"`: `auto-continuation`
+  (an approved plan fed back in), `task-notification` and `peer` are not typed. Without `origin`, skip SDK
+  scripts (`promptSource: "sdk"` or `entrypoint: "sdk-…"`). Claude Desktop prompts are `origin: human` with
+  `promptSource: "sdk"`: count them. On real logs, SDK scripts were a third of all "prompt" words.
+- Not in a subagent file, not `isSidechain` (the agent wrote those), not `isCompactSummary`.
+- Formats seen (2.1.2xx): `<pasted>…</pasted>` wraps pastes (count); `<bash-input>` is a `!` shell command the
+  user typed (count it); `<task-notification>`, `<local-command-stdout>`, `<local-command-caveat>`,
+  `<bash-stdout>`/`<bash-stderr>` and `<system-reminder>` are Claude Code's (skip).
+- Resumed sessions copy earlier prompts into the new file: dedupe prompts by the line's `uuid`, keep the earliest.
 
 ### Sessions and time
 - `timestamp` is ISO 8601 UTC. Convert to the machine's local time zone for days, hours, "3:47 AM".

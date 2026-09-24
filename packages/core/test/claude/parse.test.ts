@@ -21,7 +21,7 @@ async function parseFixture(rel: string) {
     stats,
     subagentOf(path),
   ))
-    events.push(event);
+    if (event.kind === "usage") events.push(event);
   return { events, stats };
 }
 
@@ -29,6 +29,7 @@ const SESSION = "4aaff5d2-be7b-4975-9f06-ceeb9fcdd99a";
 const MESSAGE = "msg_011CfMFmrGDzU7jaXhbeAxw4";
 const REQUEST = "req_011CfMFmqkxNL5EWpbE33TLW";
 const NORMAL = {
+  kind: "usage",
   source: "claude-code",
   sessionId: SESSION,
   ts: Date.parse("2026-09-23T23:41:04.031Z"),
@@ -55,6 +56,7 @@ describe("claude parser fixtures", () => {
     expect(stats).toEqual({
       lines: 5,
       events: 1,
+      prompts: 0,
       malformed: 0,
       synthetic: 0,
       versions: { "2.1.281": 1 },
@@ -167,7 +169,7 @@ describe("parseLine", () => {
     expect(parseLine(line({ type: "user", message: { usage: {} } }))).toEqual({
       kind: "skipped",
     });
-    expect(parseLine('{"type":"user","text":"no usage here"')).toEqual({
+    expect(parseLine('{"type":"attachment","text":"no usage here"')).toEqual({
       kind: "skipped",
     });
   });

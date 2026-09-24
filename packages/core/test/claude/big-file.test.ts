@@ -53,7 +53,7 @@ describe(`parser on a generated ${SIZE_MB} MB transcript`, () => {
     let peak = baseline;
     let output = 0;
     for await (const event of parseLines(readLines(path), stats)) {
-      output += event.output;
+      if (event.kind === "usage") output += event.output;
       if (stats.events % 5000 === 0)
         peak = Math.max(peak, process.memoryUsage().heapUsed);
     }

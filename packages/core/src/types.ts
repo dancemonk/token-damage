@@ -2,6 +2,7 @@ export type Source = "claude-code" | "codex";
 
 /** One model response's token usage. Field meanings: docs/DATA-SOURCES.md. */
 export interface UsageEvent {
+  kind: "usage";
   source: Source;
   sessionId: string;
   parentSessionId?: string;
@@ -20,6 +21,18 @@ export interface UsageEvent {
   isSidechain?: boolean;
   /** Version of the tool that wrote the line. */
   version?: string;
+}
+
+/** A prompt the user wrote. Only its word count survives ingest; the text is never kept. */
+export interface PromptEvent {
+  kind: "prompt";
+  source: Source;
+  sessionId: string;
+  /** Epoch ms, UTC. */
+  ts: number;
+  words: number;
+  /** The line's uuid: resumed sessions copy earlier prompts into new files. */
+  dedupeKey: string;
 }
 
 export interface TokenSums {
@@ -43,9 +56,11 @@ export interface DailyTotals {
   calls: number;
   sessions: number;
   subagents: number;
+  prompts: number;
   wordsTyped: number;
-  firstCall: number;
-  lastCall: number;
+  /** Null on a day with prompts but no model call. */
+  firstCall: number | null;
+  lastCall: number | null;
 }
 
 export interface SessionSummary {
@@ -66,6 +81,7 @@ export interface Totals {
   sessions: number;
   activeDays: number;
   subagents: number;
+  prompts: number;
   wordsTyped: number;
   firstCall: number | null;
   lastCall: number | null;

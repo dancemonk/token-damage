@@ -33,7 +33,8 @@
     "sessions": 2,
     "activeDays": 2,
     "subagents": 2,
-    "wordsTyped": 0,
+    "prompts": 8,
+    "wordsTyped": 39,
     "firstCall": "2026-08-22T16:56:15.452Z",
     "lastCall": "2026-09-23T23:59:23.856Z",
     "longestSession": {
@@ -63,6 +64,7 @@
       "calls": 1,
       "sessions": 1,
       "subagents": 1,
+      "prompts": 0,
       "wordsTyped": 0,
       "firstCall": "2026-08-22T16:56:15.452Z",
       "lastCall": "2026-08-22T16:56:15.452Z"
@@ -94,7 +96,8 @@
       "calls": 6,
       "sessions": 1,
       "subagents": 1,
-      "wordsTyped": 0,
+      "prompts": 8,
+      "wordsTyped": 39,
       "firstCall": "2026-09-23T23:40:54.927Z",
       "lastCall": "2026-09-23T23:59:23.856Z"
     }
