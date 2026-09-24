@@ -2,6 +2,7 @@
 //   node scripts/build.mjs --langs en,ru
 // Adding a language = i18n/<lang>.json + its code in --langs (see docs/I18N.md).
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
   cpSync,
   existsSync,
@@ -330,6 +331,37 @@ function sources(t) {
 }
 
 /**
+ * The page's Content-Security-Policy (docs/PRIVACY.md): the site's own files only, no other host, no plugins,
+ * no forms. The one inline script that runs is the import map, allowed by its hash; the i18n data block is JSON
+ * and never runs. Inline styles stay: the receipt sets widths and delays in style attributes. `frame-ancestors`
+ * can't be set here; the host sends it as a header.
+ */
+function csp(importMap) {
+  const scripts =
+    importMap === null
+      ? "'none'"
+      : [
+          "'self'",
+          ...(importMap
+            ? [
+                `'sha256-${createHash("sha256").update(importMap).digest("base64")}'`,
+              ]
+            : []),
+        ].join(" ");
+  return [
+    "default-src 'none'",
+    `script-src ${scripts}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self'",
+    // JSON modules (fixed.json) load as fetches: the site's own origin, nothing else.
+    "connect-src 'self'",
+    "base-uri 'none'",
+    "form-action 'none'",
+  ].join("; ");
+}
+
+/**
  * The home page's first receipt as the build prints it (and a no-JS visitor sees it): the first lines of a
  * fixed deck. The page script swaps in the next lines from the visitor's own deck.
  */
@@ -478,11 +510,14 @@ for (const lang of LANGS) {
       html.pool = poolSources(catalog, locale, t);
     }
     const graph = page.script ? moduleGraph(page.script) : null;
+    const importMap =
+      graph && Object.keys(graph.imports).length
+        ? inlineJson({ imports: graph.imports })
+        : "";
+    vars.csp = csp(page.script ? importMap : null);
     html.scripts = graph
       ? [
-          Object.keys(graph.imports).length
-            ? `<script type="importmap">${inlineJson({ imports: graph.imports })}</script>`
-            : "",
+          importMap ? `<script type="importmap">${importMap}</script>` : "",
           `<script type="application/json" id="i18n">${inlineJson(pageData(catalog, page))}</script>`,
           ...graph.urls.map(
             (url) => `<link rel="modulepreload" href="${url}" />`,

@@ -74,6 +74,37 @@ describe.each(LANGS)("share links on /%s", (lang) => {
     expect(v.note).toBeUndefined();
   });
 
+  it("rejects impossible dates, times and sizes instead of crashing", () => {
+    const base = readShare(hashOf(FROZEN_V1))!;
+    const bad: Record<string, unknown>[] = [
+      { end: "2026-99-99" },
+      { start: "2026-02-30" },
+      { start: "2026-09-24", end: "2026-01-01" },
+      { start: "1990-01-01" },
+      { last: "99:99" },
+      { last: "24:00" },
+      { tokens: [1e308, 1e308, 0, 0] },
+      { words: 1e16 },
+      { ach: [{}] },
+      { dispute: [1, 2] },
+    ];
+    for (const change of bad) {
+      const url = shareUrl({ ...base, ...change } as typeof base);
+      expect(readShare(hashOf(url)), JSON.stringify(change)).toBeNull();
+    }
+    expect(
+      readShare(hashOf(shareUrl({ ...base, last: "23:55" }))),
+    ).not.toBeNull();
+  });
+
+  it("prints only achievements it knows, never an object's own machinery", () => {
+    const p = {
+      ...readShare(hashOf(FROZEN_V1))!,
+      ach: ["constructor", "__proto__", "toString", "hasOwnProperty"],
+    };
+    expect(view(readShare(hashOf(shareUrl(p)))!).achievements).toEqual([]);
+  });
+
   it("falls back to the sample for missing or broken fragments", () => {
     expect(readShare("")).toBeNull();
     expect(readShare("#v2.abc")).toBeNull();

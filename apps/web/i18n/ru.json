@@ -20,7 +20,7 @@
     "og.home": "Чек, который ваш ИИ так и не выдал.",
     "home.receipt.label": "Пример чека",
     "home.stub.copy": "Копировать",
-    "home.stub.copy.label": "Скопировать команду",
+    "home.stub.copy.label": "Копировать команду",
     "home.stub.copied": "Скопировано. Теперь вставьте в терминал.",
     "home.stub.noTerminal": "Нет терминала? Викторина наверху.",
     "home.hint.pull": "Тянем-потянем…",

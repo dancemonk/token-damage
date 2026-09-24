@@ -26,6 +26,12 @@ It writes one file of its own, `~/.token-damage/state.json`, and you can delete 
   line ids). No cookies.
 
 ## Threat model
+- **A crafted share link.** `/r` is the only page that reads outside input (the URL fragment). The decoder allows
+  only whitelisted keys, the site checks every value's shape (real dates and times, numbers up to 10¹⁵, known
+  ids), never prints link text, and escapes everything it renders. Every page carries a Content-Security-Policy
+  that runs only the site's own scripts (plus the import map, by hash) and allows no other host. The host must
+  also send `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff` and
+  `Referrer-Policy: strict-origin-when-cross-origin` as headers; a page can't set those itself.
 - **Reading a sensitive folder.** `~/.claude` contains code and possibly secrets inside transcripts. Mitigation:
   stream lines, parse only known fields, never log raw lines, never write text anywhere, tests that assert
   outputs contain no path/prompt strings.

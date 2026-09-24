@@ -12,16 +12,33 @@ import { shareNote } from "./notes.js";
 import type { ReceiptView } from "./receipt.js";
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
-const HHMM = /^\d{2}:\d{2}$/;
+const HHMM = /^(\d{2}):(\d{2})$/;
 const VERDICTS = new Set(["DENIED", "APPROVED", "SIGNED"]);
+/** A quadrillion: more than any one person's tokens, dollars or kWh, and far from overflowing a sum. */
+const MAX = 1e15;
 const count = (x: unknown) =>
-  typeof x === "number" && Number.isFinite(x) && x >= 0;
+  typeof x === "number" && Number.isFinite(x) && x >= 0 && x <= MAX;
+/** A real calendar day ("2026-02-30" and "2026-99-99" are not). */
+const day = (s: unknown): s is string => {
+  if (typeof s !== "string" || !ISO.test(s)) return false;
+  const ms = Date.parse(`${s}T00:00:00Z`);
+  return Number.isFinite(ms) && new Date(ms).toISOString().startsWith(s);
+};
+const clock = (s: unknown) => {
+  const m = typeof s === "string" ? HHMM.exec(s) : null;
+  return !!m && Number(m[1]) < 24 && Number(m[2]) < 60;
+};
+const strings = (x: unknown) =>
+  Array.isArray(x) && x.every((v) => typeof v === "string");
 
 /** decodeShare checks the keys; this checks the shapes, so a hand-edited link can't break the page. */
 function valid(p: SharePayload): boolean {
   return (
-    ISO.test(p.start) &&
-    ISO.test(p.end) &&
+    day(p.start) &&
+    day(p.end) &&
+    // The start comes first, and no period runs past ten years.
+    p.start <= p.end &&
+    periodDays(p.start, p.end) <= 3660 &&
     Array.isArray(p.tokens) &&
     p.tokens.length === 4 &&
     p.tokens.every(count) &&
@@ -32,11 +49,11 @@ function valid(p: SharePayload): boolean {
     p.kwh.length === 2 &&
     p.kwh.every(count) &&
     (p.plan === undefined || count(p.plan)) &&
-    Array.isArray(p.ach) &&
+    strings(p.ach) &&
     (p.dispute === undefined ||
-      (Array.isArray(p.dispute) && p.dispute.length === 2)) &&
+      (strings(p.dispute) && p.dispute.length === 2)) &&
     (p.note === undefined || typeof p.note === "string") &&
-    (p.last === undefined || HHMM.test(p.last))
+    (p.last === undefined || clock(p.last))
   );
 }
 
@@ -93,7 +110,8 @@ export function shareView(
         : []),
     ],
     achievements: p.ach.flatMap((id) =>
-      id in ACHIEVEMENT_NAMES ? [t(`ach.${id}`)] : [],
+      // Own keys only: "constructor" is `in` every object.
+      Object.hasOwn(ACHIEVEMENT_NAMES, id) ? [t(`ach.${id}`)] : [],
     ),
     who: t("receipt.shared"),
   };

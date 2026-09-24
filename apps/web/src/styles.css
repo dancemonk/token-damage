@@ -1327,10 +1327,33 @@ a:hover {
     padding-top: 2px;
   }
   /* Phones show the receipt, its stub and the footer: pulling the paper is the way to the next customer, and
-     the news stays for bigger screens. */
-  .wire,
-  .pullrow {
+     the news stays for bigger screens. Next stays for screen readers and keyboards (a pull is touch only): out of
+     sight until it has focus, then a pill at the bottom of the screen. */
+  .wire {
     display: none;
+  }
+  .pullrow {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .pullrow:focus-within {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    transform: translateX(-50%);
+    padding: 0 18px;
+    border-radius: 22px;
+    background: var(--desk);
+    box-shadow: 0 0 0 1px var(--desk-muted);
   }
   .pullrow + .home-foot {
     padding-top: 24px;

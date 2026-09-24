@@ -1,9 +1,11 @@
 // Checks the built site in dist/ (`pnpm test` builds it first), once per language.
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
   cpSync,
   existsSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   rmSync,
   writeFileSync,
@@ -83,6 +85,36 @@ describe.each(LANGS)("built /%s", (lang) => {
         "pool",
       ]);
   });
+
+  it.each(SLUGS)(
+    "page %s runs only its own scripts under a Content-Security-Policy",
+    (slug) => {
+      const html = page(lang, slug);
+      const policy =
+        /<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(
+          html,
+        )?.[1];
+      expect(policy, "no CSP").toBeDefined();
+      expect(policy).toContain("default-src 'none'");
+      expect(policy).toContain("connect-src 'self'");
+      expect(policy).not.toMatch(/unsafe-eval|https?:|\*/);
+      const map = /<script type="importmap">(.*?)<\/script>/s.exec(html)?.[1];
+      if (map)
+        expect(policy).toContain(
+          `'sha256-${createHash("sha256").update(map).digest("base64")}'`,
+        );
+      // JSON modules load as fetches: a policy without connect-src 'self' silently stops every page script.
+      const js = readdirSync(join(DIST, "assets/js"))
+        .filter((f) => f.endsWith(".js"))
+        .map((f) => readFileSync(join(DIST, "assets/js", f), "utf8"))
+        .join("\n");
+      if (/from\s*"[^"]+\.json"/.test(js))
+        expect(policy).toContain("connect-src 'self'");
+      // Any other inline script must be data, never code.
+      for (const [, type] of html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g))
+        expect(type).toMatch(/type="(importmap|application\/json)"/);
+    },
+  );
 
   it.each(SLUGS)("page %s has a preview image in its language", (slug) => {
     const m = /<meta property="og:image" content="([^"]+)"/.exec(

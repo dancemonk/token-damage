@@ -19,7 +19,13 @@ const TYPES = {
 };
 
 function locate(pathname) {
-  const base = join(DIST, normalize(decodeURIComponent(pathname)));
+  let decoded;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    return null; // A malformed %-escape: a 404, not a crash.
+  }
+  const base = join(DIST, normalize(decoded));
   if (!base.startsWith(DIST)) return null;
   const tries = [base, `${base}.html`, join(base, "index.html")];
   return tries.find((f) => existsSync(f) && statSync(f).isFile()) ?? null;

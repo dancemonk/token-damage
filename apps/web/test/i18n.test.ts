@@ -173,6 +173,21 @@ describe.each([{ file: "en.json", catalog: en }, ...others])(
   },
 );
 
+describe.each([{ file: "en.json", catalog: en }, ...others])(
+  "control names in $file",
+  ({ catalog }) => {
+    // A screen reader name must contain the visible word, so "click Copy" works for voice control (WCAG 2.5.3).
+    const pairs = Object.keys(catalog.strings)
+      .filter((k) => k.endsWith(".label") && k.slice(0, -6) in catalog.strings)
+      .map((k) => [k, catalog.strings[k], catalog.strings[k.slice(0, -6)]]);
+    it.each(pairs)("%s contains its visible text", (_, label, visible) => {
+      expect(String(label).toLowerCase()).toContain(
+        String(visible).toLowerCase(),
+      );
+    });
+  },
+);
+
 describe.each(others)("pool in $file", ({ catalog }) => {
   const pool = catalog.pool ?? [];
   const english = new Map(POOL_EN.map((l) => [l.id, l]));
