@@ -1233,7 +1233,8 @@ a:hover {
     min-height: 3lh;
   }
   :root {
-    --receipt-w: calc(100vw - 32px);
+    /* Zoomed, the paper still spans the screen: wider in its own units, so it wraps less and fits more. */
+    --receipt-w: calc((100vw - 32px) / var(--z));
     --n-size: 36px;
     --line-size: 12px;
     --note-size: 13px;
@@ -1272,7 +1273,7 @@ a:hover {
     top: 56px;
   }
   .stage {
-    margin-top: 104px;
+    margin-top: calc(104px / var(--z));
     perspective: 1000px;
   }
   .stub-wrap {
@@ -1653,6 +1654,95 @@ a:hover {
 @media (min-width: 521px) and (max-width: 699px) and (max-height: 884px) {
   :root {
     --z: 0.67;
+  }
+}
+/* Phones: the receipt and its stub fit the first screen; the wire, Next and the footer follow just below. The stub
+   ends at about 104px + 687px × z (measured), plus 12px of air: z = (height - 116) / 687, never under 0.68.
+   At full size, Russian at 390px ends at 804px, hence 816px for zoom 1; under 380px wide a zoom over 0.92
+   wraps more lines, hence the cap. */
+@media (min-width: 380px) and (max-width: 520px) and (max-height: 816px) {
+  :root {
+    --z: 0.97;
+  }
+}
+@media (min-width: 380px) and (max-width: 520px) and (max-height: 786px) {
+  :root {
+    --z: 0.93;
+  }
+}
+@media (min-width: 380px) and (max-width: 520px) and (max-height: 756px) {
+  :root {
+    --z: 0.88;
+  }
+}
+@media (min-width: 380px) and (max-width: 520px) and (max-height: 726px) {
+  :root {
+    --z: 0.84;
+  }
+}
+@media (min-width: 380px) and (max-width: 520px) and (max-height: 696px) {
+  :root {
+    --z: 0.8;
+  }
+}
+@media (min-width: 380px) and (max-width: 520px) and (max-height: 666px) {
+  :root {
+    --z: 0.75;
+  }
+}
+@media (min-width: 380px) and (max-width: 520px) and (max-height: 636px) {
+  :root {
+    --z: 0.71;
+  }
+}
+@media (min-width: 380px) and (max-width: 520px) and (max-height: 606px) {
+  :root {
+    --z: 0.68;
+  }
+}
+@media (max-width: 379px) and (max-height: 854px) {
+  :root {
+    --z: 0.92;
+  }
+}
+@media (max-width: 379px) and (max-height: 824px) {
+  :root {
+    --z: 0.92;
+  }
+}
+@media (max-width: 379px) and (max-height: 794px) {
+  :root {
+    --z: 0.92;
+  }
+}
+@media (max-width: 379px) and (max-height: 764px) {
+  :root {
+    --z: 0.9;
+  }
+}
+@media (max-width: 379px) and (max-height: 734px) {
+  :root {
+    --z: 0.85;
+  }
+}
+@media (max-width: 379px) and (max-height: 704px) {
+  :root {
+    --z: 0.81;
+  }
+}
+@media (max-width: 379px) and (max-height: 674px) {
+  :root {
+    --z: 0.77;
+  }
+}
+@media (max-width: 379px) and (max-height: 644px) {
+  :root {
+    --z: 0.72;
+  }
+}
+@media (max-width: 379px) and (max-height: 614px) {
+  :root {
+    --z: 0.68;
   }
 }
 @media (max-width: 359px) {
