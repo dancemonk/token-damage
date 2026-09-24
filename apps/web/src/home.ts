@@ -81,9 +81,11 @@ const countUp = (target: number) =>
 
 /** The wire under the paper: one dated AI fact, a new one with every print. */
 function wire(animate: boolean) {
+  const news = el("news");
+  // Phones don't show the wire (styles.css): don't spend a line nobody sees.
+  if (!news.offsetParent) return;
   const line = next(catalog.pool, "news");
   if (!line) return;
-  const news = el("news");
   news.innerHTML = newsLine(line, t);
   if (animate) restart(news, "swap");
 }

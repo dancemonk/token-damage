@@ -332,6 +332,7 @@ a:hover {
 .home-foot {
   position: relative;
   z-index: 8;
+  text-wrap: balance;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1301,8 +1302,14 @@ a:hover {
     gap: 0;
     padding-top: 2px;
   }
-  .wire {
-    padding-top: 16px;
+  /* Phones show the receipt, its stub and the footer: pulling the paper is the way to the next customer, and
+     the news stays for bigger screens. */
+  .wire,
+  .pullrow {
+    display: none;
+  }
+  .pullrow + .home-foot {
+    padding-top: 24px;
   }
   .sheet {
     padding: 20px 18px 24px;
@@ -1473,10 +1480,10 @@ a:hover {
 }
 
 /* ---------- the home page fits one screen ----------
-   Wide screens: the wire to the left of the paper, Next to the right, the footer as one row at the bottom, so
-   nothing stacks under the receipt. The paper and its stub end 849px down at zoom 1 (paper from 110px, 739px
-   tall); the footer row takes 64px, plus 2px of rounding. Each step below is the largest zoom that fits its lowest
-   height: z = (height - 176) / 739, down to 0.58 at 605px; shorter screens scroll. Pure CSS, so the page never
+   Wide screens: the wire to the left of the paper, Next to the right, the footer centered at the bottom, so
+   nothing but the footer sits under the receipt. The paper and its stub end 849px down at zoom 1 (paper from 110px, 739px
+   tall); the footer takes 99px, plus 2px of rounding. Each step below is the largest zoom that fits its lowest
+   height: z = (height - 211) / 739, down to 0.58 at 640px; shorter screens scroll. Pure CSS, so the page never
    shifts once drawn. */
 @media (min-width: 1000px) {
   .wire {
@@ -1503,120 +1510,88 @@ a:hover {
     left: calc(50% + var(--receipt-w) * var(--z) / 2 + 44px);
     padding: 0;
   }
-  /* Two short lines on the left, the links on the right: the same height at every wide width. */
+  /* The footer as everywhere else: the two lines on top, the links centered under them, closer together. */
   .pullrow + .home-foot,
   .home-foot {
-    display: grid;
-    grid-template-columns: auto auto;
-    justify-content: center;
-    align-items: center;
-    column-gap: 40px;
-    row-gap: 2px;
-    padding: 8px 24px 12px;
-    text-align: left;
-  }
-  .home-foot > :not(.langs) {
-    grid-column: 1;
-  }
-  .home-foot > .langs {
-    grid-column: 2;
-    grid-row: 1 / span 2;
+    gap: 4px;
+    padding: 6px 24px 12px;
   }
 }
-@media (min-width: 1000px) and (max-height: 914px) {
+@media (min-width: 1000px) and (max-height: 949px) {
   :root {
     --z: 0.94;
   }
 }
-@media (min-width: 1000px) and (max-height: 874px) {
+@media (min-width: 1000px) and (max-height: 909px) {
   :root {
     --z: 0.89;
   }
 }
-@media (min-width: 1000px) and (max-height: 834px) {
+@media (min-width: 1000px) and (max-height: 869px) {
   :root {
     --z: 0.83;
   }
 }
-@media (min-width: 1000px) and (max-height: 794px) {
+@media (min-width: 1000px) and (max-height: 829px) {
   :root {
     --z: 0.78;
   }
 }
-@media (min-width: 1000px) and (max-height: 754px) {
+@media (min-width: 1000px) and (max-height: 789px) {
   :root {
     --z: 0.72;
   }
 }
-@media (min-width: 1000px) and (max-height: 714px) {
+@media (min-width: 1000px) and (max-height: 749px) {
   :root {
     --z: 0.67;
   }
 }
-@media (min-width: 1000px) and (max-height: 674px) {
+@media (min-width: 1000px) and (max-height: 709px) {
   :root {
     --z: 0.62;
   }
 }
-@media (min-width: 1000px) and (max-height: 634px) {
+@media (min-width: 1000px) and (max-height: 669px) {
   :root {
     --z: 0.58;
   }
 }
-/* Tablets and narrow windows: stacked. From 700px wide the footer is the same two-line grid as on wide
-   screens; under the paper go the wire (93px), Next (56px) and the footer (64px, or 125px under 700px wide).
+/* Tablets and narrow windows: stacked. From 700px wide the footer is as compact as on wide screens; under the paper go the wire (93px), Next (56px) and the footer (99px, or 125px under 700px wide).
    z = (height - budget) / 739, never under 0.67 so the receipt stays readable; shorter screens scroll. */
 @media (min-width: 700px) and (max-width: 999px) {
   .pullrow + .home-foot,
   .home-foot {
-    display: grid;
-    grid-template-columns: auto auto;
-    justify-content: center;
-    align-items: center;
-    column-gap: 32px;
-    row-gap: 2px;
-    padding: 8px 24px 12px;
-    text-align: left;
-  }
-  .home-foot > :not(.langs) {
-    grid-column: 1;
-  }
-  .home-foot > .langs {
-    grid-column: 2;
-    grid-row: 1 / span 2;
+    gap: 4px;
+    padding: 6px 24px 12px;
   }
 }
-@media (min-width: 700px) and (max-width: 999px) and (max-height: 1063px) {
+@media (min-width: 700px) and (max-width: 999px) and (max-height: 1106px) {
   :root {
     --z: 0.94;
   }
 }
-@media (min-width: 700px) and (max-width: 999px) and (max-height: 1023px) {
+@media (min-width: 700px) and (max-width: 999px) and (max-height: 1066px) {
   :root {
     --z: 0.89;
   }
 }
-@media (min-width: 700px) and (max-width: 999px) and (max-height: 983px) {
+@media (min-width: 700px) and (max-width: 999px) and (max-height: 1026px) {
   :root {
     --z: 0.83;
   }
 }
-@media (min-width: 700px) and (max-width: 999px) and (max-height: 943px) {
+@media (min-width: 700px) and (max-width: 999px) and (max-height: 986px) {
   :root {
     --z: 0.78;
   }
 }
-@media (min-width: 700px) and (max-width: 999px) and (max-height: 903px) {
+@media (min-width: 700px) and (max-width: 999px) and (max-height: 946px) {
   :root {
     --z: 0.72;
   }
 }
-@media (min-width: 700px) and (max-width: 999px) and (max-height: 863px) {
-  :root {
-    --z: 0.67;
-  }
-}
-@media (min-width: 700px) and (max-width: 999px) and (max-height: 823px) {
+@media (min-width: 700px) and (max-width: 999px) and (max-height: 906px) {
   :root {
     --z: 0.67;
   }
