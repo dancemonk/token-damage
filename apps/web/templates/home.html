@@ -1,0 +1,44 @@
+<div class="home">
+  {{h:header}}
+  <div class="printer" aria-hidden="true">
+    <div class="slot"></div>
+    <span class="led" id="led"></span>
+  </div>
+  <div class="strip" aria-hidden="true"></div>
+  <main class="stage" id="stage">
+    <h1 class="visually-hidden">{{v:title}}</h1>
+    <div class="specks" id="specks" aria-hidden="true"></div>
+    <div class="falling" id="falling" aria-hidden="true"></div>
+    <div class="hang">
+      <div class="drag" id="drag">
+        <div class="feed" id="feed">
+          <div id="group">
+            <section
+              class="receipt"
+              id="receipt"
+              aria-label="{{t:home.receipt.label}}"
+            >
+              {{h:receipt}}
+            </section>
+            <div class="stub-wrap">
+              {{h:stub}}
+              <div class="copied" id="copied" role="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="home-foot fade" style="animation-delay: 1.8s">
+    <div class="pullrow">
+      <span class="hint" id="hint"></span>
+      <button type="button" class="nx" id="next">
+        <span class="pointer">{{t:home.next.pointer}}</span
+        ><span class="touch">{{t:home.next.touch}}</span>
+      </button>
+    </div>
+    <div>{{t:footer.local}}</div>
+    <div class="faint">{{t:footer.affiliation}}</div>
+    {{h:langs}}
+  </footer>
+</div>

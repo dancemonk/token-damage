@@ -1,0 +1,86 @@
+{
+  "$comment": "Never translated. Receipts, stamps, the command and names look the same in every language. Site copy lives in i18n/<lang>.json.",
+  "origin": "https://tokendamage.com",
+  "github": "https://github.com/dancemonk/token-damage",
+  "brand": "TOKEN DAMAGE",
+  "command": "npx token-damage",
+  "receipt": {
+    "store": "STORE 0001 · REG 01 · CASHIER: THE ADJUSTER",
+    "trans": "TRANS #",
+    "typed": "YOU TYPED ·",
+    "words": "WORDS",
+    "tokensRead": "TOKENS IT READ",
+    "days": "DAYS",
+    "price": "≡ PRICE WITHOUT YOUR PLAN",
+    "saved": "≡ YOU SAVED (CACHE CARD)",
+    "electricity": "≈ ELECTRICITY",
+    "ram": "✶ RAM SURCHARGE (GAMERS)",
+    "plan": "≡ TIMES YOUR PLAN",
+    "latestCall": "LATEST CALL",
+    "achievements": "ACHIEVEMENTS",
+    "legendPriced": "≡ LIST PRICE",
+    "legendEstimate": "≈ ESTIMATE, ALWAYS A RANGE",
+    "legendSatire": "✶ SATIRE",
+    "sample": "SAMPLE",
+    "shared": "SHARED RECEIPT",
+    "notYours": "NOT YOUR NUMBERS (YET)",
+    "tear": "✂ TEAR HERE",
+    "yourCopy": "YOUR COPY · PASTE IN TERMINAL"
+  },
+  "samples": [
+    {
+      "trans": "0041",
+      "who": "CUSTOMER 0041",
+      "words": 14690,
+      "tokens": 1183400000,
+      "price": "$809.65",
+      "saved": "$4,383.85",
+      "kwh": "26–120 kWh",
+      "ram": "+$0.0000079",
+      "stamp": "ACT OF GOD"
+    },
+    {
+      "trans": "0042",
+      "who": "THE NIGHT SHIFT",
+      "words": 1960,
+      "tokens": 187022000,
+      "price": "$129.20",
+      "saved": "$749.94",
+      "kwh": "3.7–18 kWh",
+      "ram": "+$0.0000012",
+      "stamp": "STRUCTURAL"
+    },
+    {
+      "trans": "0043",
+      "who": "THE RESTRAINT AWARD",
+      "words": 212,
+      "tokens": 2958400,
+      "price": "$2.06",
+      "saved": "$7.04",
+      "kwh": "0.094–0.44 kWh",
+      "ram": "+$0.00000002",
+      "stamp": "FENDER BENDER"
+    },
+    {
+      "trans": "0044",
+      "who": "THE UNINSURABLE",
+      "words": 41200,
+      "tokens": 9842000000,
+      "price": "$6,721.10",
+      "saved": "$36,385.95",
+      "kwh": "220–1,000 kWh",
+      "ram": "+$0.000065",
+      "stamp": "UNINSURABLE"
+    }
+  ],
+  "quiz": {
+    "asOf": "2026-09-01",
+    "answers": [0, 2, 2, 2, 1],
+    "satire": { "3": "quiz.q3" },
+    "stamps": {
+      "low": "BLISSFULLY UNAWARE",
+      "mid": "MILDLY INFORMED",
+      "high": "KNOWS TOO MUCH"
+    }
+  }
+}

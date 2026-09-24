@@ -1,0 +1,16 @@
+{
+  "name": "@token-damage/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "tokendamage.com: static site, one folder per language.",
+  "scripts": {
+    "build": "node scripts/build.mjs --langs en,ru",
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm run build && vitest run",
+    "dev": "pnpm run build && node scripts/serve.mjs"
+  },
+  "devDependencies": {
+    "@token-damage/core": "workspace:*"
+  }
+}

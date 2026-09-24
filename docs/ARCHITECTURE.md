@@ -12,9 +12,15 @@ token-damage/
     src/metrics/           prices.json, pricing, energy, satire
     src/roasts/            facts, note families, scoring, achievements, disputes
     src/receipt/           receipt model → 48-column text, share card SVG, share link
+    src/web.ts             browser-safe entry (@token-damage/core/web): share codec, formats, note templates
     fixtures/              sanitized transcript lines + expected totals
     scripts/               fixture sanitizer, sample-month generator
   packages/cli/            bin: token-damage (flow, prompts, PNG via @resvg/resvg-js, bundled fonts)
+  apps/web/                tokendamage.com: static, no framework, one folder per language (docs/I18N.md)
+    i18n/                  site copy per language; en.json is the schema
+    templates/             page HTML with {{t:key}} slots, no copy of their own
+    src/                   page scripts (TS → native ESM), receipt markup, fixed.json (never translated)
+    scripts/build.mjs      node scripts/build.mjs --langs en,ru → dist/, dist/ru/
   schema/receipt.schema.json
   scripts/oracle.mjs       compares daily totals with ccusage, per agent
   docs/                    how it works: data sources, metrics, roasts, CLI, privacy
