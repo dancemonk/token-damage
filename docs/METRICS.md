@@ -40,6 +40,13 @@ Codex models OpenAI no longer lists (`gpt-5.2-codex`) are priced as their base m
 OpenAI lists no cache-write price, cache writes are ordinary input and cost the input price. `gpt-5.6-sol` is a
 promotional price (through at least 2026-11-21).
 
+Google rows are the standard-tier text prices from ai.google.dev. Pro models charge more when the prompt is over
+200K tokens (cached included): such a Gemini CLI call is priced entirely at the long-context row, as Codex calls
+over 272K are. Cached tokens cost the context-caching price; implicit caching has no write price and storage is
+not charged. A Gemini model Google no longer lists is priced as the nearest version of its tier (`flash-lite`,
+`flash`, `pro`: `gemini-3-pro-preview` → `gemini-3.1-pro-preview`), marked `est. model`. `gemini-3.6-flash`,
+`-3.7-flash` and `-3.8-flash` are promotional prices through 2026-12-31; they double on 2027-01-01.
+
 Cache writes have two prices: 5-minute TTL 1.25× input, 1-hour TTL 2× input. Claude Code writes the main thread with
 the 1-hour TTL (87% of cache writes on real logs; a single write price understated list price by 7.6%), so
 `cacheWrite1h` (from `usage.cache_creation.ephemeral_1h_input_tokens`) is priced separately. With no 1-hour

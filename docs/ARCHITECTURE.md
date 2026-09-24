@@ -6,6 +6,7 @@ token-damage/
   packages/core/           parsing, dedupe, metrics, roasts; zero runtime deps
     src/adapters/claude/   discovery, parser, dedupe (shared by every source)
     src/adapters/codex/    discovery, rollout parser, replay filter
+    src/adapters/gemini/   discovery, chat parser (JSONL and older JSON)
     src/aggregate/         events → daily totals, sessions
     src/metrics/           prices.json, pricing, energy, satire
     src/roasts/            facts, note families, scoring, achievements, disputes
@@ -27,7 +28,7 @@ I/O, prompts, and animation.
 
 ## Types (core)
 ```ts
-type Source = "claude-code" | "codex";
+type Source = "claude-code" | "codex" | "gemini";
 interface UsageEvent {
   kind: "usage"; source: Source; sessionId: string; parentSessionId?: string; agentId?: string;
   ts: number;                      // epoch ms, UTC
@@ -64,10 +65,10 @@ achievements, last guess). SQLite is not needed for MVP. Migrate to SQLite only 
 
 ## Testing rules
 - Every parser behaviour has a fixture built from **sanitized real lines** (text → "x", cwd → "/p/a", keep ids,
-  timestamps, usage, structure). One folder per tool version (Codex: one Codex home, versions listed in its
-  README). A regression test per known breakage in
+  timestamps, usage, structure). One folder per tool version (Codex: one Codex home; Gemini CLI: one data dir;
+  versions listed in their READMEs). A regression test per known breakage in
   `DATA-SOURCES.md`.
-- `scripts/oracle.mjs` compares daily totals with `ccusage <claude|codex> daily --json --offline`; CI fails above 1%.
+- `scripts/oracle.mjs` compares daily totals with `ccusage <claude|codex|gemini> daily --json --offline`; CI fails above 1%.
 - Snapshot tests for the 48-column receipt and the SVG for each sample customer.
 - A test asserts the share payload and the PNG's text contain no key/value outside the whitelist and none of:
   paths, `cwd`, project names, prompt text.

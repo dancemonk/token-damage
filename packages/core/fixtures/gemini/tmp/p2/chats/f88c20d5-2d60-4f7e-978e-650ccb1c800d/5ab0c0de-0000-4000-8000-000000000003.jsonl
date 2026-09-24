@@ -1,0 +1,5 @@
+{"sessionId":"5ab0c0de-0000-4000-8000-000000000003","projectHash":"x","startTime":"2026-05-30T04:20:00.000Z","lastUpdated":"2026-05-30T04:20:00.000Z","kind":"subagent"}
+{"id":"s-u1","timestamp":"2026-05-30T04:20:00.100Z","type":"user","content":[{"text":"x"}]}
+{"$set":{"lastUpdated":"2026-05-30T04:20:00.100Z"}}
+{"id":"s-g1","timestamp":"2026-05-30T04:20:05.000Z","type":"gemini","content":"x","thoughts":[],"model":"gemini-3-flash-preview","tokens":{"input":12000,"output":300,"cached":8000,"thoughts":200,"tool":0,"total":12500}}
+{"$set":{"lastUpdated":"2026-05-30T04:20:05.000Z"}}

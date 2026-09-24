@@ -5,11 +5,13 @@ import { describe, expect, it } from "vitest";
 import { sanitizeLine } from "../scripts/sanitize-fixture.js";
 
 const root = fileURLToPath(new URL("../fixtures", import.meta.url));
-// Word counting needs real-looking prose, so these prompts are invented: the words fixture (see its README)
-// and the generated sample-month corpus (scripts/sample-month.ts).
+// Word counting needs real-looking prose, so these prompts are invented: the words fixtures (see their READMEs),
+// the Gemini traps file (also a malformed line on purpose) and the generated sample-month corpus
+// (scripts/sample-month.ts).
 const INVENTED_TEXT = new Set([
   "claude/2.1.281/words-typed.jsonl",
   "codex/sessions/2026/09/22/rollout-2026-09-22T10-00-00-01a0c5f0-0000-7000-8000-000000000001.jsonl",
+  "gemini/tmp/p3/chats/session-2025-10-03T10-00-7a0c0de2.jsonl",
 ]);
 const files = readdirSync(root, { recursive: true, encoding: "utf8" }).filter(
   (f) =>

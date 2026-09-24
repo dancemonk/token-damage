@@ -164,14 +164,55 @@ repeats the thread's own id), as one subagent. 202 of 275 real rollouts are suba
 ### Not comparable across providers
 Tokenizers and cache semantics differ. Show raw tokens per provider; compare in `≡` dollars and `≈` Wh.
 
+## Gemini CLI
+
+Rules below match ccusage 20.0.24 (`rust/adapters/gemini/src/`), checked with `pnpm oracle --agent gemini`.
+Code: `packages/core/src/adapters/gemini/`. Fixtures: `packages/core/fixtures/gemini/tmp/` (a data dir).
+
+### Where
+`$GEMINI_DATA_DIR` (comma-separated; it replaces `~/.gemini/tmp`, not `~/.gemini`) →
+`<project>/chats/session-<start>-<id8>.jsonl`. A subagent writes `<project>/chats/<parent session id>/<id>.jsonl`.
+Older versions wrote one whole-file `session-*.json` per session. Only files under a `chats` folder are opened:
+`<project>/logs.json` beside it is the prompt log (an array, no usage). Gemini CLI can delete old chats
+(`general.sessionRetention` in its settings, e.g. `maxAge: "30d"`); we do not read that setting.
+
+### Structure (JSONL)
+- Header line: `sessionId`, `projectHash`, `startTime`, `lastUpdated`, `kind` (`main` or `subagent`). A resumed
+  session appends a second header to the same file.
+- One line per message: `id`, `timestamp`, `type` (`user`, `gemini`, `info`, `error`), `content`. `gemini` lines
+  add `model`, `thoughts` (text) and `tokens`. `$set` lines update metadata (`lastUpdated`, `summary`,
+  `messages`): never read for usage.
+- A response is first written without `tokens`, then written again under the same `id` once they arrive; a later
+  copy with tokens replaces the earlier one in place (per file). Copies without tokens are skipped.
+- The session id and model carry forward: a response without `model` takes the last one named in the file; none
+  named yet → dropped (ccusage does the same). Timestamp: `timestamp`, else `created_at`, else the file's mtime.
+- `tokens` is the API's `usageMetadata`: `input` (promptTokenCount), `output`, `cached`, `thoughts`, `tool`,
+  `total`. ccusage's aliases are accepted (`prompt`, `input_tokens`, `candidates`, `cached_tokens`, `reasoning`,
+  `tool_tokens`, `total_tokens`, …); numbers only, fractions truncated, negatives 0.
+
+### Per-response usage
+- Cached input is inside `input` when `cached > 0` and `total = input + output + thoughts + tool` (every real
+  line): fresh input = `input − cached`. Otherwise `input` is already fresh.
+- Input = fresh + `tool`; cache read = `cached`; no cache writes. Output = `output` + `thoughts` (thinking is
+  billed as output; ccusage reports it apart but counts it in the total).
+- Tokens the total has and the fields lack: output when `output` is 0, else thinking. All-zero usage is skipped.
+- Older `.json` files: every `messages[]` entry with `type: "gemini"` and a model of its own; one without a
+  timestamp gets `startTime`. A file that is a single `gemini` record is read the same way.
+
+### Words typed and sessions
+`user` messages in main sessions: text parts of `displayContent` (what the user typed, when `@file` expansion made
+it differ) or else of `content`. A message with only `functionResponse` parts is no prompt. A subagent's messages
+were written by its parent: not prompts. Its usage counts toward the parent session, as one subagent.
+
 ## Tested versions
 | Tool | Versions | Fixtures |
 | --- | --- | --- |
 | Claude Code | 2.1.237, 2.1.281 (real logs 2.1.205–2.1.281 scanned) | `packages/core/fixtures/claude/` |
 | Codex | 0.130.0, 0.143.0, 0.144.0-alpha.4, 0.147.0-alpha.6.5, 0.153.4, 0.155.1 (real logs 0.130.0–0.155.1, 275 rollouts) | `packages/core/fixtures/codex/` |
+| Gemini CLI | 0.42.0 (13 real chats; chats carry no version, so no check) | `packages/core/fixtures/gemini/` |
 
 ## Later sources
-Gemini CLI and Copilot CLI (ccusage parses both), Cursor/OpenCode (SQLite; Cursor needs a cloud token → opt-in
+OpenCode (SQLite via `node:sqlite`, read `-wal` too), Copilot CLI (ccusage parses it), Cursor/OpenCode (SQLite; Cursor needs a cloud token → opt-in
 only), ChatGPT/Claude.ai exports (no token counts; tokenize locally and label `≈`).
 
 ## Known divergences from ccusage
@@ -187,6 +228,13 @@ did 44 days of real logs (1.96B tokens) in every field. Model names differ on pu
 the same logs: $1,031.65 ours, $1,021.69 ccusage; the difference is exactly our $9.96 of `gpt-6-sol`, which
 ccusage does not price. We do not read
 the "headless" `codex exec --json` shapes ccusage also accepts (a top-level `usage` object); none appear in rollouts.
+
+Gemini CLI (`ccusage gemini daily`, 2026-09-24): the fixture corpus matches exactly (555,226 tokens, 5 days), and so
+did 3 days of real logs (4,298,663 tokens) in every field, with thinking counted as output on both sides (the
+oracle adds ccusage's `totalTokens − input − cache − output` to its output). List price on the same logs: $1.8384
+on both sides. Differences by design, none present in real logs: we open only files under `chats/` (ccusage
+reads every `.json`/`.jsonl` under the data dir); we skip `stats` summaries (`gemini -p --output-format json`
+output, never written to chats); a response id repeated in another file counts once for us, twice for ccusage.
 
 Not compared, because ccusage does not report them: words typed and prompts. A day with prompts but no model
 call exists only on our side, with zero tokens; the oracle skips all-zero days.

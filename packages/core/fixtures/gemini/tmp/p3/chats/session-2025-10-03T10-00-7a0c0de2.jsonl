@@ -1,0 +1,15 @@
+{"sessionId":"7a0c0de2-0000-4000-8000-000000000002","projectHash":"x","startTime":"2025-10-03T10:00:00.000Z","lastUpdated":"2025-10-03T10:00:00.000Z","kind":"main"}
+{"id":"t-u1","timestamp":"2025-10-03T10:00:01.000Z","type":"user","content":[{"text":"x x x x x x x x x x"}],"displayContent":[{"text":"x x"}]}
+{"id":"t-u2","timestamp":"2025-10-03T10:00:02.000Z","type":"user","content":[{"functionResponse":{"name":"x","response":{"output":"x"}}}]}
+not json
+{"id":"t-g0","timestamp":"2025-10-03T10:00:03.000Z","type":"gemini","content":"x","tokens":{"input":100,"output":10,"cached":0,"thoughts":0,"tool":0,"total":110}}
+{"id":"t-g1","timestamp":"2025-10-03T10:00:04.000Z","type":"gemini","content":"x","model":"gemini-3-pro-preview"}
+{"id":"t-g1","timestamp":"2025-10-03T10:00:04.000Z","type":"gemini","content":"x","model":"gemini-3-pro-preview","tokens":{"input":3000,"output":100,"cached":1000,"thoughts":50,"tool":20,"total":3170}}
+{"id":"t-g2","timestamp":"2025-10-03T10:00:05.000Z","type":"gemini","content":"x","tokens":{"input":1000,"output":100,"cached":400,"thoughts":0,"tool":0,"total":1500}}
+{"id":"t-g3","timestamp":"2025-10-03T10:00:06.000Z","type":"gemini","content":"x","model":"gemini-2.5-flash","tokens":{"input":500,"output":0,"cached":0,"thoughts":0,"tool":0,"total":800}}
+{"id":"t-g4","timestamp":"2025-10-03T10:00:07.000Z","type":"gemini","content":"x","model":"gemini-2.5-flash","tokens":{"input":500,"output":50,"cached":0,"thoughts":10,"tool":0,"total":700}}
+{"id":"t-g5","timestamp":"2025-10-03T10:00:08.000Z","type":"gemini","content":"x","model":"gemini-2.5-flash","tokens":{"input":600.9,"output":"70","cached":-5,"thoughts":0,"tool":0}}
+{"id":"t-g6","timestamp":"2025-10-03T10:00:09.000Z","type":"gemini","content":"x","model":"gemini-2.5-flash","tokens":{"input":0,"output":0,"cached":0,"thoughts":0,"tool":0,"total":0}}
+{"id":"t-g7","created_at":"2025-10-03T10:00:10.000Z","type":"gemini","content":"x","model":"gemini-2.5-flash","tokens":{"prompt_tokens":300,"candidates_tokens":30,"cached_tokens":0,"total_tokens":330}}
+{"$set":{"lastUpdated":"2025-10-03T10:00:10.000Z","messages":[{"id":"t-x","type":"gemini","model":"gemini-2.5-flash","tokens":{"input":999,"output":9,"total":1008}}]}}
+{"id":"t-i1","timestamp":"2025-10-03T10:00:11.000Z","type":"info","content":"x"}

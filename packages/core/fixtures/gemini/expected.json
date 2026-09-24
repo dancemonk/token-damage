@@ -1,0 +1,365 @@
+{
+  "timeZone": "UTC",
+  "totals": {
+    "tokens": {
+      "input": 198257,
+      "cacheWrite": 0,
+      "cacheWrite1h": 0,
+      "cacheRead": 349524,
+      "output": 7445
+    },
+    "byModel": {
+      "gemini-2.5-pro|long": {
+        "input": 50000,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 200000,
+        "output": 1000
+      },
+      "gemini-2.5-pro": {
+        "input": 5000,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 0,
+        "output": 300
+      },
+      "gemini-3-pro-preview": {
+        "input": 3020,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 1400,
+        "output": 250
+      },
+      "gemini-2.5-flash": {
+        "input": 1900,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 0,
+        "output": 530
+      },
+      "gemini-3-flash-preview": {
+        "input": 128859,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 148124,
+        "output": 5091
+      },
+      "gemini-3.1-pro-preview": {
+        "input": 9478,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 0,
+        "output": 274
+      }
+    },
+    "bySource": {
+      "gemini": {
+        "gemini-2.5-pro|long": {
+          "input": 50000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 200000,
+          "output": 1000
+        },
+        "gemini-2.5-pro": {
+          "input": 5000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 300
+        },
+        "gemini-3-pro-preview": {
+          "input": 3020,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1400,
+          "output": 250
+        },
+        "gemini-2.5-flash": {
+          "input": 1900,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 530
+        },
+        "gemini-3-flash-preview": {
+          "input": 128859,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 148124,
+          "output": 5091
+        },
+        "gemini-3.1-pro-preview": {
+          "input": 9478,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 274
+        }
+      }
+    },
+    "calls": 26,
+    "sessions": 5,
+    "activeDays": 5,
+    "subagents": 1,
+    "prompts": 8,
+    "wordsTyped": 11,
+    "firstCall": "2025-10-02T09:00:00.000Z",
+    "lastCall": "2026-05-30T04:20:05.000Z",
+    "longestSession": {
+      "start": "2026-05-30T04:12:46.774Z",
+      "end": "2026-05-30T04:20:05.000Z"
+    }
+  },
+  "daily": [
+    {
+      "day": "2025-10-02",
+      "byModel": {
+        "gemini-2.5-pro|long": {
+          "input": 50000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 200000,
+          "output": 1000
+        },
+        "gemini-2.5-pro": {
+          "input": 5000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 300
+        }
+      },
+      "bySource": {
+        "gemini": {
+          "gemini-2.5-pro|long": {
+            "input": 50000,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 200000,
+            "output": 1000
+          },
+          "gemini-2.5-pro": {
+            "input": 5000,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 300
+          }
+        }
+      },
+      "calls": 2,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 1,
+      "wordsTyped": 3,
+      "firstCall": "2025-10-02T09:00:00.000Z",
+      "lastCall": "2025-10-02T09:00:10.000Z"
+    },
+    {
+      "day": "2025-10-03",
+      "byModel": {
+        "gemini-3-pro-preview": {
+          "input": 3020,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1400,
+          "output": 250
+        },
+        "gemini-2.5-flash": {
+          "input": 1900,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 530
+        }
+      },
+      "bySource": {
+        "gemini": {
+          "gemini-3-pro-preview": {
+            "input": 3020,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 1400,
+            "output": 250
+          },
+          "gemini-2.5-flash": {
+            "input": 1900,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 530
+          }
+        }
+      },
+      "calls": 6,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 1,
+      "wordsTyped": 2,
+      "firstCall": "2025-10-03T10:00:04.000Z",
+      "lastCall": "2025-10-03T10:00:10.000Z"
+    },
+    {
+      "day": "2026-04-28",
+      "byModel": {
+        "gemini-3-flash-preview": {
+          "input": 31882,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 830
+        },
+        "gemini-3.1-pro-preview": {
+          "input": 9478,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 274
+        }
+      },
+      "bySource": {
+        "gemini": {
+          "gemini-3-flash-preview": {
+            "input": 31882,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 830
+          },
+          "gemini-3.1-pro-preview": {
+            "input": 9478,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 274
+          }
+        }
+      },
+      "calls": 4,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 3,
+      "wordsTyped": 3,
+      "firstCall": "2026-04-28T13:23:56.818Z",
+      "lastCall": "2026-04-28T13:26:08.014Z"
+    },
+    {
+      "day": "2026-05-18",
+      "byModel": {
+        "gemini-3-flash-preview": {
+          "input": 40156,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 34492,
+          "output": 1781
+        }
+      },
+      "bySource": {
+        "gemini": {
+          "gemini-3-flash-preview": {
+            "input": 40156,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 34492,
+            "output": 1781
+          }
+        }
+      },
+      "calls": 5,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 2,
+      "wordsTyped": 2,
+      "firstCall": "2026-05-18T00:20:14.681Z",
+      "lastCall": "2026-05-18T00:20:30.964Z"
+    },
+    {
+      "day": "2026-05-30",
+      "byModel": {
+        "gemini-3-flash-preview": {
+          "input": 56821,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 113632,
+          "output": 2480
+        }
+      },
+      "bySource": {
+        "gemini": {
+          "gemini-3-flash-preview": {
+            "input": 56821,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 113632,
+            "output": 2480
+          }
+        }
+      },
+      "calls": 9,
+      "sessions": 1,
+      "subagents": 1,
+      "prompts": 1,
+      "wordsTyped": 1,
+      "firstCall": "2026-05-30T04:12:46.774Z",
+      "lastCall": "2026-05-30T04:20:05.000Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "1e9ac701-0000-4000-8000-000000000001",
+      "start": "2025-10-02T09:00:00.000Z",
+      "end": "2025-10-02T09:00:10.000Z",
+      "calls": 2,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2025-10-02T09:00:00.000Z",
+        "end": "2025-10-02T09:00:10.000Z"
+      }
+    },
+    {
+      "sessionId": "7a0c0de2-0000-4000-8000-000000000002",
+      "start": "2025-10-03T10:00:04.000Z",
+      "end": "2025-10-03T10:00:10.000Z",
+      "calls": 6,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2025-10-03T10:00:04.000Z",
+        "end": "2025-10-03T10:00:10.000Z"
+      }
+    },
+    {
+      "sessionId": "e1b7bbb6-1c47-4924-be00-b92a72246f0d",
+      "start": "2026-04-28T13:23:56.818Z",
+      "end": "2026-04-28T13:26:08.014Z",
+      "calls": 4,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-04-28T13:23:56.818Z",
+        "end": "2026-04-28T13:26:08.014Z"
+      }
+    },
+    {
+      "sessionId": "a75aa971-89fc-446b-93a4-56051bd70932",
+      "start": "2026-05-18T00:20:14.681Z",
+      "end": "2026-05-18T00:20:30.964Z",
+      "calls": 5,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-05-18T00:20:14.681Z",
+        "end": "2026-05-18T00:20:30.964Z"
+      }
+    },
+    {
+      "sessionId": "f88c20d5-2d60-4f7e-978e-650ccb1c800d",
+      "start": "2026-05-30T04:12:46.774Z",
+      "end": "2026-05-30T04:20:05.000Z",
+      "calls": 9,
+      "subagents": 1,
+      "longestStretch": {
+        "start": "2026-05-30T04:12:46.774Z",
+        "end": "2026-05-30T04:20:05.000Z"
+      }
+    }
+  ]
+}

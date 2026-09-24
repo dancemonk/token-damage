@@ -39,6 +39,7 @@ export interface PriceMatch {
 /** Input tokens per call above which a source's provider charges long-context rates. */
 export const LONG_CONTEXT_INPUT: Partial<Record<Source, number>> = {
   codex: 272_000,
+  gemini: 200_000,
 };
 
 /**
@@ -80,6 +81,12 @@ function label(key: string): string {
 }
 
 const FAMILIES = ["fable", "mythos", "opus", "sonnet", "haiku"];
+/** Gemini tiers, the family a Gemini model is priced by: "gemini-3-pro-preview" is a pro. */
+const GEMINI_TIERS = ["flash-lite", "flash", "pro"];
+const geminiTier = (model: string) =>
+  model.startsWith("gemini-")
+    ? GEMINI_TIERS.find((tier) => model.includes(`-${tier}`))
+    : undefined;
 
 // "claude-sonnet-4-5-20250929" and "claude-3-5-sonnet" → 4.5 and 3.5; date suffixes are not versions.
 function version(model: string): number {
@@ -91,7 +98,7 @@ function version(model: string): number {
 
 const withoutDate = (model: string) => model.replace(/-\d{8}$/, "");
 
-/** Exact price, else the nearest version in the same family, else undefined (not priced). */
+/** Exact price, else the nearest version in the same family (Gemini: tier), else undefined (not priced). */
 function modelPrices(
   model: string,
   table: PriceTable,
@@ -102,11 +109,14 @@ function modelPrices(
   const base = table.models[model.replace(/-codex(?=-|$)/, "")];
   if (model.startsWith("gpt-") && base)
     return { prices: base, isFallback: true };
-  const family = FAMILIES.find((f) => model.includes(f));
+  const tier = geminiTier(model);
+  const family = tier ?? FAMILIES.find((f) => model.includes(f));
   if (!family) return undefined;
   const target = version(model);
   const nearest = Object.keys(table.models)
-    .filter((known) => known.includes(family))
+    .filter((known) =>
+      tier ? geminiTier(known) === tier : known.includes(family),
+    )
     .sort(
       (a, b) =>
         Math.abs(version(a) - target) - Math.abs(version(b) - target) ||

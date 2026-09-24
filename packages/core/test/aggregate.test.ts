@@ -11,6 +11,10 @@ import {
 } from "../src/index.js";
 import { corpusEvents, corpusPrompts, FIXTURES } from "./claude/support.js";
 import { CODEX_FIXTURES, scanFixtures } from "./codex/support.js";
+import {
+  GEMINI_FIXTURES,
+  scanFixtures as scanGeminiFixtures,
+} from "./gemini/support.js";
 
 const iso = (ts: number | null) =>
   ts === null ? null : new Date(ts).toISOString();
@@ -76,6 +80,20 @@ describe("aggregate", () => {
       readFileSync(`${CODEX_FIXTURES}expected.json`, "utf8"),
     );
     const { usage, prompts } = await scanFixtures();
+    const deduper = createDeduper();
+    for (const r of [...usage, ...prompts]) deduper.add(r);
+    const result = aggregate(
+      { usage: deduper.result(), prompts: deduper.prompts() },
+      { timeZone },
+    );
+    expect(readable(result)).toEqual(expected);
+  });
+
+  it("Gemini CLI fixture corpus totals equal the expected JSON", async () => {
+    const { timeZone, ...expected } = JSON.parse(
+      readFileSync(`${GEMINI_FIXTURES}../expected.json`, "utf8"),
+    );
+    const { usage, prompts } = await scanGeminiFixtures();
     const deduper = createDeduper();
     for (const r of [...usage, ...prompts]) deduper.add(r);
     const result = aggregate(

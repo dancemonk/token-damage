@@ -1,0 +1,50 @@
+{
+  "sessionId": "1e9ac701-0000-4000-8000-000000000001",
+  "projectHash": "x",
+  "startTime": "2025-10-02T09:00:00.000Z",
+  "lastUpdated": "2025-10-02T09:30:00.000Z",
+  "messages": [
+    {
+      "id": "l-u1",
+      "timestamp": "2025-10-02T09:00:01.000Z",
+      "type": "user",
+      "content": "one two three"
+    },
+    {
+      "id": "l-g1",
+      "timestamp": "2025-10-02T09:00:10.000Z",
+      "type": "gemini",
+      "content": "x",
+      "model": "gemini-2.5-pro",
+      "tokens": {
+        "input": 5000,
+        "output": 200,
+        "cached": 0,
+        "thoughts": 100,
+        "tool": 0,
+        "total": 5300
+      }
+    },
+    {
+      "id": "l-g2",
+      "type": "gemini",
+      "content": "x",
+      "model": "gemini-2.5-pro",
+      "tokens": {
+        "input": 250000,
+        "output": 1000,
+        "cached": 200000,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 251000
+      }
+    },
+    {
+      "id": "l-g3",
+      "timestamp": "2025-10-02T09:05:00.000Z",
+      "type": "gemini",
+      "content": "x",
+      "tokens": { "input": 100, "output": 10, "total": 110 }
+    }
+  ]
+}

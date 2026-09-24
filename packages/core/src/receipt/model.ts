@@ -21,6 +21,7 @@ import type { Source, TokenSums, Value } from "../types.js";
 export const AGENT_NAMES: Record<Source, string> = {
   "claude-code": "Claude Code",
   codex: "Codex",
+  gemini: "Gemini CLI",
 };
 
 /** Tokens and list price of some `byModel` keys. */

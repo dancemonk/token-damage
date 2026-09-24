@@ -40,6 +40,10 @@ const KEEP = new Set([
   "parent_thread_id",
   "thread_id",
   "turn_id",
+  // Gemini CLI chats
+  "kind",
+  "startTime",
+  "lastUpdated",
 ]);
 // Subtrees holding tool inputs and outputs: arbitrary user data, so nothing in them is kept.
 const SCRUB = new Set(["input", "wireToolInputs", "toolUseResult"]);
