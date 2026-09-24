@@ -24,7 +24,7 @@ in USD per 1M tokens. **Verify against the providers' price pages before every r
 the mockups are illustrative: Opus 5 / 6.25 / 0.50 / 25, Sonnet 3 / 3.75 / 0.30 / 15, Haiku 1 / 1.25 / 0.10 / 5.
 Unknown model → nearest version in the same family by name, flag `isFallback`, show "≡ (est. model)"; no family
 → not priced, and the receipt says so. `packages/core/src/metrics/prices.json` holds the real per-model prices
-(`asOf` 2026-06-24); the mockup values above are Opus 4.x/5, Sonnet 4.6 and Haiku 4.5 prices (Sonnet 5 is 2 / 2.5 / 0.20 / 10).
+(`asOf` 2026-09-24); the mockup values above are Opus 4.x/5, Sonnet 4.6 and Haiku 4.5 prices (Sonnet 5 is 2 / 2.5 / 0.20 / 10).
 
 Cache writes have two prices: 5-minute TTL 1.25× input, 1-hour TTL 2× input. Claude Code writes the main thread with
 the 1-hour TTL (87% of cache writes on real logs; a single write price understated list price by 7.6%), so
@@ -85,9 +85,9 @@ Assumed mix: 96.2% cache reads, 0.4% output, ~12 model calls per prompt, model m
 | TRANS | Who | Typed words | Tokens | List price | Cache saved | Electricity | RAM-X | Class | Note |
 |---|---|---|---|---|---|---|---|---|---|
 | 0041 | Customer 0041 | 14,690 | 1,183,400,000 | $809.65 | $4,383.85 | 26–120 kWh | +$0.0000079 | ACT OF GOD | For every word you typed, the machine read 80,558 tokens. That's The Great Gatsby, and a third of it again. Per word. |
-| 0042 | The Night Shift | 1,960 | 187,022,000 | $129.20 | $749.94 | 4–19 kWh | +$0.0000012 | STRUCTURAL | 187 million tokens. Two commits. You're its night-shift supervisor. |
-| 0043 | The Restraint Award | 212 | 2,958,400 | $2.06 | $7.04 | 0.07–0.3 kWh | +$0.00000002 | FENDER BENDER | Two sessions, both done by lunch. Flagged for unusual restraint. |
-| 0044 | The Uninsurable | 41,200 | 9,842,000,000 | $6,721.10 | $36,385.95 | 220–1,000 kWh | +$0.000066 | UNINSURABLE | You are now the reason the policy exists. |
+| 0042 | The Night Shift | 1,960 | 187,022,000 | $129.20 | $749.94 | 3.7–18 kWh | +$0.0000012 | STRUCTURAL | 187 million tokens. Two commits. You're its night-shift supervisor. |
+| 0043 | The Restraint Award | 212 | 2,958,400 | $2.06 | $7.04 | 0.094–0.44 kWh | +$0.00000002 | FENDER BENDER | Two sessions, both done by lunch. Flagged for unusual restraint. |
+| 0044 | The Uninsurable | 41,200 | 9,842,000,000 | $6,721.10 | $36,385.95 | 220–1,000 kWh | +$0.000065 | UNINSURABLE | You are now the reason the policy exists. |
 
 Customer 0041 detail: 94 sessions, 26 active days, 212 subagents, 7,480 model calls, tokens read
 1,178,700,000 (input 2.1M, cache write 38.4M, cache read 1,138.2M), output 4.7M; Opus 840.2M / $665.34,

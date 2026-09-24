@@ -20,6 +20,8 @@ jobs:
           node-version: 22
           cache: pnpm
           registry-url: https://registry.npmjs.org
+      # npm 11.5+ can publish through npm trusted publishing (OIDC) once it is set up for both packages.
+      - run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - name: Tag matches package versions

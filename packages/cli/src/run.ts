@@ -166,7 +166,11 @@ async function shareLink(
   io.out(
     "  it rides after the #, the part of a URL browsers never send to a server.",
   );
-  if (await yes("create the link? [y/N] ")) io.out(shareUrl(payload));
+  if (!(await yes("create the link? [y/N] "))) return;
+  io.out(shareUrl(payload));
+  io.out(
+    "tokendamage.com is still being built. the link will open there once it's live; the png works today.",
+  );
 }
 
 export async function run(options: Options, io: Io): Promise<number> {

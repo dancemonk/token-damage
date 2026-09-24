@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { writeSampleMonth } from "../../core/scripts/sample-month.js";
 import { parseGuess, parseOptions } from "../src/args.js";
+import { VERSION } from "../src/version.js";
 import { validate } from "./schema.js";
 
 const CLI = fileURLToPath(new URL("../dist/index.js", import.meta.url));
@@ -71,6 +72,8 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
       join(dir, "sample-month"),
       "--no-anim",
     ).stdout.split("\n");
+    // The banner shows the current version; the doc's example may lag behind a release.
+    flow[1] = (flow[1] ?? "").replace(/\d+\.\d+\.\d+/, VERSION);
     for (const i of [1, 2, 5, 6, 7])
       expect(out, flow[i]).toContain(
         (flow[i] ?? "").replace(/\s+\(only when.*$/, ""),

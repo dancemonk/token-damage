@@ -155,8 +155,27 @@ describe("priceFor", () => {
     });
   });
 
-  it("prices unknown models as the nearest version of their family", () => {
+  it("knows the older models by their real price, dated ids included", () => {
     expect(priceFor("claude-sonnet-4-5-20250929")).toMatchObject({
+      isFallback: false,
+      price: { input: 3 },
+    });
+    expect(priceFor("claude-opus-4-1-20250805")).toMatchObject({
+      isFallback: false,
+      price: { input: 15, output: 75 },
+    });
+    expect(priceFor("claude-opus-4-20250514")).toMatchObject({
+      isFallback: false,
+      price: { input: 15 },
+    });
+    expect(priceFor("claude-3-5-haiku-20241022")).toMatchObject({
+      isFallback: false,
+      price: { input: 0.8 },
+    });
+  });
+
+  it("prices unknown models as the nearest version of their family", () => {
+    expect(priceFor("claude-sonnet-4-7")).toMatchObject({
       isFallback: true,
       price: { input: 3 },
     });
@@ -164,9 +183,9 @@ describe("priceFor", () => {
       isFallback: true,
       price: { input: 2 },
     });
-    expect(priceFor("claude-3-5-haiku")).toMatchObject({
+    expect(priceFor("claude-3-haiku")).toMatchObject({
       isFallback: true,
-      price: { input: 1 },
+      price: { input: 0.8 },
     });
   });
 
@@ -182,10 +201,10 @@ describe("priceFor", () => {
     const v = listPrice({
       "claude-opus-5": t,
       unknown: t,
-      "claude-sonnet-4-5": t,
+      "claude-sonnet-4-7": t,
     });
     expect(v.value).toBe(5 + 3);
-    expect(v.note).toBe("est. model: claude-sonnet-4-5; not priced: unknown");
+    expect(v.note).toBe("est. model: claude-sonnet-4-7; not priced: unknown");
   });
 });
 

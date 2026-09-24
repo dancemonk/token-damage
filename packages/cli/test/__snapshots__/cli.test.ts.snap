@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`token-damage --fixtures sample-month --no-anim --plan 200 > prints the receipt in docs/CLI.md exactly 1`] = `
-"token-damage 0.1.0
+"token-damage 0.1.1
 reads ~/.claude on this machine · uploads nothing · no network calls
 
 scanning <dir>/sample-month/projects …
@@ -57,6 +57,6 @@ ADJUSTER'S NOTE
 ✶ satire. economists were not consulted.
 ================================================
    ≡ list-price equiv · ≈ estimate · ✶ satire
-      method v1 · prices as of 2026-06-24
+      method v1 · prices as of 2026-09-24
 "
 `;

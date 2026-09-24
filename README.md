@@ -63,7 +63,7 @@ ADJUSTER'S NOTE
 ✶ satire. economists were not consulted.
 ================================================
    ≡ list-price equiv · ≈ estimate · ✶ satire
-      method v1 · prices as of 2026-06-24
+      method v1 · prices as of 2026-09-24
 ```
 
 That's sample customer 0041, a made-up person with a very real habit. Before printing, the CLI makes you guess your own total. 0041 guessed 20 million and was off by 59×. Afterwards you can dispute the charge. The dispute department has heard every excuse, and "it was research" has never once worked at 3:47 AM.

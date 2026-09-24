@@ -97,7 +97,7 @@ ADJUSTER'S NOTE
 ✶ satire. economists were not consulted.
 ================================================
    ≡ list-price equiv · ≈ estimate · ✶ satire
-      method v1 · prices as of 2026-06-24
+      method v1 · prices as of 2026-09-24
 ```
 The "YOUR PLAN" block appears only with `--plan` or a configured plan. This is sample customer 0041:
 `pnpm -F core sample-month` writes a synthetic config dir that adds up to it, and a CLI test compares
