@@ -18,7 +18,7 @@ import { afterAll, describe, expect, it } from "vitest";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const DIST = join(ROOT, "dist");
 const LANGS = ["en", "ru"];
-const SLUGS = ["", "r", "quiz", "method", "privacy"];
+const SLUGS = ["", "r", "quiz", "method", "privacy", "404"];
 const ORIGIN = "https://tokendamage.com";
 
 const pathOf = (lang: string, slug: string) =>
@@ -116,6 +116,14 @@ describe.each(LANGS)("built /%s", (lang) => {
     },
   );
 
+  it("keeps the 404 page out of search results, and only it", () => {
+    for (const slug of SLUGS)
+      expect(
+        page(lang, slug).includes('<meta name="robots" content="noindex" />'),
+        slug,
+      ).toBe(slug === "404");
+  });
+
   it.each(SLUGS)("page %s has a preview image in its language", (slug) => {
     const m = /<meta property="og:image" content="([^"]+)"/.exec(
       page(lang, slug),
@@ -124,9 +132,10 @@ describe.each(LANGS)("built /%s", (lang) => {
     expect(existsSync(join(DIST, new URL(m![1]!).pathname))).toBe(true);
   });
 
-  it("is in the sitemap with every alternate, /r excepted", () => {
+  it("is in the sitemap with every alternate, /r and the 404 page excepted", () => {
     const xml = readFileSync(join(DIST, "sitemap.xml"), "utf8");
-    for (const slug of SLUGS.filter((s) => s !== "r")) {
+    expect(xml).not.toContain("404");
+    for (const slug of SLUGS.filter((s) => s !== "r" && s !== "404")) {
       const entry = new RegExp(
         `<url><loc>${ORIGIN}${pathOf(lang, slug)}</loc>(.*?)</url>`,
       ).exec(xml);
@@ -319,5 +328,25 @@ describe("Saint Petersburg asides stay on the home page's samples", () => {
         for (const line of asideTexts) expect(html).not.toContain(line);
       }
     }
+  });
+});
+
+describe("Cloudflare Pages", () => {
+  const headers = readFileSync(join(DIST, "_headers"), "utf8");
+
+  it("sends the headers a page can't set for itself", () => {
+    expect(headers).toMatch(/^\/\*$/m);
+    for (const h of [
+      "Content-Security-Policy: frame-ancestors 'none'",
+      "X-Frame-Options: DENY",
+      "X-Content-Type-Options: nosniff",
+      "Referrer-Policy: strict-origin-when-cross-origin",
+    ])
+      expect(headers).toContain(h);
+  });
+
+  it("has a 404 page in every language", () => {
+    for (const lang of LANGS)
+      expect(existsSync(fileOf(DIST, lang, "404")), lang).toBe(true);
   });
 });

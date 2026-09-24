@@ -15,7 +15,8 @@
     "oracle": "pnpm -F @token-damage/core build && node scripts/oracle.mjs && node scripts/oracle.mjs --agent codex && node scripts/oracle.mjs --agent gemini && node scripts/oracle.mjs --agent opencode",
     "pool:age": "pnpm -F @token-damage/core build && node scripts/pool-age.mjs",
     "oracle:fixtures": "pnpm -F @token-damage/core build && node scripts/oracle.mjs --fixtures && node scripts/oracle.mjs --fixtures --agent codex && node scripts/oracle.mjs --fixtures --agent gemini && node scripts/oracle.mjs --fixtures --agent opencode",
-    "build": "pnpm -F @token-damage/core build"
+    "build": "pnpm -F @token-damage/core build",
+    "build:site": "pnpm -F @token-damage/core build && pnpm -F @token-damage/web build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

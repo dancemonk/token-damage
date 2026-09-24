@@ -213,7 +213,12 @@
     "method.source.13": "TrendForce, 2 Feb 2026 (90–95% forecast for 1Q26)",
     "method.source.14": "Micron exits Crucial, 3 Dec 2025",
     "pool.meanwhile": "Meanwhile",
-    "pool.source": "source"
+    "pool.source": "source",
+    "404.meta.title": "Not found · Token Damage",
+    "404.meta.description": "There is no page at this address.",
+    "404.title": "No receipt at this address",
+    "404.body": "This page was never printed. Somewhere, tokens were spent looking for it anyway.",
+    "404.home": "Back to the printer"
   },
   "notes": {
     "sample.0041": "You typed a paragraph.\nIt read a library.",

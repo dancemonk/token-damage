@@ -177,6 +177,9 @@ const PAGES = [
   },
   { slug: "method", template: "method.html" },
   { slug: "privacy", template: "privacy.html" },
+  // Cloudflare Pages serves the nearest 404.html for any unknown path (/ru/… gets /ru/404.html); without one
+  // it would answer every typo with the home page and a 200.
+  { slug: "404", template: "404.html", noindex: true },
 ];
 const pathOf = (lang, slug) => `${lang === "en" ? "/" : `/${lang}/`}${slug}`;
 const urlOf = (lang, slug) => fixed.origin + pathOf(lang, slug);
@@ -467,6 +470,7 @@ for (const lang of LANGS) {
       ogImage: `${fixed.origin}/og/${lang}${slug === "r" ? "-r" : ""}.png`,
       ogAlt: slug === "r" ? t("r.meta.description") : t("og.home"),
       quizHref: pathOf(lang, "quiz"),
+      homeHref: pathOf(lang, ""),
       github: fixed.github,
       asOf: t("quiz.asOf", { date: monthYear(fixed.quiz.asOf, locale) }),
       pricesIntro: t("method.prices.intro", {
@@ -478,6 +482,7 @@ for (const lang of LANGS) {
     };
     const html = {
       header: header(lang, t, slug === "", slug === "" || slug === "r"),
+      robots: page.noindex ? `<meta name="robots" content="noindex" />` : "",
       langs: langs(lang, slug, t),
       alternates: alternates(slug),
     };
@@ -541,8 +546,9 @@ for (const lang of LANGS) {
   }
 }
 
-// 5. Crawlers: every page with content, each with its language alternates. /r has none of its own.
-const listed = PAGES.filter((p) => p.slug !== "r");
+// 5. Crawlers: every page with content, each with its language alternates. /r has none of its own, and the
+// 404 page is not a page.
+const listed = PAGES.filter((p) => p.slug !== "r" && !p.noindex);
 writeFileSync(
   join(DIST, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>
