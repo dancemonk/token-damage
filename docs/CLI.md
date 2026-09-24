@@ -31,11 +31,23 @@ dispute this charge?
 CLAIM #0041 · "it was one last fix" · DENIED
 11 sessions started after midnight. that's not one.
 
+[c] copy image   [s] share link   [d] daily slips   [q] quit
+› c
+the image will show exactly this:
+  <every field printed on the card>
+  no project names · no paths · no prompts · no code
+write ~/token-damage/receipt-2026-09-23.png? [y/N] y
 saved  ~/token-damage/receipt-2026-09-23.png
        no project names · no paths · no prompts · no code
-
-[c] copy image   [s] share link   [d] daily slips   [q] quit
+› s
+the link will carry exactly this, and nothing else:
+  <every field in the payload, with its value>
+  it rides after the #, the part of a URL browsers never send to a server.
+create the link? [y/N] y
+https://tokendamage.com/r#v1.<payload>
 ```
+Nothing is written or linked without that preview and a yes. "copy image" saves a file: the CLI starts no child
+processes, so it cannot reach the clipboard.
 
 ## The receipt (48 columns; snapshot test target for the sample customer)
 ```
@@ -91,6 +103,14 @@ The "YOUR PLAN" block appears only with `--plan` or a configured plan. This is s
 `pnpm -F core sample-month` writes a synthetic config dir that adds up to it, and a CLI test compares
 `token-damage --fixtures <it> --no-anim --plan 200` (UTC) with this block character for character.
 The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
+
+## Image and link
+- PNG: `receiptSvg` (core) builds the 1080×1920 card of `design/canvas/ShareCard.dc.html` as an SVG string;
+  `@resvg/resvg-js` rasterizes it with the bundled fonts in `packages/cli/assets/fonts` (IBM Plex Mono, OFL;
+  Special Elite, Apache-2.0). System fonts are never loaded, so every machine renders the same card. Plex Mono has no
+  `≡` or `✶`, so those are drawn as shapes. resvg reads TTF, not woff2, so the fonts ship as TTF files.
+- Link: `sharePayload` keeps only the fields in `SHARE_WHITELIST` (docs/WEBSITE.md §Share links); `decodeShare`
+  rejects any other key.
 
 ## Flags
 `--since 30d|YYYY-MM-DD`, `--plan 20|100|200|<usd>`, `--no-anim`, `--no-sound` (reserved), `--json` (schema in

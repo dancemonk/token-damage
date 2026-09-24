@@ -35,8 +35,18 @@ export interface Receipt {
     sessions: Value;
     activeDays: Value;
     subagents: Value;
+    /** Tokens by type: fresh input, cache writes, cache reads, output. */
+    byType: {
+      input: Value;
+      cacheWrite: Value;
+      cacheRead: Value;
+      output: Value;
+    };
     tokensRead: Value;
     cacheReadShare: Value;
+    /** Fresh input plus cache writes, as a share of all tokens. */
+    freshShare: Value;
+    outputShare: Value;
     tokensWritten: Value;
     latestCall: Value<string> | null;
     /** Local calendar day of the latest call. */
@@ -57,10 +67,12 @@ export interface Receipt {
     comparison: { kind: "fridge-months" | "phone-charges"; value: Value };
     waterLiters: Value;
     co2Kg: Value;
+    /** Words typed as a share of all tokens, at 1.0–1.6 tokens per word (≈1.33 central). */
+    typingShare: Value;
   };
   satire: { ramX: Value };
   damageClass: { name: string; finePrint: string };
-  note: { family: string; text: string } | null;
+  note: { family: string; variant: number; text: string } | null;
   achievements: Achievement[];
   jokes: string[];
   method: { version: "v1"; pricesAsOf: string };
@@ -158,8 +170,16 @@ export function buildReceipt({
       sessions: measured(totals.sessions),
       activeDays: measured(facts.activeDays),
       subagents: measured(totals.subagents),
+      byType: {
+        input: measured(t.input),
+        cacheWrite: measured(t.cacheWrite),
+        cacheRead: measured(t.cacheRead),
+        output: measured(t.output),
+      },
       tokensRead: measured(t.input + t.cacheWrite + t.cacheRead),
       cacheReadShare: measured(all > 0 ? t.cacheRead / all : 0),
+      freshShare: measured(all > 0 ? (t.input + t.cacheWrite) / all : 0),
+      outputShare: measured(all > 0 ? t.output / all : 0),
       tokensWritten: measured(t.output),
       latestCall: facts.lastCall && {
         value: facts.lastCall.label,
@@ -196,11 +216,18 @@ export function buildReceipt({
         low: low * 0.34,
         high: high * 0.42,
       },
+      typingShare: {
+        value: all > 0 ? (totals.wordsTyped * 4) / 3 / all : 0,
+        tier: "estimated",
+        low: all > 0 ? totals.wordsTyped / all : 0,
+        high: all > 0 ? (totals.wordsTyped * 1.6) / all : 0,
+      },
     },
     satire: { ramX: ramX(all) },
     damageClass: observations.damageClass,
     note: observations.note && {
       family: observations.note.family,
+      variant: observations.note.variant,
       text: observations.note.text,
     },
     achievements: observations.achievements,

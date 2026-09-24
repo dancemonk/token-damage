@@ -24,6 +24,11 @@ import {
   type PromptEvent,
   type Receipt,
   type UsageEvent,
+  type Verdict,
+  imagePreview,
+  sharePayload,
+  sharePreview,
+  shareUrl,
 } from "@token-damage/core";
 import { parseGuess, type Options } from "./args.js";
 import { VERSION } from "./version.js";
@@ -125,6 +130,43 @@ function dailySlips(
       `  ${d.day} ${".".repeat(Math.max(1, 48 - d.day.length - value.length - 4))} ${value}`,
     );
   }
+}
+
+const yes = async (question: string) =>
+  (await ask(question)).trim().toLowerCase() === "y";
+
+// "copy image" writes the card to a file: no clipboard, because the CLI never starts child processes.
+async function saveImage(receipt: Receipt, io: Io) {
+  const path = join(
+    homedir(),
+    "token-damage",
+    `receipt-${receipt.period.end}.png`,
+  );
+  io.out();
+  io.out("the image will show exactly this:");
+  imagePreview(receipt).forEach((line) => io.out(line));
+  io.out("  no project names · no paths · no prompts · no code");
+  if (!(await yes(`write ${tilde(path)}? [y/N] `))) return;
+  // Loaded only when asked for, so every other run skips the native renderer.
+  const { writePng } = await import("./png.js");
+  await writePng(receipt, path);
+  io.out(`saved  ${tilde(path)}`);
+  io.out("       no project names · no paths · no prompts · no code");
+}
+
+async function shareLink(
+  receipt: Receipt,
+  disputed: { excuse: Excuse; verdict: Verdict } | undefined,
+  io: Io,
+) {
+  const payload = sharePayload(receipt, disputed);
+  io.out();
+  io.out("the link will carry exactly this, and nothing else:");
+  sharePreview(payload).forEach((line) => io.out(line));
+  io.out(
+    "  it rides after the #, the part of a URL browsers never send to a server.",
+  );
+  if (await yes("create the link? [y/N] ")) io.out(shareUrl(payload));
 }
 
 export async function run(options: Options, io: Io): Promise<number> {
@@ -250,9 +292,11 @@ export async function run(options: Options, io: Io): Promise<number> {
       `[${i + 1}] ${(EXCUSES[i] ?? "").toLowerCase()}`;
     io.out(` ${label(0).padEnd(19)}${label(1).padEnd(33)}${label(2)}`);
     io.out(` ${label(3).padEnd(19)}${label(4).padEnd(33)}${label(5)}`);
+    let disputed: { excuse: Excuse; verdict: Verdict } | undefined;
     const excuse = EXCUSES[Number(await ask("› ")) - 1] as Excuse | undefined;
     if (excuse) {
       const verdict = dispute(excuse, facts);
+      disputed = { excuse, verdict };
       io.out(
         paint(
           {
@@ -284,8 +328,8 @@ export async function run(options: Options, io: Io): Promise<number> {
       const k = await key();
       if (k === "q" || k === "\u0003") break;
       if (k === "d") dailySlips(days, io);
-      else if (k === "c" || k === "s")
-        io.out("image export and share links arrive in the next version.");
+      else if (k === "c") await saveImage(receipt, io);
+      else if (k === "s") await shareLink(receipt, disputed, io);
     }
     return 0;
   }

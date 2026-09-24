@@ -8,7 +8,8 @@
     "token-damage": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "assets"
   ],
   "engines": {
     "node": ">=22"
@@ -20,6 +21,7 @@
     "test": "tsc -p tsconfig.build.json && vitest run"
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@token-damage/core": "workspace:*"
   }
 }

@@ -21,8 +21,13 @@
     "method"
   ],
   "properties": {
-    "version": { "const": 1 },
-    "trans": { "type": "string", "pattern": "^\\d{4,}$" },
+    "version": {
+      "const": 1
+    },
+    "trans": {
+      "type": "string",
+      "pattern": "^\\d{4,}$"
+    },
     "period": {
       "type": "object",
       "additionalProperties": false,
@@ -34,11 +39,23 @@
         "retentionIsDefault"
       ],
       "properties": {
-        "start": { "$ref": "#/$defs/day" },
-        "end": { "$ref": "#/$defs/day" },
-        "days": { "type": "integer", "minimum": 1 },
-        "retentionDays": { "type": "integer", "minimum": 1 },
-        "retentionIsDefault": { "type": "boolean" }
+        "start": {
+          "$ref": "#/$defs/day"
+        },
+        "end": {
+          "$ref": "#/$defs/day"
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "retentionDays": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "retentionIsDefault": {
+          "type": "boolean"
+        }
       }
     },
     "measured": {
@@ -51,42 +68,108 @@
         "sessions",
         "activeDays",
         "subagents",
+        "byType",
         "tokensRead",
         "cacheReadShare",
+        "freshShare",
+        "outputShare",
         "tokensWritten",
         "latestCall",
         "latestCallDay",
         "longestSessionMinutes"
       ],
       "properties": {
-        "words": { "$ref": "#/$defs/measured" },
-        "prompts": { "$ref": "#/$defs/measured" },
-        "calls": { "$ref": "#/$defs/measured" },
-        "sessions": { "$ref": "#/$defs/measured" },
-        "activeDays": { "$ref": "#/$defs/measured" },
-        "subagents": { "$ref": "#/$defs/measured" },
-        "tokensRead": { "$ref": "#/$defs/measured" },
-        "cacheReadShare": { "$ref": "#/$defs/measured" },
-        "tokensWritten": { "$ref": "#/$defs/measured" },
+        "words": {
+          "$ref": "#/$defs/measured"
+        },
+        "prompts": {
+          "$ref": "#/$defs/measured"
+        },
+        "calls": {
+          "$ref": "#/$defs/measured"
+        },
+        "sessions": {
+          "$ref": "#/$defs/measured"
+        },
+        "activeDays": {
+          "$ref": "#/$defs/measured"
+        },
+        "subagents": {
+          "$ref": "#/$defs/measured"
+        },
+        "byType": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["input", "cacheWrite", "cacheRead", "output"],
+          "properties": {
+            "input": {
+              "$ref": "#/$defs/measured"
+            },
+            "cacheWrite": {
+              "$ref": "#/$defs/measured"
+            },
+            "cacheRead": {
+              "$ref": "#/$defs/measured"
+            },
+            "output": {
+              "$ref": "#/$defs/measured"
+            }
+          }
+        },
+        "tokensRead": {
+          "$ref": "#/$defs/measured"
+        },
+        "cacheReadShare": {
+          "$ref": "#/$defs/measured"
+        },
+        "freshShare": {
+          "$ref": "#/$defs/measured"
+        },
+        "outputShare": {
+          "$ref": "#/$defs/measured"
+        },
+        "tokensWritten": {
+          "$ref": "#/$defs/measured"
+        },
         "latestCall": {
           "anyOf": [
-            { "type": "null" },
+            {
+              "type": "null"
+            },
             {
               "type": "object",
               "additionalProperties": false,
               "required": ["value", "tier"],
               "properties": {
-                "value": { "type": "string" },
-                "tier": { "const": "measured" }
+                "value": {
+                  "type": "string"
+                },
+                "tier": {
+                  "const": "measured"
+                }
               }
             }
           ]
         },
         "latestCallDay": {
-          "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/day" }]
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/day"
+            }
+          ]
         },
         "longestSessionMinutes": {
-          "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/measured" }]
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/measured"
+            }
+          ]
         }
       }
     },
@@ -97,9 +180,15 @@
         "additionalProperties": false,
         "required": ["name", "tokens", "listPrice"],
         "properties": {
-          "name": { "type": "string" },
-          "tokens": { "$ref": "#/$defs/measured" },
-          "listPrice": { "$ref": "#/$defs/priced" }
+          "name": {
+            "type": "string"
+          },
+          "tokens": {
+            "$ref": "#/$defs/measured"
+          },
+          "listPrice": {
+            "$ref": "#/$defs/priced"
+          }
         }
       }
     },
@@ -114,33 +203,52 @@
         "mostExpensiveDay"
       ],
       "properties": {
-        "listPrice": { "$ref": "#/$defs/priced" },
+        "listPrice": {
+          "$ref": "#/$defs/priced"
+        },
         "plan": {
           "anyOf": [
-            { "type": "null" },
+            {
+              "type": "null"
+            },
             {
               "type": "object",
               "additionalProperties": false,
               "required": ["usd", "multiple"],
               "properties": {
-                "usd": { "type": "number", "minimum": 0 },
-                "multiple": { "$ref": "#/$defs/priced" }
+                "usd": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "multiple": {
+                  "$ref": "#/$defs/priced"
+                }
               }
             }
           ]
         },
-        "cacheSaved": { "$ref": "#/$defs/priced" },
-        "withoutCache": { "$ref": "#/$defs/priced" },
+        "cacheSaved": {
+          "$ref": "#/$defs/priced"
+        },
+        "withoutCache": {
+          "$ref": "#/$defs/priced"
+        },
         "mostExpensiveDay": {
           "anyOf": [
-            { "type": "null" },
+            {
+              "type": "null"
+            },
             {
               "type": "object",
               "additionalProperties": false,
               "required": ["day", "listPrice"],
               "properties": {
-                "day": { "$ref": "#/$defs/day" },
-                "listPrice": { "$ref": "#/$defs/priced" }
+                "day": {
+                  "$ref": "#/$defs/day"
+                },
+                "listPrice": {
+                  "$ref": "#/$defs/priced"
+                }
               }
             }
           ]
@@ -150,27 +258,50 @@
     "estimated": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["electricityKwh", "comparison", "waterLiters", "co2Kg"],
+      "required": [
+        "electricityKwh",
+        "comparison",
+        "waterLiters",
+        "co2Kg",
+        "typingShare"
+      ],
       "properties": {
-        "electricityKwh": { "$ref": "#/$defs/estimated" },
+        "electricityKwh": {
+          "$ref": "#/$defs/estimated"
+        },
         "comparison": {
           "type": "object",
           "additionalProperties": false,
           "required": ["kind", "value"],
           "properties": {
-            "kind": { "enum": ["fridge-months", "phone-charges"] },
-            "value": { "$ref": "#/$defs/estimated" }
+            "kind": {
+              "enum": ["fridge-months", "phone-charges"]
+            },
+            "value": {
+              "$ref": "#/$defs/estimated"
+            }
           }
         },
-        "waterLiters": { "$ref": "#/$defs/estimated" },
-        "co2Kg": { "$ref": "#/$defs/estimated" }
+        "waterLiters": {
+          "$ref": "#/$defs/estimated"
+        },
+        "co2Kg": {
+          "$ref": "#/$defs/estimated"
+        },
+        "typingShare": {
+          "$ref": "#/$defs/estimated"
+        }
       }
     },
     "satire": {
       "type": "object",
       "additionalProperties": false,
       "required": ["ramX"],
-      "properties": { "ramX": { "$ref": "#/$defs/satire" } }
+      "properties": {
+        "ramX": {
+          "$ref": "#/$defs/satire"
+        }
+      }
     },
     "damageClass": {
       "type": "object",
@@ -187,19 +318,31 @@
             "UNINSURABLE"
           ]
         },
-        "finePrint": { "type": "string" }
+        "finePrint": {
+          "type": "string"
+        }
       }
     },
     "note": {
       "anyOf": [
-        { "type": "null" },
+        {
+          "type": "null"
+        },
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["family", "text"],
+          "required": ["family", "variant", "text"],
           "properties": {
-            "family": { "type": "string" },
-            "text": { "type": "string" }
+            "family": {
+              "type": "string"
+            },
+            "variant": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "text": {
+              "type": "string"
+            }
           }
         }
       ]
@@ -211,67 +354,126 @@
         "additionalProperties": false,
         "required": ["id", "name", "trigger", "hidden"],
         "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "trigger": { "type": "string" },
-          "hidden": { "type": "boolean" }
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "hidden": {
+            "type": "boolean"
+          }
         }
       }
     },
-    "jokes": { "type": "array", "maxItems": 2, "items": { "type": "string" } },
+    "jokes": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "string"
+      }
+    },
     "method": {
       "type": "object",
       "additionalProperties": false,
       "required": ["version", "pricesAsOf"],
       "properties": {
-        "version": { "const": "v1" },
-        "pricesAsOf": { "$ref": "#/$defs/day" }
+        "version": {
+          "const": "v1"
+        },
+        "pricesAsOf": {
+          "$ref": "#/$defs/day"
+        }
       }
     }
   },
   "$defs": {
-    "day": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "day": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
     "value": {
       "type": "object",
       "additionalProperties": false,
       "required": ["value", "tier"],
       "properties": {
-        "value": { "type": "number" },
-        "tier": { "enum": ["measured", "priced", "estimated", "satire"] },
-        "low": { "type": "number" },
-        "high": { "type": "number" },
-        "note": { "type": "string" }
+        "value": {
+          "type": "number"
+        },
+        "tier": {
+          "enum": ["measured", "priced", "estimated", "satire"]
+        },
+        "low": {
+          "type": "number"
+        },
+        "high": {
+          "type": "number"
+        },
+        "note": {
+          "type": "string"
+        }
       }
     },
     "measured": {
       "allOf": [
-        { "$ref": "#/$defs/value" },
-        { "properties": { "tier": { "const": "measured" } } }
+        {
+          "$ref": "#/$defs/value"
+        },
+        {
+          "properties": {
+            "tier": {
+              "const": "measured"
+            }
+          }
+        }
       ]
     },
     "priced": {
       "allOf": [
-        { "$ref": "#/$defs/value" },
-        { "properties": { "tier": { "const": "priced" } } }
+        {
+          "$ref": "#/$defs/value"
+        },
+        {
+          "properties": {
+            "tier": {
+              "const": "priced"
+            }
+          }
+        }
       ]
     },
     "estimated": {
       "allOf": [
-        { "$ref": "#/$defs/value" },
+        {
+          "$ref": "#/$defs/value"
+        },
         {
           "required": ["low", "high"],
-          "properties": { "tier": { "const": "estimated" } }
+          "properties": {
+            "tier": {
+              "const": "estimated"
+            }
+          }
         }
       ]
     },
     "satire": {
       "allOf": [
-        { "$ref": "#/$defs/value" },
+        {
+          "$ref": "#/$defs/value"
+        },
         {
           "required": ["note"],
           "properties": {
-            "tier": { "const": "satire" },
-            "note": { "pattern": "made up" }
+            "tier": {
+              "const": "satire"
+            },
+            "note": {
+              "pattern": "made up"
+            }
           }
         }
       ]
