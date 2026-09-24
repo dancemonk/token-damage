@@ -10,7 +10,7 @@ npx token-damage
 
 You typed a paragraph. It read a library.
 
-Token Damage reads the logs Claude Code and Codex keep on your machine and prints an itemized receipt: the words you typed, the tokens your agents read, what that would cost at API list price, an electricity estimate, and a note from a tired insurance adjuster. Nothing leaves your computer.
+Token Damage reads the logs Claude Code, Codex and Gemini CLI keep on your machine and prints an itemized receipt: the words you typed, the tokens your agents read, what that would cost at API list price, an electricity estimate, and a note from a tired insurance adjuster. Nothing leaves your computer.
 
 <p align="center"><img src="docs/assets/share-card.png" width="320" alt="Share card for a sample month: 1,183,400,000 tokens, damage class ACT OF GOD"></p>
 
@@ -27,11 +27,11 @@ Token Damage reads the logs Claude Code and Codex keep on your machine and print
 
 ## Privacy
 
-It reads Claude Code's transcripts and retention setting and Codex's session logs, and nothing else. Your prompts are counted, never stored. It makes no network calls and has no telemetry or accounts. A share link keeps its numbers after the `#`, the part of a URL browsers never send to a server.
+It reads Claude Code's transcripts and retention setting, Codex's session logs and Gemini CLI's chats, and nothing else. Your prompts are counted, never stored. It makes no network calls and has no telemetry or accounts. A share link keeps its numbers after the `#`, the part of a URL browsers never send to a server.
 
 ## How the numbers work
 
-Daily token totals match [ccusage](https://github.com/ryoppippi/ccusage) on the logs we've tested. Prices come from Anthropic's public price list, and every receipt prints the date of that list. Electricity is always a range, because nobody publishes the real figure. Satire is printed in red and says so. The details are in [docs/METRICS.md](docs/METRICS.md) and [docs/DATA-SOURCES.md](docs/DATA-SOURCES.md).
+Daily token totals match [ccusage](https://github.com/ryoppippi/ccusage) on the logs we've tested. Prices come from Anthropic's, OpenAI's and Google's public price lists, and every receipt prints the date they were checked. Electricity is always a range, because nobody publishes the real figure. Satire is printed in red and says so. The details are in [docs/METRICS.md](docs/METRICS.md) and [docs/DATA-SOURCES.md](docs/DATA-SOURCES.md).
 
 ## Development
 

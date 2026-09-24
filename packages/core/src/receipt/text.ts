@@ -77,13 +77,20 @@ function kept(r: Receipt): string {
 
 const priced = (v: Value) => `≡ ${formatUsd(v)}`;
 
+// A row name fits 21 columns (24 less the indent and a space before the tokens); longer names end in "…".
+function rowName(name: string, estModel?: true): string {
+  const mark = estModel ? "*" : "";
+  const room = 21 - mark.length;
+  return (name.length > room ? `${name.slice(0, room - 1)}…` : name) + mark;
+}
+
 function table(heading: string, rows: [string, PriceRow][]): Line[] {
   return [
     {
       text: `${heading.padEnd(24)}${"TOKENS".padStart(6)}${"LIST PRICE".padStart(18)}`,
     },
     ...rows.map(([name, row]) => ({
-      text: `${`  ${name}${row.estModel ? "*" : ""}`.padEnd(24)}${compactTokens(row.tokens.value).padStart(6)}${(row.notPriced ? "not priced" : priced(row.listPrice)).padStart(18)}`,
+      text: `${`  ${rowName(name, row.estModel)}`.padEnd(24)}${compactTokens(row.tokens.value).padStart(6)}${(row.notPriced ? "not priced" : priced(row.listPrice)).padStart(18)}`,
     })),
   ];
 }

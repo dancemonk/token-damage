@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import { parseArgs } from "node:util";
 
 export interface Options {
@@ -8,6 +9,7 @@ export interface Options {
   json: boolean;
   configDir: string | undefined;
   codexHome: string | undefined;
+  geminiDir: string | undefined;
   fixtures: boolean;
   strict: boolean;
   help: boolean;
@@ -24,6 +26,7 @@ usage: npx token-damage [options]
   --no-anim             print everything at once
   --config-dir <path>   Claude Code config dir (default ~/.claude, or CLAUDE_CONFIG_DIR)
   --codex-home <path>   Codex home (default ~/.codex, or CODEX_HOME)
+  --gemini-dir <path>   Gemini CLI data dir (default ~/.gemini/tmp, or GEMINI_DATA_DIR)
   --fixtures <dir>      read a fixture corpus instead of your own logs
   --strict              exit 3 if an agent is newer than anything tested
   -v, --version         print the version
@@ -43,6 +46,7 @@ export function parseOptions(argv: string[]): Options {
       fixtures: { type: "string" },
       "config-dir": { type: "string" },
       "codex-home": { type: "string" },
+      "gemini-dir": { type: "string" },
       strict: { type: "boolean", default: false },
       help: { type: "boolean", short: "h", default: false },
       version: { type: "boolean", short: "v", default: false },
@@ -63,9 +67,13 @@ export function parseOptions(argv: string[]): Options {
     planUsd: plan,
     anim: !values["no-anim"],
     json: values.json,
-    // A fixture corpus is both a Claude Code config dir and a Codex home.
+    // A fixture corpus is a Claude Code config dir, a Codex home and a Gemini CLI home (`tmp/`) in one.
     configDir: values.fixtures ?? values["config-dir"],
     codexHome: values.fixtures ?? values["codex-home"],
+    geminiDir:
+      values.fixtures !== undefined
+        ? join(values.fixtures, "tmp")
+        : values["gemini-dir"],
     fixtures: values.fixtures !== undefined,
     strict: values.strict,
     help: values.help,

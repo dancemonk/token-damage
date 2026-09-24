@@ -118,6 +118,28 @@ describe("receipt for several agents", () => {
     expect(r.byAgent[0]?.notPriced).toBeUndefined();
   });
 
+  it("shortens model names too long for the column, keeping the mark", () => {
+    const r = receipt([
+      call({
+        source: "gemini",
+        sessionId: "s3",
+        model: "gemini-3.1-pro-preview-customtools",
+        input: 900_000,
+      }),
+      call({
+        source: "gemini",
+        sessionId: "s3",
+        model: "gemini-3-pro-preview",
+      }),
+    ]);
+    const rows = text(r).filter((l) => l.startsWith("  gemini"));
+    expect(rows.map((l) => l.slice(0, 24))).toEqual([
+      "  gemini-3.1-pro-previ… ",
+      "  gemini-3-pro-preview* ",
+    ]);
+    expect(rows.every((l) => l.length === 48)).toBe(true);
+  });
+
   it("talks about Claude Code's retention only when Claude Code is on the receipt", () => {
     expect(text(both)).toContain("        (30 days — all claude code kept)");
     expect(text(receipt([solCall]))).toContain("                   (30 days)");

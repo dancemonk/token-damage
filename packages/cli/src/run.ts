@@ -12,8 +12,10 @@ import {
   dispute,
   disputeStamp,
   emptyCodexStats,
+  emptyGeminiStats,
   emptyStats,
   EXCUSES,
+  geminiDirs,
   listPrice,
   loadState,
   nextState,
@@ -23,6 +25,7 @@ import {
   saveState,
   scanClaude,
   scanCodex,
+  scanGemini,
   type Excuse,
   type PromptEvent,
   type Receipt,
@@ -37,8 +40,13 @@ import {
 import { parseGuess, type Options } from "./args.js";
 import { VERSION } from "./version.js";
 
-/** Newest major.minor per agent the parser has fixtures for (docs/DATA-SOURCES.md §Tested versions). */
-const TESTED: Record<Source, { name: string; newest: [number, number] }> = {
+/**
+ * Newest major.minor per agent the parser has fixtures for (docs/DATA-SOURCES.md §Tested versions).
+ * Gemini CLI writes no version into its chats, so it is never flagged.
+ */
+const TESTED: Partial<
+  Record<Source, { name: string; newest: [number, number] }>
+> = {
   "claude-code": { name: "claude code", newest: [2, 1] },
   codex: { name: "codex", newest: [0, 155] },
 };
@@ -92,7 +100,9 @@ function untested(usage: UsageEvent[]): string[] {
     const m = /^(\d+)\.(\d+)/.exec(e.version ?? "");
     if (!m) continue;
     const [major, minor] = [Number(m[1]), Number(m[2])];
-    const { name, newest } = TESTED[e.source];
+    const tested = TESTED[e.source];
+    if (!tested) continue;
+    const { name, newest } = tested;
     if (major > newest[0] || (major === newest[0] && minor > newest[1]))
       found.add(`${name} ${major}.${minor}`);
   }
@@ -201,10 +211,14 @@ export async function run(options: Options, io: Io): Promise<number> {
   const homes = options.codexHome
     ? [options.codexHome]
     : codexHomes(process.env, homedir());
+  const geminiData = options.geminiDir
+    ? [options.geminiDir]
+    : geminiDirs(process.env, homedir());
   // What each agent's scan reads, one line per agent.
   const scanned = [
     roots.map((r) => join(r, "projects")),
     homes.flatMap((h) => [join(h, "sessions"), join(h, "archived_sessions")]),
+    geminiData,
   ];
   const p = period(options);
   if (!options.json) {
@@ -219,11 +233,13 @@ export async function run(options: Options, io: Io): Promise<number> {
 
   const claudeStats = { ...emptyStats(), files: 0, subagentFiles: 0 };
   const codexStats = emptyCodexStats();
+  const geminiStats = emptyGeminiStats();
   // One deduper for every agent: their dedupe keys never collide.
   const deduper = createDeduper();
   for (const scan of [
     scanClaude(roots, claudeStats),
     scanCodex(homes, codexStats),
+    scanGemini(geminiData, geminiStats),
   ]) {
     for await (const record of scan) {
       if (record.ts >= p.from && record.ts < p.to) deduper.add(record);
@@ -231,10 +247,10 @@ export async function run(options: Options, io: Io): Promise<number> {
   }
   const usage: UsageEvent[] = deduper.result();
   const prompts: PromptEvent[] = deduper.prompts();
-  const files = claudeStats.files + codexStats.files;
+  const files = claudeStats.files + codexStats.files + geminiStats.files;
   if (files === 0 || usage.length === 0) {
     const lines = [
-      `no claude code or codex sessions found${files > 0 ? " in this period" : ""}.`,
+      `no claude code, codex or gemini cli sessions found${files > 0 ? " in this period" : ""}.`,
       `looked in: ${scanned.flat().join(", ")}`,
       "claude code writes none when CLAUDE_CODE_SKIP_PROMPT_HISTORY is set or with `claude -p --no-session-persistence`.",
     ];

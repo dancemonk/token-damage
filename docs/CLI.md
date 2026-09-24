@@ -9,6 +9,7 @@ reads agent logs on this machine · uploads nothing · no network calls
 
 scanning ~/.claude/projects …
 scanning ~/.codex/sessions, ~/.codex/archived_sessions …
+scanning ~/.gemini/tmp …
   ✓ 94 sessions · 26 active days · 212 subagent transcripts
   ✓ 7,480 model calls · 612 prompts you actually typed
   ! claude code already deleted everything older than 30 days.
@@ -101,7 +102,8 @@ ADJUSTER'S NOTE
 ```
 The "YOUR PLAN" block appears only with `--plan` or a configured plan. With more than one agent in the period, a
 BY AGENT block (same columns, most tokens first) sits above BY MODEL. Model rows follow the name people pick:
-Claude Code models by family (`opus`), Codex models by full name (`gpt-5.6-sol`). A row priced as a guess ends in
+Claude Code models by family (`opus`), Codex and Gemini CLI models by full name (`gpt-5.6-sol`,
+`gemini-3-flash-preview`); a name longer than 21 columns is cut with `…`. A row priced as a guess ends in
 `*`, with the footnote `  * est. model: priced as the closest listed one` under BY MODEL; a row with no list price
 says `not priced`. The retention line is about Claude Code only; without Claude Code in the period it reads
 `(30 days)`. The share card names the agents instead (`30 days — Codex + Claude Code · all Claude Code kept`). This is sample customer 0041:
@@ -119,9 +121,10 @@ The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 
 ## Flags
 `--since 30d|YYYY-MM-DD`, `--plan 20|100|200|<usd>`, `--no-anim`, `--no-sound` (reserved), `--json` (schema in
-`schema/receipt.schema.json`; tiers included on every value), `--fixtures <dir>` (a Claude Code config dir and a
-Codex home in one), `--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>` (same as
-`CODEX_HOME`), `--daily` (today's slip), `--keep-history 3650` (offers to set `cleanupPeriodDays`; asks first), `--audit` (prints every file read and every field stored), `--forget` (deletes `~/.token-damage`).
+`schema/receipt.schema.json`; tiers included on every value), `--fixtures <dir>` (a Claude Code config dir, a
+Codex home and a Gemini CLI home in one: `projects/`, `sessions/`, `tmp/`), `--config-dir <path>` (same as
+`CLAUDE_CONFIG_DIR`), `--codex-home <path>` (same as `CODEX_HOME`), `--gemini-dir <path>` (same as
+`GEMINI_DATA_DIR`), `--daily` (today's slip), `--keep-history 3650` (offers to set `cleanupPeriodDays`; asks first), `--audit` (prints every file read and every field stored), `--forget` (deletes `~/.token-damage`).
 
 ## Files it writes
 - `~/.token-damage/history.json` — daily aggregates only (tokens by type/model, calls, sessions, words, first/last

@@ -13,6 +13,7 @@ import { validate } from "./schema.js";
 const CLI = fileURLToPath(new URL("../dist/index.js", import.meta.url));
 const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
 const CODEX = join(ROOT, "packages/core/fixtures/codex");
+const GEMINI = join(ROOT, "packages/core/fixtures/gemini");
 const NEWEST_ROLLOUT =
   "sessions/2026/09/22/rollout-2026-09-22T10-00-00-01a0c5f0-0000-7000-8000-000000000001.jsonl";
 let dir = "";
@@ -21,9 +22,10 @@ beforeAll(async () => {
   dir = await mkdtemp(join(tmpdir(), "td-cli-"));
   await mkdir(join(dir, "home"));
   await writeSampleMonth(join(dir, "sample-month"));
-  // Claude Code and Codex in one corpus.
-  await cp(join(dir, "sample-month"), join(dir, "both"), { recursive: true });
-  await cp(CODEX, join(dir, "both"), { recursive: true });
+  // Claude Code, Codex and Gemini CLI in one corpus.
+  await cp(join(dir, "sample-month"), join(dir, "all"), { recursive: true });
+  await cp(CODEX, join(dir, "all"), { recursive: true });
+  await cp(GEMINI, join(dir, "all"), { recursive: true });
   // One Codex rollout from a version newer than our fixtures.
   const rollout = await readFile(join(CODEX, NEWEST_ROLLOUT), "utf8");
   await mkdir(join(dir, "newer", NEWEST_ROLLOUT, ".."), { recursive: true });
@@ -91,7 +93,8 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
     const corpus = join(dir, "sample-month");
     flow[4] = (flow[4] ?? "").replace("~/.claude", corpus);
     flow[5] = (flow[5] ?? "").replaceAll("~/.codex", corpus);
-    for (const i of [1, 2, 4, 5, 6, 7, 8])
+    flow[6] = (flow[6] ?? "").replace("~/.gemini", corpus);
+    for (const i of [1, 2, 4, 5, 6, 7, 8, 9])
       expect(out, flow[i]).toContain(
         (flow[i] ?? "").replace(/\s+\(only when.*$/, ""),
       );
@@ -136,7 +139,7 @@ describe("--json", () => {
   });
 });
 
-describe("codex", () => {
+describe("codex and gemini cli", () => {
   const receipt = (fixtures: string) => {
     const run = cli("--fixtures", fixtures, "--json", "--since", "2025-09-01");
     expect(run.status, run.stderr).toBe(0);
@@ -154,13 +157,16 @@ describe("codex", () => {
     );
   });
 
-  it("adds Codex to Claude Code in one receipt", () => {
-    const claude = receipt(join(dir, "sample-month"));
-    const codex = receipt(CODEX);
-    const both = receipt(join(dir, "both"));
-    expect(tokens(both)).toBe(tokens(claude) + tokens(codex));
+  it("reads a Gemini CLI home", () => {
+    expect(tokens(receipt(GEMINI))).toBe(555_226);
+  });
+
+  it("adds Claude Code, Codex and Gemini CLI up in one receipt", () => {
+    const parts = [join(dir, "sample-month"), CODEX, GEMINI].map(receipt);
+    const all = receipt(join(dir, "all"));
+    expect(tokens(all)).toBe(parts.reduce((s, m) => s + tokens(m), 0));
     for (const k of ["calls", "sessions", "prompts", "words"])
-      expect(both[k].value, k).toBe(claude[k].value + codex[k].value);
+      expect(all[k].value, k).toBe(parts.reduce((s, m) => s + m[k].value, 0));
   });
 
   it("says when Codex is newer than our fixtures, and --strict exits 3", () => {
@@ -180,7 +186,10 @@ describe("exit codes", () => {
     await mkdir(join(dir, "empty", "projects"), { recursive: true });
     const run = cli("--fixtures", join(dir, "empty"), "--no-anim");
     expect(run.status).toBe(2);
-    expect(run.stdout).toContain("no claude code or codex sessions found");
+    expect(run.stdout).toContain(
+      "no claude code, codex or gemini cli sessions found",
+    );
+    expect(run.stdout).toContain(join(dir, "empty", "tmp"));
     expect(run.stdout).toContain(join(dir, "empty", "archived_sessions"));
     expect(run.stdout).toContain("CLAUDE_CODE_SKIP_PROMPT_HISTORY");
   });
@@ -210,8 +219,10 @@ describe("arguments", () => {
     expect(parseOptions(["--fixtures", "f"])).toMatchObject({
       configDir: "f",
       codexHome: "f",
+      geminiDir: join("f", "tmp"),
       fixtures: true,
     });
+    expect(parseOptions(["--gemini-dir", "g"]).geminiDir).toBe("g");
     expect(parseOptions(["--codex-home", "c"])).toMatchObject({
       configDir: undefined,
       codexHome: "c",
