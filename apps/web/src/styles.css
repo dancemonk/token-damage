@@ -1196,11 +1196,35 @@ a:hover {
 }
 .cmd {
   align-self: stretch;
-  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 6px 6px 14px;
   background: var(--ink);
   color: var(--paper-2);
   font-size: 15px;
   text-align: left;
+}
+.cmd code {
+  font: inherit;
+}
+.cmd-copy {
+  flex-shrink: 0;
+  height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 22px;
+  background: var(--paper-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cmd-copy:hover {
+  background: var(--red);
+  color: #f7f4ec;
 }
 .row {
   display: flex;

@@ -125,6 +125,22 @@ function end() {
       // Dismissed share sheet or no clipboard permission: nothing to do.
     }
   });
+  // The command, ready to paste: the same Copy as on the receipt stub, inverted for the dark block.
+  const copy = h(
+    "button",
+    { type: "button", className: "cmd-copy" },
+    t("quiz.copy"),
+  );
+  copy.setAttribute("aria-label", t("quiz.copy.label"));
+  copy.addEventListener("click", () => {
+    navigator.clipboard?.writeText(fixed.command).then(
+      () => {
+        copy.textContent = t("quiz.copied");
+        status.textContent = t("quiz.copied");
+      },
+      () => undefined,
+    );
+  });
   const again = h(
     "button",
     { type: "button", className: "btn ghost" },
@@ -151,7 +167,7 @@ function end() {
       h("p", {}, t(`quiz.score.${level}`)),
       h("div", { className: "rule" }),
       h("p", {}, t("quiz.cta.lead")),
-      h("div", { className: "cmd" }, `$ ${fixed.command}`),
+      h("div", { className: "cmd" }, h("code", {}, `$ ${fixed.command}`), copy),
       h("div", { className: "q-source" }, t("quiz.cta.local")),
       h("div", { className: "row" }, share, again),
       status,
