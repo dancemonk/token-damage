@@ -1,4 +1,8 @@
-export { achievements, type Achievement } from "./achievements.js";
+export {
+  ACHIEVEMENT_NAMES,
+  achievements,
+  type Achievement,
+} from "./achievements.js";
 export { damageClass, type DamageClass } from "./classes.js";
 export {
   dispute,

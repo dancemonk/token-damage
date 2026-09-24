@@ -16,7 +16,7 @@ const WORDS = [
   "ten",
 ];
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const numberWord = (n: number) => WORDS[n] ?? n.toLocaleString("en-US");
+export const numberWord = (n: number) => WORDS[n] ?? n.toLocaleString("en-US");
 const sig3 = (x: number) => Number(x.toPrecision(3)).toLocaleString("en-US");
 
 /** Gatsby ≈ 62,600 tokens. 1.29 → "The Great Gatsby, and a third of it again"; rounds to thirds and halves. */
