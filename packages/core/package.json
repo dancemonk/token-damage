@@ -19,5 +19,17 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "description": "Parsing, dedupe, metrics and the roast engine behind token-damage. Zero runtime dependencies.",
+  "homepage": "https://github.com/dancemonk/token-damage#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dancemonk/token-damage.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/dancemonk/token-damage/issues"
+  },
+  "author": "Vlad Guliakin",
+  "license": "MIT"
 }

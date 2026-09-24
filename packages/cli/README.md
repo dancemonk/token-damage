@@ -1,4 +1,4 @@
-<p align="center"><img src="design/brand/token-damage-mark.svg" width="72" alt=""></p>
+<p align="center"><img src="https://raw.githubusercontent.com/dancemonk/token-damage/main/design/brand/token-damage-mark.svg" width="72" alt=""></p>
 
 # Token Damage
 
@@ -68,7 +68,7 @@ ADJUSTER'S NOTE
 
 That's sample customer 0041, a made-up person with a very real habit. Before printing, the CLI makes you guess your own total. 0041 guessed 20 million and was off by 59×. Afterwards you can dispute the charge. The dispute department has heard every excuse, and "it was research" has never once worked at 3:47 AM.
 
-<p align="center"><img src="docs/assets/share-card.png" width="360" alt="The share card for sample customer 0041: 1,183,400,000 tokens, damage class ACT OF GOD"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/dancemonk/token-damage/main/docs/assets/share-card.png" width="360" alt="The share card for sample customer 0041: 1,183,400,000 tokens, damage class ACT OF GOD"></p>
 
 Press `c` to save that card as a PNG, or `s` for a share link. Either way it first shows you every field it's about to write, and waits for a yes. The link keeps its numbers after the `#`, the part of a URL that browsers never send to a server, so tokendamage.com never sees them.
 
@@ -87,7 +87,7 @@ A wrong number is worse than a boring one, so the boring parts got most of the w
 
 Claude Code writes the same API response several times: streaming snapshots, one line per parallel tool call, and copies whenever you resume a session. Token Damage folds those back into one call each. On the logs we've tested, its daily token totals match [ccusage](https://github.com/ryoppippi/ccusage) exactly, field by field, and CI runs that comparison on every push.
 
-Prices come from a dated table in `packages/core/src/metrics/prices.json`. That table includes a detail most tools miss. Claude Code caches the main thread with the 1-hour TTL, which costs 2× input instead of 1.25×. On one real month that was 87% of all cache writes, and pricing them at the cheaper rate would have understated the total by about 8%.
+Prices come from a dated table in [`prices.json`](https://github.com/dancemonk/token-damage/blob/main/packages/core/src/metrics/prices.json). That table includes a detail most tools miss. Claude Code caches the main thread with the 1-hour TTL, which costs 2× input instead of 1.25×. On one real month that was 87% of all cache writes, and pricing them at the cheaper rate would have understated the total by about 8%.
 
 Electricity is the honest-shrug part. Nobody publishes per-token energy for these models, so the coefficients are calibrated against a published 3.2 billion token Claude Code log (Zeke Hausfather, about 170 kWh). You get a range and the method, never one confident number.
 
@@ -132,19 +132,9 @@ One thing to know: Claude Code deletes transcripts older than 30 days by default
 
 You should, for the day-to-day numbers. It's good, and Token Damage checks itself against it. This is the receipt you screenshot: the words-you-typed ratio, list price with the cache priced right, an electricity range that admits it's a range, and a damage class stamped in red.
 
-## Hacking on it
+## Source, issues, specs
 
-```
-pnpm i
-pnpm check                  # lint, typecheck, tests; must pass before a commit
-pnpm -F core sample-month   # writes a fake month that adds up to sample customer 0041
-pnpm -F token-damage dev -- --fixtures packages/core/fixtures/sample-month --plan 200
-pnpm oracle                 # compare daily totals with ccusage on your own logs
-```
-
-`packages/core` does the parsing, dedupe, metrics and the roast engine. `packages/cli` is the thin terminal part. `docs/` holds the specs (start with `PRODUCT.md`, then `DATA-SOURCES.md`) and `design/` has the mockups and the brand kit.
-
-Claude Code's transcript format is internal and changes between versions. If a new version breaks the numbers, open an issue with the output of `claude --version`. Any fixture lines get sanitized before they go into the repo: every piece of text becomes `"x"`.
+Everything lives at [github.com/dancemonk/token-damage](https://github.com/dancemonk/token-damage). Claude Code's transcript format is internal and changes between versions; if a new version breaks the numbers, open an issue there with the output of `claude --version`.
 
 ## Fine print
 

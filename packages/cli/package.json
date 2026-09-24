@@ -1,7 +1,27 @@
 {
   "name": "token-damage",
   "version": "0.1.0",
-  "description": "Prints the receipt your AI agent never gave you.",
+  "description": "The receipt your AI agent never gave you. Reads Claude Code's local logs and prints an itemized receipt; uploads nothing.",
+  "keywords": [
+    "claude-code",
+    "claude",
+    "tokens",
+    "usage",
+    "receipt",
+    "cli",
+    "ai",
+    "llm"
+  ],
+  "homepage": "https://github.com/dancemonk/token-damage#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dancemonk/token-damage.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/dancemonk/token-damage/issues"
+  },
+  "author": "Vlad Guliakin",
   "license": "MIT",
   "type": "module",
   "bin": {
