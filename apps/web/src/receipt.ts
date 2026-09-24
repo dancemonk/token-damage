@@ -1,6 +1,6 @@
 import fixed from "./fixed.json" with { type: "json" };
 import { receiptFormat } from "./format.js";
-import type { T } from "./i18n.js";
+import type { PoolEntry, T } from "./i18n.js";
 
 /** One receipt, already formatted for the page's language. Labels come from i18n (`receipt.*`). */
 export interface ReceiptView {
@@ -17,6 +17,10 @@ export interface ReceiptView {
   saved: string;
   kwh: string;
   ram: string;
+  /** A ✶ pool line with the share filled in, printed red under RAM-X (docs/ROASTS.md §Pool). */
+  satire?: string;
+  /** A receipt joke from the pool, printed small above the legend. */
+  joke?: string;
   /** Extra rows, e.g. plan multiple, latest call; labels already in the page language. */
   rows?: { label: string; value: string }[];
   /** Adjuster's note or aside; `\n` breaks lines. */
@@ -90,12 +94,14 @@ ${line(t("receipt.saved"), v.saved)}
 ${(v.rows ?? []).map((r) => line(r.label, r.value)).join("\n")}
 ${line(t("receipt.electricity"), v.kwh, "estimate")}
 ${line(t("receipt.ram"), v.ram, "satire")}
+${v.satire === undefined ? "" : `<p class="pool-satire">✶ ${esc(v.satire)}</p>`}
 </div>
 ${rule}
 <div class="r-verdict">${note}<div class="stamps">${stamps}</div></div>
 ${v.achievements?.length ? `<div class="r-ach">${esc(t("receipt.achievements"))} · ${v.achievements.map(esc).join(" · ")}</div>` : ""}
 ${rule}
 <div class="r-foot">
+${v.joke === undefined ? "" : `<p class="pool-joke">${esc(v.joke)}</p>`}
 <div class="legend">${esc(t("receipt.legendPriced"))} · <span class="estimate">${esc(t("receipt.legendEstimate"))}</span> · <span class="satire">${esc(t("receipt.legendSatire"))}</span></div>
 <div class="who">${esc(v.who)} · ${esc(t("receipt.notYours"))}</div>
 ${barcode()}
@@ -142,4 +148,16 @@ export function sampleView(
     stamps: [t(`class.${c.class}`)],
     who: `${t("receipt.sample")} · ${t(`receipt.who.${c.trans}`)}`,
   };
+}
+
+/** A pool satire line with the reader's share in the page's number format. */
+export const fillShare = (text: string, share: string) =>
+  text.replace("{share}", share);
+
+/** The inside of a news line: kicker, the dated fact in plain ink, and its source. */
+export function newsLine(line: PoolEntry, t: T): string {
+  const source = line.source
+    ? ` <a href="${esc(line.source.url)}" rel="noopener">${esc(t("pool.source"))}</a>`
+    : "";
+  return `<span class="news-k">${esc(t("pool.meanwhile"))}</span> ${esc(line.text)}${source}`;
 }

@@ -27,3 +27,12 @@ export {
 } from "./roasts/slots.js";
 export { ACHIEVEMENT_NAMES } from "./roasts/achievements.js";
 export { damageClass } from "./roasts/classes.js";
+export {
+  draw,
+  freshDeck,
+  isDeck,
+  newDeck,
+  satireShare,
+  type Deck,
+  type PoolLine,
+} from "./pool-entry.js";

@@ -16,9 +16,11 @@ import {
   emptyOpenCodeStats,
   emptyStats,
   EXCUSES,
+  freshDeck,
   geminiDirs,
   listPrice,
   loadState,
+  newDeck,
   nextState,
   observe,
   opencodeDirs,
@@ -281,7 +283,11 @@ export async function run(options: Options, io: Io): Promise<number> {
 
   const agg = aggregate({ usage, prompts });
   const facts = buildFacts({ aggregate: agg, usage, planUsd: options.planUsd });
-  const state = await loadState();
+  const loaded = await loadState();
+  // The first run shuffles the pool with a random seed; fixture runs stay reproducible.
+  const state = loaded.deck
+    ? loaded
+    : { ...loaded, deck: options.fixtures ? newDeck(0) : freshDeck() };
   const observations = observe(facts, state);
   const kept = await retention(roots);
   const receipt: Receipt = buildReceipt({

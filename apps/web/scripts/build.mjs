@@ -41,11 +41,12 @@ execFileSync(
     stdio: "inherit",
   },
 );
-const { esc, receiptPaper, sampleView, stub } = await import(
-  join(JS, "receipt.js")
-);
+const { esc, fillShare, newsLine, receiptPaper, sampleView, stub } =
+  await import(join(JS, "receipt.js"));
 const { translator } = await import(join(JS, "i18n.js"));
-const { monthYear, number } = await import(join(JS, "format.js"));
+const { monthYear, number, receiptFormat } = await import(
+  join(JS, "format.js")
+);
 const fixed = JSON.parse(readFileSync(join(ROOT, "src/fixed.json"), "utf8"));
 const core = await import("@token-damage/core");
 const { FAMILIES } = await import("@token-damage/core/web");
@@ -66,6 +67,11 @@ writeFileSync(
 rmSync(join(DIST, "assets/fonts/fonts.css"));
 
 const coreWeb = fileURLToPath(import.meta.resolve("@token-damage/core/web"));
+// Browser entries of core a page script may import; web.js re-exports pool-entry.js, so one copy covers both.
+const CORE_ENTRIES = {
+  "@token-damage/core/web": "web.js",
+  "@token-damage/core/pool": "pool-entry.js",
+};
 const coreDist = dirname(coreWeb);
 const IMPORT = /(?:import|export)\s[^;]*?from\s*"([^"]+)"|import\s*"([^"]+)"/g;
 (function copyGraph(file, seen = new Set()) {
@@ -85,6 +91,26 @@ const IMPORT = /(?:import|export)\s[^;]*?from\s*"([^"]+)"|import\s*"([^"]+)"/g;
 const load = (lang) =>
   JSON.parse(readFileSync(join(I18N, `${lang}.json`), "utf8"));
 const en = load("en");
+/**
+ * A language's own pool (docs/ROASTS.md §Pool): English ids and kinds, written fresh, never translated.
+ * No fallback to English lines: a page shows its own language or nothing.
+ */
+function poolOf(lang, lines) {
+  const english = new Map(core.POOL_EN.map((l) => [l.id, l]));
+  for (const l of lines) {
+    const en = english.get(l.id);
+    if (!en) throw new Error(`i18n/${lang}.json pool: unknown id ${l.id}`);
+    if (en.kind !== l.kind) throw new Error(`${lang} pool ${l.id}: kind`);
+    if (l.kind === "satire" && !l.text.includes("{share}"))
+      throw new Error(`${lang} pool ${l.id}: no {share}`);
+  }
+  return lines;
+}
+
+/** Lines the site can print: the share is its only slot, and it has no latest-call data for bands. */
+const onSite = (l) =>
+  !l.band && [...l.text.matchAll(/\{(\w+)\}/g)].every((m) => m[1] === "share");
+
 const catalogs = {};
 for (const lang of LANGS) {
   const own = load(lang);
@@ -109,6 +135,7 @@ for (const lang of LANGS) {
     strings: { ...en.strings, ...own.strings },
     notes: own.notes,
     asides: own.asides ?? {},
+    pool: lang === "en" ? core.POOL_EN : poolOf(lang, own.pool ?? []),
   };
 }
 
@@ -118,8 +145,9 @@ const PAGES = [
     slug: "",
     template: "home.html",
     script: "home.js",
-    keys: ["home.", "nav.", "receipt.", "class."],
+    keys: ["home.", "nav.", "receipt.", "class.", "pool."],
     notes: /^sample\./,
+    pool: ["satire", "joke", "news"],
   },
   {
     slug: "r",
@@ -133,16 +161,18 @@ const PAGES = [
       "class.",
       "verdict.",
       "ach.",
+      "pool.",
     ],
     notes: /./,
-    core: true,
+    pool: ["satire", "joke", "news"],
   },
   {
     slug: "quiz",
     template: "quiz.html",
     script: "quiz.js",
-    keys: ["quiz."],
+    keys: ["quiz.", "pool."],
     notes: /^quiz\./,
+    pool: ["news"],
   },
   { slug: "method", template: "method.html" },
   { slug: "privacy", template: "privacy.html" },
@@ -217,6 +247,16 @@ function pageData(catalog, page) {
     ...(page.slug === "" && {
       asides: pickKeys(catalog.asides, (k) => catalog.asides[k].trim() !== ""),
     }),
+    // Only the kinds this page prints; a source link only where the page shows one (news).
+    pool: catalog.pool
+      .filter((l) => page.pool?.includes(l.kind) && onSite(l))
+      .map(({ id, kind, text, size, source }) => ({
+        id,
+        kind,
+        text,
+        ...(size !== undefined && { size }),
+        ...(kind === "news" && source && { source }),
+      })),
   };
 }
 
@@ -290,20 +330,79 @@ function sources(t) {
 }
 
 /**
+ * The home page's first receipt as the build prints it (and a no-JS visitor sees it): the first lines of a
+ * fixed deck. The page script swaps in the next lines from the visitor's own deck.
+ */
+function staticPool(catalog, tokens, locale) {
+  const first = (kind) => {
+    const lines = catalog.pool.filter((l) => l.kind === kind && onSite(l));
+    const { id } = core.draw(
+      core.newDeck(0),
+      kind,
+      lines.map((l) => l.id),
+    );
+    return lines.find((l) => l.id === id);
+  };
+  const satire = first("satire");
+  return {
+    satire:
+      satire &&
+      fillShare(
+        satire.text,
+        receiptFormat(locale).share(core.satireShare(tokens, satire.size)),
+      ),
+    joke: first("joke")?.text,
+    news: first("news"),
+  };
+}
+
+/** /method: every pool line that rests on a fact, with its source; the share stays a blank. */
+function poolSources(catalog, locale, t) {
+  const month = new Intl.DateTimeFormat(locale, {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+  const order = { satire: 0, news: 1, joke: 2 };
+  const items = catalog.pool
+    .filter((l) => l.source)
+    .sort((a, b) => order[a.kind] - order[b.kind])
+    .map((l) => {
+      const text = `${l.kind === "satire" ? "✶ " : ""}${l.text.replace("{share}", "…")}`;
+      // "2024-09" → "Sep 2024", "2024" stays; news already opens with its date, and "-" (a standing fact)
+      // has none, so those link as "source".
+      const { date } = l.source;
+      const when =
+        l.kind === "news"
+          ? t("pool.source")
+          : /^\d{4}-\d{2}$/.test(date)
+            ? month.format(new Date(`${date}-01T00:00:00Z`))
+            : /^\d{4}$/.test(date)
+              ? date
+              : t("pool.source");
+      return `<li${l.kind === "satire" ? ' class="satire"' : ""}>${esc(text)} <a href="${esc(l.source.url)}" rel="noopener">${esc(when)}</a></li>`;
+    });
+  if (!items.length) throw new Error("no sourced pool lines");
+  return `<ul class="sources pool">${items.join("")}</ul>`;
+}
+
+/**
  * Every JS module a page script reaches, as site paths, so the page can preload them all at once
  * instead of discovering the import chain one round trip at a time.
  */
 function moduleGraph(entry) {
   const found = new Set();
+  const imports = {};
   const walk = (file, url) => {
     if (found.has(url)) return;
     found.add(url);
     for (const m of readFileSync(file, "utf8").matchAll(IMPORT)) {
       const spec = m[1] ?? m[2];
       if (spec.endsWith(".json")) continue;
-      if (spec === "@token-damage/core/web")
-        walk(join(DIST, "assets/core/web.js"), "/assets/core/web.js");
-      else if (spec.startsWith("."))
+      if (spec in CORE_ENTRIES) {
+        imports[spec] = `/assets/core/${CORE_ENTRIES[spec]}`;
+        walk(join(DIST, "assets/core", CORE_ENTRIES[spec]), imports[spec]);
+      } else if (spec.startsWith("."))
         walk(
           resolve(dirname(file), spec),
           new URL(spec, `http://x${url}`).pathname,
@@ -311,7 +410,7 @@ function moduleGraph(entry) {
     }
   };
   walk(join(JS, entry), `/assets/js/${entry}`);
-  return [...found];
+  return { urls: [...found], imports };
 }
 
 // The static receipt's clock; the page script replaces it with the visitor's own time.
@@ -348,11 +447,20 @@ for (const lang of LANGS) {
       alternates: alternates(slug),
     };
     if (slug === "") {
+      const view = sampleView(
+        0,
+        t,
+        locale,
+        BUILD_DATE,
+        noteOf(catalog, "sample.0041"),
+      );
+      const shown = staticPool(catalog, view.tokens, locale);
       html.receipt = receiptPaper(
-        sampleView(0, t, locale, BUILD_DATE, noteOf(catalog, "sample.0041")),
+        { ...view, satire: shown.satire, joke: shown.joke },
         t,
         { slam: true },
       );
+      html.news = shown.news ? newsLine(shown.news, t) : "";
       html.stub = stub(t);
     }
     if (slug === "r") html.stub = stub(t);
@@ -364,14 +472,16 @@ for (const lang of LANGS) {
       html.prices = pricesTable(locale, t);
       html.energy = energyTable(locale, t);
       html.sources = sources(t);
+      html.pool = poolSources(catalog, locale, t);
     }
-    html.scripts = page.script
+    const graph = page.script ? moduleGraph(page.script) : null;
+    html.scripts = graph
       ? [
-          page.core
-            ? `<script type="importmap">${inlineJson({ imports: { "@token-damage/core/web": "/assets/core/web.js" } })}</script>`
+          Object.keys(graph.imports).length
+            ? `<script type="importmap">${inlineJson({ imports: graph.imports })}</script>`
             : "",
           `<script type="application/json" id="i18n">${inlineJson(pageData(catalog, page))}</script>`,
-          ...moduleGraph(page.script).map(
+          ...graph.urls.map(
             (url) => `<link rel="modulepreload" href="${url}" />`,
           ),
           `<script type="module" src="/assets/js/${page.script}"></script>`,
@@ -425,5 +535,6 @@ const count = readdirSync(DIST, { recursive: true }).filter((f) =>
 console.log(
   `built ${count} pages for ${LANGS.join(", ")} → ${relative(process.cwd(), DIST) || "."}`,
 );
-if (!existsSync(join(DIST, "assets/core/web.js")))
-  throw new Error("core web entry not copied");
+for (const file of Object.values(CORE_ENTRIES))
+  if (!existsSync(join(DIST, "assets/core", file)))
+    throw new Error(`core entry ${file} not copied`);

@@ -35,6 +35,8 @@ export interface ReceiptFormat {
   satire(x: number): string;
   /** "26–120 kWh" / "26–120 кВт·ч": two significant figures, like core's sig2. */
   range(lo: number, hi: number, unit: string): string;
+  /** A made-up share for a ✶ pool line: "0.0000083" / "0,0000083". */
+  share(x: number): string;
   multiple(x: number): string;
   /** Header clock: "09/24/26 · 04:30 PM" / "24.09.26 · 16:30". */
   clock(d: Date, timeZone?: string): string;
@@ -67,6 +69,7 @@ export function receiptFormat(locale: string): ReceiptFormat {
     satire: (x) =>
       `+${nf({ style: "currency", currency: "USD", maximumSignificantDigits: 2 }).format(x)}`,
     range: (lo, hi, unit) => `${sig2(lo)}–${sig2(hi)} ${unit}`,
+    share: (x) => nf({ maximumSignificantDigits: 2 }).format(x),
     multiple: (x) =>
       `${nf({ minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(x)}×`,
     clock: (d, timeZone) =>

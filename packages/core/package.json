@@ -10,6 +10,10 @@
     "./web": {
       "types": "./dist/web.d.ts",
       "default": "./dist/web.js"
+    },
+    "./pool": {
+      "types": "./dist/pool-entry.d.ts",
+      "default": "./dist/pool-entry.js"
     }
   },
   "scripts": {

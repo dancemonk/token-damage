@@ -5,8 +5,14 @@ import { receiptFormat } from "./format.js";
 import { pageCatalog, translator } from "./i18n.js";
 import { pickAside } from "./asides.js";
 import { countUp as countUpIn, restart } from "./motion.js";
+import { next, poolLines } from "./pool.js";
 import { lastAside, setLastAside } from "./prefs.js";
-import { receiptPaper, sampleView, type ReceiptView } from "./receipt.js";
+import {
+  newsLine,
+  receiptPaper,
+  sampleView,
+  type ReceiptView,
+} from "./receipt.js";
 import { buzz, reducedMotion, sound } from "./sound.js";
 import { crackS, snapS, TEAR } from "./timeline.js";
 import { wireSoundToggle } from "./toggle.js";
@@ -75,6 +81,7 @@ const countUp = (target: number) =>
 
 function print(i: number, withSound: boolean) {
   const view = sampleView(i, t, catalog.meta.locale, new Date(), noteFor(i));
+  Object.assign(view, poolLines(catalog.pool, view.tokens, fmt));
   receipt.innerHTML = receiptPaper(view, t, { count: "0", slam: true });
   feed.style.visibility = "";
   restart(feed, "feed");
@@ -271,6 +278,14 @@ wireSoundToggle();
 );
 countUp(fixed.samples[0]!.tokens);
 led.classList.add("boot");
+// The build printed lines from a fixed deck; this visitor gets the next ones from their own.
+const first = poolLines(catalog.pool, fixed.samples[0]!.tokens, fmt);
+const firstSatire = receipt.querySelector(".pool-satire");
+if (firstSatire && first.satire) firstSatire.textContent = `✶ ${first.satire}`;
+const firstJoke = receipt.querySelector(".pool-joke");
+if (firstJoke && first.joke) firstJoke.textContent = first.joke;
+const news = next(catalog.pool, "news");
+if (news) el("news").innerHTML = newsLine(news, t);
 // Once, after the first print, the paper dips 6px so people find the pull.
 if (!reducedMotion())
   later(2700, () => {

@@ -184,12 +184,16 @@ describe("cooldown", () => {
     const second = observe(facts, state);
     expect(second.note?.text).not.toBe(first.note?.text);
     expect(JSON.stringify(state)).not.toContain(first.note?.text ?? "");
-    expect(state).toEqual({
+    expect(state).toMatchObject({
       version: 1,
       runs: 1,
       families: { iceberg: { lastRun: 1, nextVariant: 1 } },
       jokeCursor: 2,
     });
+    // The pool deck keeps line ids only, never the lines themselves.
+    expect(state.deck?.used.joke).toHaveLength(2);
+    for (const line of [...first.jokes, first.satire?.text, first.news?.text])
+      if (line) expect(JSON.stringify(state)).not.toContain(line);
   });
 
   it("never prints more than two jokes, and none that repeats the note", () => {
@@ -211,6 +215,9 @@ describe("cooldown", () => {
       );
       await saveState(state, path);
       expect(await loadState(path)).toEqual(state);
+      // A hand-edited or broken deck is dropped; the rest of the state stays.
+      await saveState({ ...state, deck: { seed: "x" } as never }, path);
+      expect(await loadState(path)).toEqual({ ...state, deck: undefined });
     } finally {
       await rm(dir, { recursive: true, force: true });
     }

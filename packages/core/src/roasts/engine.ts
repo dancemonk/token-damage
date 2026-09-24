@@ -3,6 +3,10 @@ import { achievements, type Achievement } from "./achievements.js";
 import { damageClass, type DamageClass } from "./classes.js";
 import { metricsOf, type Facts } from "./facts.js";
 import { FAMILIES, type Band, type Family, type Tone } from "./families.js";
+import { sig2 } from "../metrics/format.js";
+import { satireShare } from "../metrics/satire.js";
+import { draw, newDeck, type Deck } from "./deck.js";
+import { POOL_EN, type PoolLine } from "./pool.js";
 import { render, slotsOf } from "./slots.js";
 import { emptyState, type RoastState } from "./state.js";
 
@@ -21,8 +25,14 @@ export interface Observations {
   note: Note | null;
   damageClass: DamageClass;
   achievements: Achievement[];
-  /** Receipt-grammar jokes, never more than two. */
+  /** Receipt-grammar jokes from the pool, never more than two. */
   jokes: string[];
+  /** One ✶ line: a real AI event and the reader's made-up share of it. */
+  satire: { text: string; source?: PoolLine["source"] } | null;
+  /** One dated AI news line, plain fact. */
+  news: { text: string; source?: PoolLine["source"] } | null;
+  /** The pool deck after these draws; nextState keeps it. */
+  deck: Deck;
 }
 
 const CONFIDENCE: Record<Tier, number> = {
@@ -61,25 +71,11 @@ function strength(
   return Math.min(1, Math.max(0, pos));
 }
 
-// Jokes need their facts too: a line about 3 AM only when the logs show 3 AM.
-const JOKES: { text: string; band?: Band }[] = [
-  { text: "You saved {cacheSaving} with your Cache Rewards card." },
-  { text: "Suggested tip for Claude: 18% · 20% · 25% · No tip" },
-  { text: "Paid by: You {plan} · Venture capital {venture}" },
-  {
-    text: "Last call {lastCall}. In most states even the bars close at 2.",
-    band: { lastCallMinutes: [1560, 1800] },
-  },
-  { text: "No refunds. Tokens cannot be un-read." },
-  {
-    text: "Rate your visit ☆☆☆☆☆ for a chance to win a bigger context window.",
-  },
-];
-
 /** Picks what the receipt says about this period. Deterministic: same facts and state, same output. */
 export function observe(
   facts: Facts,
   state: RoastState = emptyState(),
+  pool: readonly PoolLine[] = POOL_EN,
 ): Observations {
   const metrics = metricsOf(facts);
   const slots = slotsOf(facts);
@@ -118,15 +114,32 @@ export function observe(
   );
   const note = candidates[0] ?? null;
 
-  const eligible = JOKES.filter((j) => !j.band || inBand(metrics, j.band))
-    .map((j) => render(j.text, slots))
-    .filter((t): t is string => t !== undefined && t !== note?.text);
-  const jokes =
-    eligible.length <= 2
-      ? eligible
-      : [0, 1].map(
-          (i) => eligible[(state.jokeCursor + i) % eligible.length] as string,
-        );
+  // Pool lines rotate through a deck: no repeats until every line that fits has been printed.
+  let deck = state.deck ?? newDeck(0);
+  const byId = new Map(pool.map((l) => [l.id, l]));
+  const text = (line: PoolLine) =>
+    line.band && !inBand(metrics, line.band)
+      ? undefined
+      : render(line.text, {
+          ...slots,
+          share: sig2(satireShare(facts.tokens, line.size)),
+        });
+  const take = (kind: PoolLine["kind"], avoid: string[] = []) => {
+    const ids = pool.filter((l) => l.kind === kind).map((l) => l.id);
+    const fits = (id: string) => {
+      const t = text(byId.get(id)!);
+      return t !== undefined && t !== note?.text && !avoid.includes(t);
+    };
+    const drawn = draw(deck, kind, ids, fits);
+    deck = drawn.deck;
+    const line = drawn.id ? byId.get(drawn.id)! : undefined;
+    return line ? { text: text(line)!, source: line.source } : null;
+  };
+  const first = take("joke");
+  const second = take("joke", first ? [first.text] : []);
+  const jokes = [first, second].flatMap((j) => (j ? [j.text] : []));
+  const satire = take("satire");
+  const news = take("news");
 
   return {
     candidates,
@@ -134,6 +147,9 @@ export function observe(
     damageClass: damageClass(facts.tokens),
     achievements: achievements(facts),
     jokes,
+    satire,
+    news,
+    deck,
   };
 }
 
@@ -153,5 +169,11 @@ export function nextState(
       nextVariant: (note.variant + 1) % count,
     };
   }
-  return { version: 1, runs, families, jokeCursor: state.jokeCursor + 2 };
+  return {
+    version: 1,
+    runs,
+    families,
+    jokeCursor: state.jokeCursor + 2,
+    deck: observations.deck,
+  };
 }

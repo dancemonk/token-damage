@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { Catalog, Message } from "../src/i18n.js";
 import { englishTemplate, NOTE_IDS, slotsRu } from "../src/notes.js";
+import { POOL_EN } from "@token-damage/core";
 import { render } from "@token-damage/core/web";
 import fixed from "../src/fixed.json" with { type: "json" };
 import samples from "../../../packages/core/fixtures/samples.json" with { type: "json" };
@@ -171,3 +172,32 @@ describe.each([{ file: "en.json", catalog: en }, ...others])(
     );
   },
 );
+
+describe.each(others)("pool in $file", ({ catalog }) => {
+  const pool = catalog.pool ?? [];
+  const english = new Map(POOL_EN.map((l) => [l.id, l]));
+  const asides = Object.values(catalog.asides ?? {}).filter((a) => a.trim());
+
+  it("is written fresh for most of the English pool, id for id", () => {
+    expect(pool.length).toBeGreaterThan(80);
+    expect(new Set(pool.map((l) => l.id)).size).toBe(pool.length);
+    for (const l of pool) expect(english.get(l.id)?.kind, l.id).toBe(l.kind);
+  });
+
+  it.each(pool)("$id follows the rules", (l) => {
+    expect(l.text).not.toContain("!");
+    expect(l.text.length).toBeLessThanOrEqual(140);
+    expect(l.text.replace("{share}", "")).not.toMatch(/\{\w+\}/);
+    if (l.kind === "satire") expect(l.text).toContain("{share}");
+    else expect(l.text).not.toContain("{share}");
+    if (l.kind !== "joke") expect(l.source?.url).toMatch(/^https:\/\//);
+    // The date in a news line keeps its age honest.
+    if (l.kind === "news") expect(l.text).toMatch(/\d{4}/);
+  });
+
+  it("never repeats an aside", () => {
+    for (const l of pool)
+      for (const a of asides)
+        expect(l.text.replace(/\s+/g, " ")).not.toBe(a.replace(/\s+/g, " "));
+  });
+});

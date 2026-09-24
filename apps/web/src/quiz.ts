@@ -1,6 +1,8 @@
 // /quiz: five questions, sources after each answer. The static list in the page is the no-JS version.
 import fixed from "./fixed.json" with { type: "json" };
 import { pageCatalog, translator } from "./i18n.js";
+import { next } from "./pool.js";
+import { newsLine } from "./receipt.js";
 
 const catalog = pageCatalog();
 const t = translator(catalog);
@@ -134,6 +136,7 @@ function end() {
     picked = null;
     render();
   });
+  const line = next(catalog.pool, "news");
   return [
     h(
       "div",
@@ -152,6 +155,9 @@ function end() {
       h("div", { className: "q-source" }, t("quiz.cta.local")),
       h("div", { className: "row" }, share, again),
       status,
+      ...(line
+        ? [h("p", { className: "news", innerHTML: newsLine(line, t) })]
+        : []),
     ),
   ];
 }

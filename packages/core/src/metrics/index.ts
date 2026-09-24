@@ -22,5 +22,5 @@ export {
   type PriceMatch,
   type PriceTable,
 } from "./pricing.js";
-export { ramX } from "./satire.js";
+export { ramX, satireShare } from "./satire.js";
 export { WORLD_CHECK } from "./world.js";

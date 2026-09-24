@@ -392,6 +392,27 @@ a:hover {
   font-size: 11px;
   color: var(--desk-faint);
 }
+/* A dated AI fact in the page chrome: plain ink, not satire (docs/ROASTS.md §Pool). */
+.news {
+  min-height: 2lh;
+  max-width: 34em;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.news-k {
+  margin-right: 0.6em;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.result + .news {
+  margin: 10px auto 0;
+  color: var(--desk-muted);
+  text-align: center;
+}
 
 /* ---------- the receipt ---------- */
 .receipt {
@@ -509,6 +530,26 @@ a:hover {
   justify-content: space-between;
   gap: 12px;
   min-height: 44px;
+}
+/* Pool lines on the paper: a ✶ line under RAM-X, a receipt joke above the legend. */
+.pool-satire {
+  /* Two lines held open, so the visitor's own line never moves the paper when it replaces the built one. */
+  min-height: 2lh;
+  margin: 0;
+  /* 12px floor: the joke is meant to be read (and Lighthouse counts smaller text as illegible). */
+  font-size: max(12px, calc(12px * var(--receipt-scale)));
+  line-height: 1.4;
+  color: var(--red-text);
+  text-wrap: pretty;
+}
+.pool-joke {
+  min-height: 2lh;
+  max-width: 30em;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+  text-wrap: balance;
 }
 .note {
   font-size: calc(var(--note-size) * var(--receipt-scale));
@@ -824,6 +865,14 @@ a:hover {
   font-size: 13px;
   overflow-wrap: anywhere;
 }
+.sources li.satire {
+  color: var(--red-text);
+}
+.pool-sources summary {
+  margin: 4px 0 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
 .page-foot {
   display: flex;
   flex-direction: column;
@@ -1064,6 +1113,9 @@ a:hover {
   color: var(--muted);
   margin: 0;
 }
+.score .news {
+  color: var(--muted);
+}
 .score {
   display: flex;
   flex-direction: column;
@@ -1127,6 +1179,10 @@ a:hover {
 
 /* ---------- phone ---------- */
 @media (max-width: 520px) {
+  /* Most ✶ pool lines take three lines at phone width. */
+  .pool-satire {
+    min-height: 3lh;
+  }
   :root {
     --receipt-w: calc(100vw - 32px);
     --n-size: 36px;

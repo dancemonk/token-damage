@@ -8,6 +8,17 @@ export interface Catalog {
   notes: Record<string, string>;
   /** Saint Petersburg asides for the home page's sample receipts; optional per language (docs/I18N.md). */
   asides?: Record<string, string>;
+  /** The rotating pool lines this page draws from, in its language (docs/ROASTS.md §Pool). */
+  pool?: PoolEntry[];
+}
+
+/** One pool line as page data: core's PoolLine without bands or CLI-only slots. */
+export interface PoolEntry {
+  id: string;
+  kind: "satire" | "joke" | "news";
+  text: string;
+  size?: number;
+  source?: { date: string; url: string };
 }
 
 /** Fills `{name}` slots. An unknown slot stays visible, so a bad template shows up in review. */

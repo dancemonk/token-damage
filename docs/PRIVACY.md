@@ -16,11 +16,14 @@ numbers live in the link itself (after the `#`), which browsers never send to an
 It writes one file of its own, `~/.token-damage/state.json`, and you can delete it any time.
 
 ## What is stored locally
-- `~/.token-damage/state.json`: a run counter and which adjuster's notes were used recently, so the next receipt
-  doesn't repeat them. Numbers only, never text. Nothing else is kept between runs; every receipt is computed
-  from the agents' own logs.
+- `~/.token-damage/state.json`: a run counter, which adjuster's notes were used recently, and which pool lines
+  (jokes, satire, news) you have seen, so the next receipt doesn't repeat them. Numbers and line ids only, never
+  your text. Nothing else is kept between runs; every receipt is computed from the agents' own logs.
 - `~/token-damage/receipt-<date>.png`: only when you ask for the image, and only after it shows you exactly what
   the image will contain.
+- On tokendamage.com, three `localStorage` keys in your own browser, nothing sent anywhere: `td.sound` (sound
+  off), `td.aside` (the last Saint Petersburg aside shown) and `td.deck` (which pool lines you've seen: a seed and
+  line ids). No cookies.
 
 ## Threat model
 - **Reading a sensitive folder.** `~/.claude` contains code and possibly secrets inside transcripts. Mitigation:

@@ -19,6 +19,8 @@
     "note",
     "achievements",
     "jokes",
+    "poolSatire",
+    "news",
     "method"
   ],
   "properties": {
@@ -416,6 +418,68 @@
       "items": {
         "type": "string"
       }
+    },
+    "poolSatire": {
+      "description": "One ✶ pool line: a real AI event and the reader's made-up share of it.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": ["text"],
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "source": {
+              "type": "object",
+              "required": ["date", "url"],
+              "additionalProperties": false,
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "news": {
+      "description": "One dated AI news line from the pool, plain fact.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": ["text"],
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "source": {
+              "type": "object",
+              "required": ["date", "url"],
+              "additionalProperties": false,
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "method": {
       "type": "object",

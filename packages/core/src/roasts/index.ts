@@ -47,3 +47,12 @@ export {
   STATE_PATH,
   type RoastState,
 } from "./state.js";
+export {
+  draw,
+  freshDeck,
+  isDeck,
+  newDeck,
+  roundOrder,
+  type Deck,
+} from "./deck.js";
+export { POOL_EN, type PoolKind, type PoolLine } from "./pool.js";

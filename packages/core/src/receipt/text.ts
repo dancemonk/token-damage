@@ -58,6 +58,10 @@ function wrap(text: string, width: number): string[] {
   return lines;
 }
 
+/** Wrapped with later lines two columns in, so two short paragraphs in a row stay apart. */
+const hang = (text: string): string[] =>
+  wrap(text, 44).map((line, i) => (i ? `  ${line}` : line));
+
 function period(p: Receipt["period"]): string {
   const [sy, ey] = [p.start.slice(0, 4), p.end.slice(0, 4)];
   return sy === ey
@@ -253,7 +257,33 @@ export function receiptLines(r: Receipt): Line[] {
       text: leader("✶ RAM-X", `▲ +$${sig2(r.satire.ramX.value)}/stick`),
       style: "red",
     },
+    ...(r.poolSatire
+      ? hang(`✶ ${r.poolSatire.text.toLowerCase()}`).map((text) => ({
+          text,
+          style: "red" as const,
+        }))
+      : []),
     { text: "✶ satire. economists were not consulted.", style: "red" },
+    ...(r.jokes.length
+      ? [
+          rule("-"),
+          ...r.jokes.flatMap((j) =>
+            hang(j.toLowerCase()).map((text) => ({
+              text,
+              style: "muted" as const,
+            })),
+          ),
+        ]
+      : []),
+    ...(r.news
+      ? [
+          rule("-"),
+          ...hang(`meanwhile, ${r.news.text.toLowerCase()}`).map((text) => ({
+            text,
+            style: "muted" as const,
+          })),
+        ]
+      : []),
     rule("="),
     {
       text: center("≡ list-price equiv · ≈ estimate · ✶ satire"),

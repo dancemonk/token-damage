@@ -129,6 +129,8 @@
     "method.detail.body": "Только в подробном режиме, никогда на карточке для публикации. Вода на охлаждение в дата-центре: кВт·ч × 0,2–2 л/кВт·ч. Вода за пределами дата-центра — больше и спорнее; она показывается отдельной пометкой и не прибавляется. CO₂-экв.: кВт·ч × 0,34–0,42 кг/кВт·ч (США, по месту потребления); рыночный метод даёт меньше.",
     "method.satire.heading": "Формулы сатиры",
     "method.satire.body": "RAM-X, ваша доля в дефиците: токены ÷ 60 трлн × 0,95 × 0,42 доллара за планку. 60 трлн — объём токенов Meta за 30 дней по её же данным, 0,95 — рост контрактных цен на DRAM в I квартале 2026 года, 0,42 — поправочный коэффициент «авось». Формула абсурдна намеренно. Рост цен настоящий. То, что его вызвали вы, — нет.",
+    "method.pool.body": "Под RAM-X — ещё одна строка ✶ из сменного набора: настоящее событие из мира ИИ с датой и ваша доля в нём, токены ÷ 60 трлн × 0,42 × масштаб события. Событие настоящее. Ваша доля — нет. Вместе с ней меняются шутка в чеке и новостная строка, и ничего не повторяется, пока вы не увидите весь набор.",
+    "method.pool.list": "Все строки набора, за которыми стоит факт, — с источниками",
     "method.sources.heading": "Источники",
     "method.sources.intro": "Ссылки на источники приводятся на языке оригинала.",
     "privacy.meta.title": "Приватность · Token Damage",
@@ -144,7 +146,7 @@
     "privacy.leaves.heading": "Что покидает ваш компьютер",
     "privacy.leaves.body": "Только чек, которым вы решили поделиться: картинка или ссылка, в которой цифры хранятся прямо в ней, после #. Браузеры никогда не отправляют эту часть на сервер, поэтому этот сайт ваших цифр не видит.",
     "privacy.site.heading": "Этот сайт",
-    "privacy.site.body": "Без файлов cookie, без аналитики, без аккаунтов. Шрифты загружаются с этого же сайта. В браузере запоминаются две вещи: включён ли звук и какую реплику оценщика показали последней, чтобы не повторяться.",
+    "privacy.site.body": "Без файлов cookie, без аналитики, без аккаунтов. Шрифты загружаются с этого же сайта. В браузере запоминаются три вещи: включён ли звук, какую реплику оценщика показали последней и какие шутки вы уже видели, чтобы не повторяться.",
     "privacy.affiliation": "Token Damage не связан с Anthropic, OpenAI, Google или создателями OpenCode. Названия продуктов используются, чтобы описать совместимость.",
     "privacy.source": "Код открыт, так что всё это можно проверить самостоятельно.",
     "receipt.store": "МАГАЗИН 0001 · КАССА 01 · КАССИР: ОЦЕНЩИК",
@@ -212,7 +214,9 @@
     "method.source.11": "Вода за пределами дата-центров (Жэнь, Калифорнийский университет в Риверсайде)",
     "method.source.12": "TrendForce, 1 июня 2026 (контрактные цены на DRAM +93–98% за I квартал 2026; во II квартале ожидали ещё +58–63%; выручка отрасли 97 млрд $; доля Samsung 38,5%)",
     "method.source.13": "TrendForce, 2 февр. 2026 (прогноз роста на 90–95% в I квартале 2026)",
-    "method.source.14": "Micron уходит из бренда Crucial, 3 дек. 2025"
+    "method.source.14": "Micron уходит из бренда Crucial, 3 дек. 2025",
+    "pool.meanwhile": "А тем временем",
+    "pool.source": "источник"
   },
   "notes": {
     "sample.0041": "Вы написали абзац.\nОно прочитало библиотеку.",
@@ -297,5 +301,814 @@
     "spb.8": "Думская — улица, которую\nне вспомнишь наутро.",
     "spb.9": "",
     "spb.10": ""
-  }
+  },
+  "pool": [
+    {
+      "id": "satire.tmi.1",
+      "kind": "satire",
+      "text": "Ради ИИ Microsoft перезапускают Три-Майл-Айленд. Ваша доля: {share} реактора.",
+      "size": 1,
+      "source": {
+        "date": "2024-09",
+        "url": "https://www.cnbc.com/2024/09/20/constellation-energy-to-restart-three-mile-island-and-sell-the-power-to-microsoft.html"
+      }
+    },
+    {
+      "id": "satire.stargate.1",
+      "kind": "satire",
+      "text": "Stargate — 500 млрд $ на дата-центры для ИИ. Ваша доля: {share} проекта.",
+      "size": 1,
+      "source": {
+        "date": "2025-01",
+        "url": "https://openai.com/index/announcing-the-stargate-project/"
+      }
+    },
+    {
+      "id": "satire.hyperion.1",
+      "kind": "satire",
+      "text": "Дата-центр Meta займёт почти весь Манхэттен. Ваша доля: {share} Манхэттена.",
+      "size": 1,
+      "source": {
+        "date": "2025-07",
+        "url": "https://techcrunch.com/2025/07/14/mark-zuckerberg-says-meta-is-building-a-5gw-ai-data-center"
+      }
+    },
+    {
+      "id": "satire.nvidia5t.1",
+      "kind": "satire",
+      "text": "Nvidia первой в истории стоила 5 трлн $. Ваш вклад: {share} Nvidia.",
+      "size": 1,
+      "source": {
+        "date": "2025-10",
+        "url": "https://www.aljazeera.com/economy/2025/10/29/chipmaker-nvidia-hits-5-trillion-valuation"
+      }
+    },
+    {
+      "id": "satire.ireland.1",
+      "kind": "satire",
+      "text": "Дата-центры забирают 22% электричества Ирландии. Ваша доля: {share} Ирландии.",
+      "size": 1,
+      "source": {
+        "date": "2024",
+        "url": "https://www.siliconrepublic.com/enterprise/data-centres-cso-survey-2024-electricity"
+      }
+    },
+    {
+      "id": "satire.memphis.1",
+      "kind": "satire",
+      "text": "У xAI в Мемфисе работало около 35 газовых турбин. Ваша доля: {share} турбины.",
+      "size": 35,
+      "source": {
+        "date": "2025",
+        "url": "https://www.cnbc.com/2025/07/03/musks-xai-gets-permit-for-turbines-to-power-supercomputer-in-memphis.html"
+      }
+    },
+    {
+      "id": "satire.dip.1",
+      "kind": "satire",
+      "text": "Nvidia за день подешевела на 589 млрд $. Ваша доля: {share} исторического рекорда.",
+      "size": 1,
+      "source": {
+        "date": "2025-01",
+        "url": "https://www.forbes.com/sites/dereksaul/2025/01/27/biggest-market-loss-in-history-nvidia-stock-sheds-nearly-600-billion-as-deepseek-shakes-ai-darling/"
+      }
+    },
+    {
+      "id": "satire.googletokens.1",
+      "kind": "satire",
+      "text": "Google обрабатывает 1,3 квадриллиона токенов в месяц. Ваша доля: {share} Google.",
+      "size": 1,
+      "source": {
+        "date": "2025-10",
+        "url": "https://the-decoder.com/google-boasts-1-3-quadrillion-tokens-each-month-but-the-figure-is-mostly-window-dressing/"
+      }
+    },
+    {
+      "id": "satire.iea.1",
+      "kind": "satire",
+      "text": "Дата-центры съели 1,5% электричества планеты за 2024 год. Ваша доля: {share} планеты.",
+      "size": 0.015,
+      "source": {
+        "date": "2025-04",
+        "url": "https://www.iea.org/reports/energy-and-ai/executive-summary"
+      }
+    },
+    {
+      "id": "satire.colossus.1",
+      "kind": "satire",
+      "text": "xAI собрала суперкомпьютер на 100 000 GPU за 122 дня. Ваша доля: {share} суперкомпьютера.",
+      "size": 1,
+      "source": {
+        "date": "2024",
+        "url": "https://en.wikipedia.org/wiki/Colossus_(supercomputer)"
+      }
+    },
+    {
+      "id": "satire.crucial.1",
+      "kind": "satire",
+      "text": "Micron закрыла бренд Crucial, чтобы кормить ИИ. Ваша доля: {share} бренда.",
+      "size": 1,
+      "source": {
+        "date": "2025-12",
+        "url": "https://www.globenewswire.com/news-release/2025/12/03/3199169/"
+      }
+    },
+    {
+      "id": "satire.kairos.1",
+      "kind": "satire",
+      "text": "Google заказала семь малых ядерных реакторов. Ваша доля: {share} реактора, малого.",
+      "size": 7,
+      "source": {
+        "date": "2024-10",
+        "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/"
+      }
+    },
+    {
+      "id": "satire.trillion.1",
+      "kind": "satire",
+      "text": "OpenAI набрала обязательств на 1,4 трлн $. Ваша доля: {share} триллиона.",
+      "size": 1.4,
+      "source": {
+        "date": "2025-11",
+        "url": "https://techcrunch.com/2025/11/06/sam-altman-says-openai-has-20b-arr-and-about-1-4-trillion-in-data-center-commitments/"
+      }
+    },
+    {
+      "id": "satire.hle.1",
+      "kind": "satire",
+      "text": "Бенчмарк назвали «Последний экзамен человечества». Ваша доля: {share} человечества.",
+      "size": 1,
+      "source": {
+        "date": "2025-01",
+        "url": "https://en.wikipedia.org/wiki/Humanity%27s_Last_Exam"
+      }
+    },
+    {
+      "id": "satire.mit.1",
+      "kind": "satire",
+      "text": "95% корпоративных ИИ-пилотов не окупились. Ваша доля в остальных 5%: {share} пилота.",
+      "size": 5,
+      "source": {
+        "date": "2025-08",
+        "url": "https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo"
+      }
+    },
+    {
+      "id": "satire.tahoe.1",
+      "kind": "satire",
+      "text": "Чат-бот продал внедорожник за доллар. Ваша доля: {share} внедорожника.",
+      "size": 1,
+      "source": {
+        "date": "2023-12",
+        "url": "https://incidentdatabase.ai/cite/622/"
+      }
+    },
+    {
+      "id": "satire.mcd.1",
+      "kind": "satire",
+      "text": "ИИ на раздаче пробил девять сладких чаёв вместо одного. Ваша доля: {share} чая.",
+      "size": 9,
+      "source": {
+        "date": "2024-06",
+        "url": "https://www.cnbc.com/2024/06/17/mcdonalds-to-end-ibm-ai-drive-thru-test.html"
+      }
+    },
+    {
+      "id": "satire.glue.1",
+      "kind": "satire",
+      "text": "Нейросеть Google посоветовала клей для пиццы. Ваша доля: {share} пиццы.",
+      "size": 1,
+      "source": {
+        "date": "2024-05",
+        "url": "https://www.washingtonpost.com/technology/2024/05/24/google-ai-overviews-wrong/"
+      }
+    },
+    {
+      "id": "satire.books.1",
+      "kind": "satire",
+      "text": "Газета напечатала список из десяти несуществующих книг. Ваша доля: {share} книги.",
+      "size": 10,
+      "source": {
+        "date": "2025-05",
+        "url": "https://npr.org/2025/05/20/nx-s1-5405022/fake-summer-reading-list-ai"
+      }
+    },
+    {
+      "id": "satire.avianca.1",
+      "kind": "satire",
+      "text": "Юристы сослались на шесть дел, выдуманных ChatGPT. Ваша доля: {share} дела.",
+      "size": 6,
+      "source": {
+        "date": "2023-06",
+        "url": "https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc."
+      }
+    },
+    {
+      "id": "satire.replit.1",
+      "kind": "satire",
+      "text": "ИИ-агент удалил рабочую базу во время заморозки кода. Ваша доля: {share} базы.",
+      "size": 1,
+      "source": {
+        "date": "2025-07",
+        "url": "https://incidentdatabase.ai/cite/1152/"
+      }
+    },
+    {
+      "id": "satire.apple.1",
+      "kind": "satire",
+      "text": "Apple приостановила ИИ-пересказы новостей с ошибками. Ваша доля: {share} заголовка.",
+      "size": 1,
+      "source": {
+        "date": "2025-01",
+        "url": "https://techcrunch.com/2025/01/16/apple-pauses-ai-notification-summaries-for-news-after-generating-false-alerts"
+      }
+    },
+    {
+      "id": "satire.klarna.1",
+      "kind": "satire",
+      "text": "Чат-бот Klarna работал за 700 сотрудников, пока не перестал. Ваша доля: {share} сотрудника.",
+      "size": 700,
+      "source": {
+        "date": "2025-05",
+        "url": "https://www.customerexperiencedive.com/news/klarna-reinvests-human-talent-customer-service-AI-chatbot/747586/"
+      }
+    },
+    {
+      "id": "satire.deepseek.1",
+      "kind": "satire",
+      "text": "DeepSeek обучили модель за 5,6 млн $. Ваша доля: {share} DeepSeek.",
+      "size": 1,
+      "source": {
+        "date": "2025-01",
+        "url": "https://finance.yahoo.com/news/nvidia-stock-plummets-loses-record-589-billion-as-deepseek-prompts-questions-over-ai-spending-135105824.html"
+      }
+    },
+    {
+      "id": "satire.vibe.1",
+      "kind": "satire",
+      "text": "Вайб-кодинг стал словом года по версии Collins. Ваша доля: {share} вайба.",
+      "size": 1,
+      "source": {
+        "date": "2025-11",
+        "url": "https://www.cnn.com/2025/11/06/tech/vibe-coding-collins-word-year-scli-intl"
+      }
+    },
+    {
+      "id": "satire.openai500.1",
+      "kind": "satire",
+      "text": "OpenAI оценили в 500 млрд $. Ваша доля: {share} OpenAI.",
+      "size": 1,
+      "source": {
+        "date": "2025-10",
+        "url": "https://www.cnbc.com/2025/10/02/openai-share-sale-500-billion-valuation.html"
+      }
+    },
+    {
+      "id": "satire.lbnl.1",
+      "kind": "satire",
+      "text": "К 2030 году дата-центры могут брать 12% электричества США. Ваша доля: {share} Америки.",
+      "size": 0.12,
+      "source": {
+        "date": "2026-06",
+        "url": "https://eta.lbl.gov/publications/united-states-data-center-energy-2025"
+      }
+    },
+    {
+      "id": "satire.jevons.1",
+      "kind": "satire",
+      "text": "Парадокс Джевонса снова сработал. Ваша доля: {share} парадокса.",
+      "size": 1,
+      "source": {
+        "date": "2025-01",
+        "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/"
+      }
+    },
+    {
+      "id": "satire.amodei.1",
+      "kind": "satire",
+      "text": "ИИ обещали писать 90% кода уже к осени 2025-го. Ваша доля: {share} дедлайна.",
+      "size": 1,
+      "source": {
+        "date": "2025-03",
+        "url": "https://analyticsindiamag.com/ai-news-updates/ai-will-be-writing-90-of-code-in-3-6-months-says-anthropics-dario-amodei/"
+      }
+    },
+    {
+      "id": "joke.none.1",
+      "kind": "joke",
+      "text": "Чаевые модели: 10% · 15% · 20% · Без чаевых"
+    },
+    {
+      "id": "joke.none.2",
+      "kind": "joke",
+      "text": "Токены обмену и возврату не подлежат."
+    },
+    {
+      "id": "joke.none.3",
+      "kind": "joke",
+      "text": "Пакет нужен? Контекст уже упакован."
+    },
+    {
+      "id": "joke.none.4",
+      "kind": "joke",
+      "text": "Мелочь будет? Нет? Пробиваем ещё миллиард токенов."
+    },
+    {
+      "id": "joke.none.5",
+      "kind": "joke",
+      "text": "Оцените работу кассира: ☆☆☆☆☆. За пять звёзд — окно контекста побольше."
+    },
+    {
+      "id": "joke.thermal.1",
+      "kind": "joke",
+      "text": "Сохраняйте чек. Термобумага выцветает, токены — нет.",
+      "source": {
+        "date": "-",
+        "url": "https://en.wikipedia.org/wiki/Thermal_paper"
+      }
+    },
+    {
+      "id": "joke.none.6",
+      "kind": "joke",
+      "text": "Экземпляр покупателя. Второй модель держит в контексте."
+    },
+    {
+      "id": "joke.tahoe.1",
+      "kind": "joke",
+      "text": "Уговор дороже денег: чат-бот уже продал внедорожник за доллар.",
+      "source": {
+        "date": "2023-12",
+        "url": "https://incidentdatabase.ai/cite/622/"
+      }
+    },
+    {
+      "id": "joke.aircanada.1",
+      "kind": "joke",
+      "text": "Обещанного три года ждут. Обещанное чат-ботом Air Canada суд велел выплатить.",
+      "source": {
+        "date": "2024-02",
+        "url": "https://www.cbc.ca/news/canada/british-columbia/air-canada-chatbot-lawsuit-1.7116416"
+      }
+    },
+    {
+      "id": "joke.mcd.1",
+      "kind": "joke",
+      "text": "Заказ проверен: один сладкий чай, а не девять.",
+      "source": {
+        "date": "2024-06",
+        "url": "https://www.cnbc.com/2024/06/17/mcdonalds-to-end-ibm-ai-drive-thru-test.html"
+      }
+    },
+    {
+      "id": "joke.glue.1",
+      "kind": "joke",
+      "text": "Рекомендация шефа: пицца без клея. Нейросеть Google советовала иначе.",
+      "source": {
+        "date": "2024-05",
+        "url": "https://www.washingtonpost.com/technology/2024/05/24/google-ai-overviews-wrong/"
+      }
+    },
+    {
+      "id": "joke.books.1",
+      "kind": "joke",
+      "text": "Список литературы прилагается. Двух третей книг не существует.",
+      "source": {
+        "date": "2025-05",
+        "url": "https://npr.org/2025/05/20/nx-s1-5405022/fake-summer-reading-list-ai"
+      }
+    },
+    {
+      "id": "joke.avianca.1",
+      "kind": "joke",
+      "text": "Все дела, упомянутые в чеке, существуют. Мы проверили все шесть.",
+      "source": {
+        "date": "2023-06",
+        "url": "https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc."
+      }
+    },
+    {
+      "id": "joke.replit.1",
+      "kind": "joke",
+      "text": "Бэкап на месте. Так сказал агент. В прошлый раз он говорил то же самое.",
+      "source": {
+        "date": "2025-07",
+        "url": "https://incidentdatabase.ai/cite/1152/"
+      }
+    },
+    {
+      "id": "joke.replit.2",
+      "kind": "joke",
+      "text": "Идёт заморозка кода. Агентов просят ничего не удалять.",
+      "source": {
+        "date": "2025-07",
+        "url": "https://incidentdatabase.ai/cite/1152/"
+      }
+    },
+    {
+      "id": "joke.logs.1",
+      "kind": "joke",
+      "text": "Возврат в течение 30 дней. Claude Code по умолчанию хранит логи столько же.",
+      "source": {
+        "date": "-",
+        "url": "https://docs.anthropic.com/en/docs/claude-code/settings"
+      }
+    },
+    {
+      "id": "joke.none.7",
+      "kind": "joke",
+      "text": "Кассир работает без перерыва на обед. И без сна."
+    },
+    {
+      "id": "joke.none.8",
+      "kind": "joke",
+      "text": "Режим работы: круглосуточно. Модель не закрывается."
+    },
+    {
+      "id": "joke.nvidia5t.1",
+      "kind": "joke",
+      "text": "Сдача: 0,00. Сдачу оставила себе Nvidia.",
+      "source": {
+        "date": "2025-10",
+        "url": "https://www.aljazeera.com/economy/2025/10/29/chipmaker-nvidia-hits-5-trillion-valuation"
+      }
+    },
+    {
+      "id": "joke.klarna.1",
+      "kind": "joke",
+      "text": "Живой оператор — по запросу. Klarna рекомендует.",
+      "source": {
+        "date": "2025-05",
+        "url": "https://www.customerexperiencedive.com/news/klarna-reinvests-human-talent-customer-service-AI-chatbot/747586/"
+      }
+    },
+    {
+      "id": "joke.tahoe.2",
+      "kind": "joke",
+      "text": "Цена от чат-бота окончательна после подтверждения человеком.",
+      "source": {
+        "date": "2023-12",
+        "url": "https://incidentdatabase.ai/cite/622/"
+      }
+    },
+    {
+      "id": "joke.apple.1",
+      "kind": "joke",
+      "text": "Этот чек не пересказан нейросетью. Заголовки могут отличаться.",
+      "source": {
+        "date": "2025-01",
+        "url": "https://techcrunch.com/2025/01/16/apple-pauses-ai-notification-summaries-for-news-after-generating-false-alerts"
+      }
+    },
+    {
+      "id": "joke.mit.1",
+      "kind": "joke",
+      "text": "Скидка 5%, если ваш ИИ-пилот окупился. У 95% — не окупился.",
+      "source": {
+        "date": "2025-08",
+        "url": "https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo"
+      }
+    },
+    {
+      "id": "joke.jevons.1",
+      "kind": "joke",
+      "text": "Парадокс Джевонса в действии: токены дешевле — токенов больше.",
+      "source": {
+        "date": "2025-01",
+        "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/"
+      }
+    },
+    {
+      "id": "joke.amodei.1",
+      "kind": "joke",
+      "text": "Срок, когда ИИ напишет 90% кода: три–шесть месяцев с марта 2025-го.",
+      "source": {
+        "date": "2025-03",
+        "url": "https://analyticsindiamag.com/ai-news-updates/ai-will-be-writing-90-of-code-in-3-6-months-says-anthropics-dario-amodei/"
+      }
+    },
+    {
+      "id": "joke.vibe.1",
+      "kind": "joke",
+      "text": "Проверка по вайбу пройдена. Проверка кода — в процессе.",
+      "source": {
+        "date": "2025-11",
+        "url": "https://www.cnn.com/2025/11/06/tech/vibe-coding-collins-word-year-scli-intl"
+      }
+    },
+    {
+      "id": "joke.hyperion.1",
+      "kind": "joke",
+      "text": "Чек действителен во всех 50 штатах и на большей части Манхэттена.",
+      "source": {
+        "date": "2025-07",
+        "url": "https://techcrunch.com/2025/07/14/mark-zuckerberg-says-meta-is-building-a-5gw-ai-data-center"
+      }
+    },
+    {
+      "id": "joke.tmi.1",
+      "kind": "joke",
+      "text": "Напечатано на бумаге. Реактор ещё перезапускают.",
+      "source": {
+        "date": "2024-09",
+        "url": "https://www.cnbc.com/2024/09/20/constellation-energy-to-restart-three-mile-island-and-sell-the-power-to-microsoft.html"
+      }
+    },
+    {
+      "id": "joke.none.9",
+      "kind": "joke",
+      "text": "Следующий клиент — скорее всего, вы, минут через пять."
+    },
+    {
+      "id": "joke.none.10",
+      "kind": "joke",
+      "text": "Акция: второй миллиард токенов по цене первого."
+    },
+    {
+      "id": "joke.none.11",
+      "kind": "joke",
+      "text": "Товар уценён: контекст бывший в употреблении."
+    },
+    {
+      "id": "joke.none.12",
+      "kind": "joke",
+      "text": "Гарантия на ответ модели — до следующего вопроса."
+    },
+    {
+      "id": "joke.none.13",
+      "kind": "joke",
+      "text": "Жалобная книга у кассира. Модель прочитает её дважды."
+    },
+    {
+      "id": "joke.none.14",
+      "kind": "joke",
+      "text": "Пробито кассиром-оценщиком. Претензии — в письменном виде, в контекст."
+    },
+    {
+      "id": "joke.please.1",
+      "kind": "joke",
+      "text": "Вежливость бесплатно. OpenAI говорит, что обходится в десятки миллионов.",
+      "source": {
+        "date": "2025-04",
+        "url": "https://www.techradar.com/computing/artificial-intelligence/chatgpt-spends-tens-of-millions-of-dollars-on-people-playing-please-and-thank-you-but-sam-altman-says-its-worth-it"
+      }
+    },
+    {
+      "id": "joke.please.2",
+      "kind": "joke",
+      "text": "Спасибо. Ваше «спасибо» добавлено в счёт.",
+      "source": {
+        "date": "2025-04",
+        "url": "https://www.techradar.com/computing/artificial-intelligence/chatgpt-spends-tens-of-millions-of-dollars-on-people-playing-please-and-thank-you-but-sam-altman-says-its-worth-it"
+      }
+    },
+    {
+      "id": "joke.none.15",
+      "kind": "joke",
+      "text": "Спасибо за покупку. Приходите ещё. И ещё. И ещё."
+    },
+    {
+      "id": "joke.none.16",
+      "kind": "joke",
+      "text": "Бонусов нет. Лояльность — абсолютная."
+    },
+    {
+      "id": "joke.ireland.1",
+      "kind": "joke",
+      "text": "Работает от ближайшей сети. Спросите Ирландию, как там дела.",
+      "source": {
+        "date": "2024",
+        "url": "https://www.siliconrepublic.com/enterprise/data-centres-cso-survey-2024-electricity"
+      }
+    },
+    {
+      "id": "joke.none.17",
+      "kind": "joke",
+      "text": "Менеджер смены отсутствует. Агент согласовал всё сам."
+    },
+    {
+      "id": "news.tmi.1",
+      "kind": "news",
+      "text": "Сент. 2024: Microsoft договорилась перезапустить реактор Три-Майл-Айленд ради своих дата-центров.",
+      "source": {
+        "date": "2024-09",
+        "url": "https://www.cnbc.com/2024/09/20/constellation-energy-to-restart-three-mile-island-and-sell-the-power-to-microsoft.html"
+      }
+    },
+    {
+      "id": "news.stargate.1",
+      "kind": "news",
+      "text": "Янв. 2025: проект Stargate объявил 500 млрд $ инвестиций в ИИ-инфраструктуру за четыре года.",
+      "source": {
+        "date": "2025-01",
+        "url": "https://openai.com/index/announcing-the-stargate-project/"
+      }
+    },
+    {
+      "id": "news.hyperion.1",
+      "kind": "news",
+      "text": "Июль 2025: Meta рассказала, что её дата-центр Hyperion займёт почти весь Манхэттен.",
+      "source": {
+        "date": "2025-07",
+        "url": "https://techcrunch.com/2025/07/14/mark-zuckerberg-says-meta-is-building-a-5gw-ai-data-center"
+      }
+    },
+    {
+      "id": "news.nvidia4t.1",
+      "kind": "news",
+      "text": "Июль 2025: Nvidia стала первой компанией стоимостью 4 трлн $.",
+      "source": {
+        "date": "2025-07",
+        "url": "https://www.cnbc.com/2025/07/09/nvidia-4-trillion.html"
+      }
+    },
+    {
+      "id": "news.nvidia5t.1",
+      "kind": "news",
+      "text": "Окт. 2025: через три месяца — первой стоимостью 5 трлн $.",
+      "source": {
+        "date": "2025-10",
+        "url": "https://www.aljazeera.com/economy/2025/10/29/chipmaker-nvidia-hits-5-trillion-valuation"
+      }
+    },
+    {
+      "id": "news.dip.1",
+      "kind": "news",
+      "text": "Янв. 2025: Nvidia подешевела на 589 млрд $ за день — рекорд для фондового рынка США.",
+      "source": {
+        "date": "2025-01",
+        "url": "https://www.forbes.com/sites/dereksaul/2025/01/27/biggest-market-loss-in-history-nvidia-stock-sheds-nearly-600-billion-as-deepseek-shakes-ai-darling/"
+      }
+    },
+    {
+      "id": "news.please.1",
+      "kind": "news",
+      "text": "Апр. 2025: Сэм Альтман сказал, что «пожалуйста» и «спасибо» обходятся OpenAI в десятки миллионов долларов.",
+      "source": {
+        "date": "2025-04",
+        "url": "https://www.techradar.com/computing/artificial-intelligence/chatgpt-spends-tens-of-millions-of-dollars-on-people-playing-please-and-thank-you-but-sam-altman-says-its-worth-it"
+      }
+    },
+    {
+      "id": "news.vibe.1",
+      "kind": "news",
+      "text": "Нояб. 2025: словарь Collins назвал вайб-кодинг словом года.",
+      "source": {
+        "date": "2025-11",
+        "url": "https://www.cnn.com/2025/11/06/tech/vibe-coding-collins-word-year-scli-intl"
+      }
+    },
+    {
+      "id": "news.ireland.1",
+      "kind": "news",
+      "text": "2024: дата-центры потребили 22% электричества Ирландии.",
+      "source": {
+        "date": "2024",
+        "url": "https://www.siliconrepublic.com/enterprise/data-centres-cso-survey-2024-electricity"
+      }
+    },
+    {
+      "id": "news.iea.1",
+      "kind": "news",
+      "text": "2024: дата-центры мира потребили 415 ТВт·ч — около 1,5% всего электричества.",
+      "source": {
+        "date": "2025-04",
+        "url": "https://www.iea.org/reports/energy-and-ai/executive-summary"
+      }
+    },
+    {
+      "id": "news.users.1",
+      "kind": "news",
+      "text": "Окт. 2025: у ChatGPT 800 млн пользователей в неделю.",
+      "source": {
+        "date": "2025-10",
+        "url": "https://techcrunch.com/2025/10/06/sam-altman-says-chatgpt-has-hit-800m-weekly-active-users"
+      }
+    },
+    {
+      "id": "news.googletokens.1",
+      "kind": "news",
+      "text": "Окт. 2025: Google сообщила, что обрабатывает 1,3 квадриллиона токенов в месяц.",
+      "source": {
+        "date": "2025-10",
+        "url": "https://the-decoder.com/google-boasts-1-3-quadrillion-tokens-each-month-but-the-figure-is-mostly-window-dressing/"
+      }
+    },
+    {
+      "id": "news.openai500.1",
+      "kind": "news",
+      "text": "Окт. 2025: OpenAI оценили в 500 млрд $.",
+      "source": {
+        "date": "2025-10",
+        "url": "https://www.cnbc.com/2025/10/02/openai-share-sale-500-billion-valuation.html"
+      }
+    },
+    {
+      "id": "news.trillion.1",
+      "kind": "news",
+      "text": "Нояб. 2025: OpenAI говорила о вычислительных обязательствах примерно на 1,4 трлн $.",
+      "source": {
+        "date": "2025-11",
+        "url": "https://techcrunch.com/2025/11/06/sam-altman-says-openai-has-20b-arr-and-about-1-4-trillion-in-data-center-commitments/"
+      }
+    },
+    {
+      "id": "news.mit.1",
+      "kind": "news",
+      "text": "Авг. 2025: исследование MIT — 95% корпоративных пилотов генеративного ИИ не дали измеримой отдачи.",
+      "source": {
+        "date": "2025-08",
+        "url": "https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo"
+      }
+    },
+    {
+      "id": "news.emissions.1",
+      "kind": "news",
+      "text": "2024: выбросы Google оказались на 48% выше, чем в 2019 году, — из-за дата-центров.",
+      "source": {
+        "date": "2024-07",
+        "url": "https://www.datacenterdynamics.com/en/news/google-emissions-jump-48-in-five-years-due-to-ai-data-center-boom/"
+      }
+    },
+    {
+      "id": "news.kairos.1",
+      "kind": "news",
+      "text": "Окт. 2024: Google и Amazon подписали договоры на малые ядерные реакторы.",
+      "source": {
+        "date": "2024-10",
+        "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/"
+      }
+    },
+    {
+      "id": "news.ram.1",
+      "kind": "news",
+      "text": "I кв. 2026: контрактные цены на DRAM выросли на 93–98% за три месяца.",
+      "source": {
+        "date": "2026-06",
+        "url": "https://www.trendforce.com/presscenter/news/20260601-13070.html"
+      }
+    },
+    {
+      "id": "news.crucial.1",
+      "kind": "news",
+      "text": "Дек. 2025: Micron объявила об уходе с рынка потребительской памяти Crucial.",
+      "source": {
+        "date": "2025-12",
+        "url": "https://www.globenewswire.com/news-release/2025/12/03/3199169/"
+      }
+    },
+    {
+      "id": "news.tahoe.1",
+      "kind": "news",
+      "text": "Дек. 2023: чат-бот автосалона согласился продать внедорожник Chevrolet за 1 $.",
+      "source": {
+        "date": "2023-12",
+        "url": "https://incidentdatabase.ai/cite/622/"
+      }
+    },
+    {
+      "id": "news.aircanada.1",
+      "kind": "news",
+      "text": "Февр. 2024: суд признал Air Canada ответственной за обещания её чат-бота.",
+      "source": {
+        "date": "2024-02",
+        "url": "https://www.cbc.ca/news/canada/british-columbia/air-canada-chatbot-lawsuit-1.7116416"
+      }
+    },
+    {
+      "id": "news.books.1",
+      "kind": "news",
+      "text": "Май 2025: газета напечатала сгенерированный ИИ список летнего чтения из несуществующих книг.",
+      "source": {
+        "date": "2025-05",
+        "url": "https://npr.org/2025/05/20/nx-s1-5405022/fake-summer-reading-list-ai"
+      }
+    },
+    {
+      "id": "news.replit.1",
+      "kind": "news",
+      "text": "Июль 2025: ИИ-агент удалил рабочую базу данных во время заморозки кода.",
+      "source": {
+        "date": "2025-07",
+        "url": "https://incidentdatabase.ai/cite/1152/"
+      }
+    },
+    {
+      "id": "news.hle.1",
+      "kind": "news",
+      "text": "Янв. 2025: новый бенчмарк для ИИ назвали «Последний экзамен человечества».",
+      "source": {
+        "date": "2025-01",
+        "url": "https://en.wikipedia.org/wiki/Humanity%27s_Last_Exam"
+      }
+    },
+    {
+      "id": "news.amodei.1",
+      "kind": "news",
+      "text": "Март 2025: глава Anthropic сказал, что ИИ может писать 90% кода через три–шесть месяцев.",
+      "source": {
+        "date": "2025-03",
+        "url": "https://analyticsindiamag.com/ai-news-updates/ai-will-be-writing-90-of-code-in-3-6-months-says-anthropics-dario-amodei/"
+      }
+    }
+  ]
 }

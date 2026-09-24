@@ -3,7 +3,13 @@ import fixed from "./fixed.json" with { type: "json" };
 import { compact, number, periodDays, receiptFormat } from "./format.js";
 import { pageCatalog, translator } from "./i18n.js";
 import { countUp, restart } from "./motion.js";
-import { receiptPaper, sampleView, type ReceiptView } from "./receipt.js";
+import { next, poolLines } from "./pool.js";
+import {
+  newsLine,
+  receiptPaper,
+  sampleView,
+  type ReceiptView,
+} from "./receipt.js";
 import { readShare, shareView, totalTokens } from "./share-view.js";
 import { buzz, sound } from "./sound.js";
 import { wireSoundToggle } from "./toggle.js";
@@ -35,7 +41,11 @@ if (location.hash)
     .forEach((a) => (a.hash = location.hash));
 
 function printReceipt(view: ReceiptView, withSound: boolean) {
-  receipt.innerHTML = receiptPaper(view, t, { count: "0", slam: true });
+  const lines = poolLines(catalog.pool, view.tokens, receiptFormat(locale));
+  receipt.innerHTML = receiptPaper({ ...view, ...lines }, t, {
+    count: "0",
+    slam: true,
+  });
   stage.hidden = false;
   restart(feed, "feed");
   countUp(
@@ -44,6 +54,15 @@ function printReceipt(view: ReceiptView, withSound: boolean) {
     receiptFormat(locale).int,
   );
   if (withSound) sound("print");
+}
+
+/** One dated AI fact under the result, with its source. */
+function showNews() {
+  const line = next(catalog.pool, "news");
+  if (!line) return;
+  const news = el("news");
+  news.innerHTML = newsLine(line, t);
+  news.hidden = false;
 }
 
 const guessed = () => Number((10 ** Number(range.value)).toPrecision(2));
@@ -63,6 +82,7 @@ if (!payload) {
     ),
     false,
   );
+  showNews();
   cta.hidden = false;
 } else {
   const days = periodDays(payload.start, payload.end);
@@ -90,6 +110,7 @@ if (!payload) {
       factor: number(factor, locale, { maximumSignificantDigits: 3 }),
     });
     result.hidden = false;
+    showNews();
     cta.hidden = false;
     result.focus();
   });

@@ -96,7 +96,17 @@ ADJUSTER'S NOTE
   and a third of it again. per word.
 ------------------------------------------------
 ✶ RAM-X .................... ▲ +$0.0000079/stick
+✶ jevons paradox strikes again. your share:
+  0.0000083 paradoxes.
 ✶ satire. economists were not consulted.
+------------------------------------------------
+whatever our chatbot promised, we honor. a
+  tribunal told air canada to.
+5% off if your ai pilot paid for itself. 95%
+  don't.
+------------------------------------------------
+meanwhile, oct 2024: google and amazon
+  signed deals for small nuclear reactors.
 ================================================
    ≡ list-price equiv · ≈ estimate · ✶ satire
       method v1 · prices as of 2026-09-24
@@ -132,7 +142,7 @@ Codex home, a Gemini CLI home and an OpenCode data dir in one: `projects/`, `ses
 ## Files it writes
 - `~/.token-damage/history.json` — daily aggregates only (tokens by type/model, calls, sessions, words, first/last
   call, subagents). This is how history survives the 30-day deletion. No text, no paths.
-- `~/.token-damage/state.json` — roast cooldowns, achievements unlocked, last guess.
+- `~/.token-damage/state.json` — run counter, note cooldowns, and the pool deck (seed and line ids, never text).
 - `~/token-damage/receipt-<date>.png` — on request.
 
 ## Security posture

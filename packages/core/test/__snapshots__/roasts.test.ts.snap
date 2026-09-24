@@ -86,10 +86,42 @@ exports[`sample customers > 0041: output is frozen 1`] = `
     "finePrint": "Your insurer has stopped returning calls.",
     "name": "ACT OF GOD",
   },
+  "deck": {
+    "last": {
+      "joke": "joke.mit.1",
+      "news": "news.kairos.1",
+      "satire": "satire.jevons.1",
+    },
+    "round": {
+      "joke": 0,
+      "news": 0,
+      "satire": 0,
+    },
+    "seed": 0,
+    "used": {
+      "joke": [
+        "joke.aircanada.1",
+        "joke.mit.1",
+      ],
+      "news": [
+        "news.kairos.1",
+      ],
+      "satire": [
+        "satire.jevons.1",
+      ],
+    },
+  },
   "jokes": [
-    "You saved $4,383.85 with your Cache Rewards card.",
-    "Suggested tip for Claude: 18% · 20% · 25% · No tip",
+    "Whatever our chatbot promised, we honor. A tribunal told Air Canada to.",
+    "5% off if your AI pilot paid for itself. 95% don't.",
   ],
+  "news": {
+    "source": {
+      "date": "2024-10",
+      "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+    },
+    "text": "Oct 2024: Google and Amazon signed deals for small nuclear reactors.",
+  },
   "note": {
     "family": "iceberg",
     "score": 0.6815172000231275,
@@ -97,6 +129,13 @@ exports[`sample customers > 0041: output is frozen 1`] = `
     "tier": "measured",
     "tone": "absurd",
     "variant": 0,
+  },
+  "satire": {
+    "source": {
+      "date": "2025-01",
+      "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/",
+    },
+    "text": "Jevons paradox strikes again. Your share: 0.0000083 paradoxes.",
   },
   "verdicts": [
     "CLAIM #0041 · "It was research" · DENIED | DENIED. 1.18 billion tokens. Research rarely happens at 3:47 AM.",
@@ -189,10 +228,42 @@ exports[`sample customers > 0042: output is frozen 1`] = `
     "finePrint": "Building inspector en route.",
     "name": "STRUCTURAL",
   },
+  "deck": {
+    "last": {
+      "joke": "joke.mit.1",
+      "news": "news.kairos.1",
+      "satire": "satire.jevons.1",
+    },
+    "round": {
+      "joke": 0,
+      "news": 0,
+      "satire": 0,
+    },
+    "seed": 0,
+    "used": {
+      "joke": [
+        "joke.aircanada.1",
+        "joke.mit.1",
+      ],
+      "news": [
+        "news.kairos.1",
+      ],
+      "satire": [
+        "satire.jevons.1",
+      ],
+    },
+  },
   "jokes": [
-    "You saved $749.94 with your Cache Rewards card.",
-    "Suggested tip for Claude: 18% · 20% · 25% · No tip",
+    "Whatever our chatbot promised, we honor. A tribunal told Air Canada to.",
+    "5% off if your AI pilot paid for itself. 95% don't.",
   ],
+  "news": {
+    "source": {
+      "date": "2024-10",
+      "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+    },
+    "text": "Oct 2024: Google and Amazon signed deals for small nuclear reactors.",
+  },
   "note": {
     "family": "few-commits",
     "score": 0.7427156753339286,
@@ -200,6 +271,13 @@ exports[`sample customers > 0042: output is frozen 1`] = `
     "tier": "measured",
     "tone": "dry",
     "variant": 0,
+  },
+  "satire": {
+    "source": {
+      "date": "2025-01",
+      "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/",
+    },
+    "text": "Jevons paradox strikes again. Your share: 0.0000013 paradoxes.",
   },
   "verdicts": [
     "CLAIM #0042 · "It was research" · DENIED | DENIED. 187 million tokens. 2 commits. Research rarely happens at 4:12 AM.",
@@ -253,10 +331,42 @@ exports[`sample customers > 0043: output is frozen 1`] = `
     "finePrint": "Adjuster notified.",
     "name": "FENDER BENDER",
   },
+  "deck": {
+    "last": {
+      "joke": "joke.mit.1",
+      "news": "news.kairos.1",
+      "satire": "satire.jevons.1",
+    },
+    "round": {
+      "joke": 0,
+      "news": 0,
+      "satire": 0,
+    },
+    "seed": 0,
+    "used": {
+      "joke": [
+        "joke.aircanada.1",
+        "joke.mit.1",
+      ],
+      "news": [
+        "news.kairos.1",
+      ],
+      "satire": [
+        "satire.jevons.1",
+      ],
+    },
+  },
   "jokes": [
-    "You saved $7.04 with your Cache Rewards card.",
-    "Suggested tip for Claude: 18% · 20% · 25% · No tip",
+    "Whatever our chatbot promised, we honor. A tribunal told Air Canada to.",
+    "5% off if your AI pilot paid for itself. 95% don't.",
   ],
+  "news": {
+    "source": {
+      "date": "2024-10",
+      "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+    },
+    "text": "Oct 2024: Google and Amazon signed deals for small nuclear reactors.",
+  },
   "note": {
     "family": "restraint",
     "score": 0.95,
@@ -264,6 +374,13 @@ exports[`sample customers > 0043: output is frozen 1`] = `
     "tier": "measured",
     "tone": "bureaucratic",
     "variant": 0,
+  },
+  "satire": {
+    "source": {
+      "date": "2025-01",
+      "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/",
+    },
+    "text": "Jevons paradox strikes again. Your share: 0.000000021 paradoxes.",
   },
   "verdicts": [
     "CLAIM #0043 · "It was research" · DENIED | DENIED. 2.96 million tokens. Research at this scale usually comes with a bibliography.",
@@ -370,10 +487,42 @@ exports[`sample customers > 0044: output is frozen 1`] = `
     "finePrint": "You are now the reason the policy exists.",
     "name": "UNINSURABLE",
   },
+  "deck": {
+    "last": {
+      "joke": "joke.mit.1",
+      "news": "news.kairos.1",
+      "satire": "satire.jevons.1",
+    },
+    "round": {
+      "joke": 0,
+      "news": 0,
+      "satire": 0,
+    },
+    "seed": 0,
+    "used": {
+      "joke": [
+        "joke.aircanada.1",
+        "joke.mit.1",
+      ],
+      "news": [
+        "news.kairos.1",
+      ],
+      "satire": [
+        "satire.jevons.1",
+      ],
+    },
+  },
   "jokes": [
-    "You saved $36,385.95 with your Cache Rewards card.",
-    "Suggested tip for Claude: 18% · 20% · 25% · No tip",
+    "Whatever our chatbot promised, we honor. A tribunal told Air Canada to.",
+    "5% off if your AI pilot paid for itself. 95% don't.",
   ],
+  "news": {
+    "source": {
+      "date": "2024-10",
+      "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+    },
+    "text": "Oct 2024: Google and Amazon signed deals for small nuclear reactors.",
+  },
   "note": {
     "family": "uninsurable",
     "score": 1,
@@ -381,6 +530,13 @@ exports[`sample customers > 0044: output is frozen 1`] = `
     "tier": "measured",
     "tone": "bureaucratic",
     "variant": 0,
+  },
+  "satire": {
+    "source": {
+      "date": "2025-01",
+      "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/",
+    },
+    "text": "Jevons paradox strikes again. Your share: 0.000069 paradoxes.",
   },
   "verdicts": [
     "CLAIM #0044 · "It was research" · DENIED | DENIED. 9.84 billion tokens. Research rarely happens at 2:05 AM.",

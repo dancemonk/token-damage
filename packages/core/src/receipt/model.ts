@@ -101,6 +101,10 @@ export interface Receipt {
   note: { family: string; variant: number; text: string } | null;
   achievements: Achievement[];
   jokes: string[];
+  /** One ✶ pool line: a real AI event and the reader's made-up share of it. */
+  poolSatire: { text: string; source?: { date: string; url: string } } | null;
+  /** One dated AI news line from the pool, plain fact. */
+  news: { text: string; source?: { date: string; url: string } } | null;
   method: { version: "v1"; pricesAsOf: string };
 }
 
@@ -287,6 +291,8 @@ export function buildReceipt({
     },
     achievements: observations.achievements,
     jokes: observations.jokes,
+    poolSatire: observations.satire,
+    news: observations.news,
     method: { version: "v1", pricesAsOf: prices.asOf },
   };
 }

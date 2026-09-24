@@ -94,9 +94,11 @@ Always red, always with the disclaimer line, never a precise-looking number with
   Meta's reported 30-day token usage, 0.95 the Q1-2026 DRAM contract price rise, and 0.42 the Coefficient of
   Vibes. Fully disclosed in "show your work" as a deliberately absurd formula. Pair with the real fact:
   "RAM contract prices +93–98% in Q1 2026 (TrendForce). Real. That you did it: not."
-- Other fiction-tier lines, rotated: "GPUs personally harmed: 0.003", "a kettle in Virginia boiled slightly
-  later", "cooling tower emotionally overwhelmed", "Suggested tip for Claude: 18% · 20% · 25% · No tip",
-  "No refunds. Tokens cannot be un-read."
+- **Pool shares** (`satireShare`): `tokens ÷ 60e12 × 0.42 × size`, the same family as RAM-X, where `size` is
+  the event's own unit count (1 reactor, 700 employees, 1.4 trillion dollars). Printed with two significant
+  figures, marked ✶, red, next to a real, dated, sourced event: "Microsoft is restarting Three Mile Island for
+  AI. Your share: 0.0000083 reactors." The event is real. The share is not. Lines, sources and rotation:
+  `docs/ROASTS.md` §The pool.
 - Never: fake water/CO₂ numbers, fake per-user attribution presented as an estimate.
 
 ## World check (real facts shown next to the satire; update monthly, dated)

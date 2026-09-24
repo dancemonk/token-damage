@@ -80,6 +80,7 @@ describe.each(LANGS)("built /%s", (lang) => {
         "strings",
         "notes",
         ...(slug === "" ? ["asides"] : []),
+        "pool",
       ]);
   });
 
@@ -124,7 +125,9 @@ describe("one language per page", () => {
     (
       "TOKEN DAMAGE Token Damage npx token-damage GitHub Claude Code Codex Gemini CLI OpenCode Anthropic " +
       "OpenAI Google Meta Berkeley Lab JavaScript DRAM RAM-X API LBNL TrendForce The Climate Brink Epoch AI " +
-      "ChatGPT Mistral DOE EcoLogits ISO dev to Samsung Micron Crucial CO USD cookie I II III IV"
+      "ChatGPT Mistral DOE EcoLogits ISO dev to Samsung Micron Crucial CO USD cookie I II III IV " +
+      // Pool lines (docs/ROASTS.md §Pool): companies, products and places in the news.
+      "Microsoft Stargate Nvidia xAI GPU Apple Klarna DeepSeek Collins Hyperion MIT Amazon Chevrolet Air Canada"
     ).split(" "),
   );
   /** Visible text and attributes, without scripts, style, code, paths or model ids. */
@@ -147,6 +150,28 @@ describe("one language per page", () => {
   it.each(SLUGS)("/ru/%s shows no Latin words but names", (slug) => {
     const words = visible(page("ru", slug)).match(/[A-Za-z][A-Za-z-]*/g) ?? [];
     expect([...new Set(words.filter((w) => !NAMES.has(w)))]).toEqual([]);
+  });
+
+  // Pool lines drawn in the browser never reach the static HTML, so check them where they're kept.
+  it("every line a page can draw stays in the page language", () => {
+    for (const lang of LANGS)
+      for (const slug of ["", "r", "quiz"]) {
+        const data = JSON.parse(
+          /<script type="application\/json" id="i18n">(.*?)<\/script>/s.exec(
+            page(lang, slug),
+          )![1]!,
+        ) as { pool: { text: string }[] };
+        expect(data.pool.length, `${lang}/${slug}`).toBeGreaterThan(0);
+        for (const { text } of data.pool)
+          if (lang === "ru")
+            expect(
+              (
+                text.replace("{share}", "").match(/[A-Za-z][A-Za-z-]*/g) ?? []
+              ).filter((w) => !NAMES.has(w)),
+              text,
+            ).toEqual([]);
+          else expect(text, text).not.toMatch(/[А-Яа-яЁё]/);
+      }
   });
 
   it.each(SLUGS)(
