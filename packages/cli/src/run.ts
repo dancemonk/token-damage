@@ -7,9 +7,11 @@ import {
   buildFacts,
   buildReceipt,
   claudeRoots,
+  codexHomes,
   createDeduper,
   dispute,
   disputeStamp,
+  emptyCodexStats,
   emptyStats,
   EXCUSES,
   listPrice,
@@ -20,9 +22,11 @@ import {
   receiptLines,
   saveState,
   scanClaude,
+  scanCodex,
   type Excuse,
   type PromptEvent,
   type Receipt,
+  type Source,
   type UsageEvent,
   type Verdict,
   imagePreview,
@@ -33,8 +37,11 @@ import {
 import { parseGuess, type Options } from "./args.js";
 import { VERSION } from "./version.js";
 
-/** Claude Code major.minor versions the parser has fixtures for (docs/DATA-SOURCES.md §Tested versions). */
-const TESTED = ["2.1"];
+/** Newest major.minor per agent the parser has fixtures for (docs/DATA-SOURCES.md §Tested versions). */
+const TESTED: Record<Source, { name: string; newest: [number, number] }> = {
+  "claude-code": { name: "claude code", newest: [2, 1] },
+  codex: { name: "codex", newest: [0, 155] },
+};
 const DAY_MS = 86_400_000;
 
 interface Io {
@@ -76,6 +83,20 @@ function period(options: Options) {
     from: midnight(start),
     to: midnight(end) + DAY_MS,
   };
+}
+
+/** Agent versions in the receipt that are newer than any we have fixtures for, e.g. "codex 0.156". */
+function untested(usage: UsageEvent[]): string[] {
+  const found = new Set<string>();
+  for (const e of usage) {
+    const m = /^(\d+)\.(\d+)/.exec(e.version ?? "");
+    if (!m) continue;
+    const [major, minor] = [Number(m[1]), Number(m[2])];
+    const { name, newest } = TESTED[e.source];
+    if (major > newest[0] || (major === newest[0] && minor > newest[1]))
+      found.add(`${name} ${major}.${minor}`);
+  }
+  return [...found].sort();
 }
 
 async function retention(
@@ -177,29 +198,44 @@ export async function run(options: Options, io: Io): Promise<number> {
   const roots = options.configDir
     ? [options.configDir]
     : claudeRoots(process.env, homedir());
+  const homes = options.codexHome
+    ? [options.codexHome]
+    : codexHomes(process.env, homedir());
+  // What each agent's scan reads, one line per agent.
+  const scanned = [
+    roots.map((r) => join(r, "projects")),
+    homes.flatMap((h) => [join(h, "sessions"), join(h, "archived_sessions")]),
+  ];
   const p = period(options);
   if (!options.json) {
     io.out(`token-damage ${VERSION}`);
     io.out(
-      "reads ~/.claude on this machine · uploads nothing · no network calls",
+      "reads agent logs on this machine · uploads nothing · no network calls",
     );
     io.out();
-    io.out(
-      `scanning ${roots.map((r) => tilde(join(r, "projects"))).join(", ")} …`,
-    );
+    for (const dirs of scanned)
+      io.out(`scanning ${dirs.map(tilde).join(", ")} …`);
   }
 
-  const stats = { ...emptyStats(), files: 0, subagentFiles: 0 };
+  const claudeStats = { ...emptyStats(), files: 0, subagentFiles: 0 };
+  const codexStats = emptyCodexStats();
+  // One deduper for every agent: their dedupe keys never collide.
   const deduper = createDeduper();
-  for await (const record of scanClaude(roots, stats)) {
-    if (record.ts >= p.from && record.ts < p.to) deduper.add(record);
+  for (const scan of [
+    scanClaude(roots, claudeStats),
+    scanCodex(homes, codexStats),
+  ]) {
+    for await (const record of scan) {
+      if (record.ts >= p.from && record.ts < p.to) deduper.add(record);
+    }
   }
   const usage: UsageEvent[] = deduper.result();
   const prompts: PromptEvent[] = deduper.prompts();
-  if (stats.files === 0 || usage.length === 0) {
+  const files = claudeStats.files + codexStats.files;
+  if (files === 0 || usage.length === 0) {
     const lines = [
-      `no claude code transcripts found${stats.files > 0 ? " in this period" : ""}.`,
-      `looked in: ${roots.map((r) => join(r, "projects")).join(", ")}`,
+      `no claude code or codex sessions found${files > 0 ? " in this period" : ""}.`,
+      `looked in: ${scanned.flat().join(", ")}`,
       "claude code writes none when CLAUDE_CODE_SKIP_PROMPT_HISTORY is set or with `claude -p --no-session-persistence`.",
     ];
     if (options.json) process.stderr.write(lines.join("\n") + "\n");
@@ -238,24 +274,22 @@ export async function run(options: Options, io: Io): Promise<number> {
     return 0;
   }
 
-  const untested = Object.keys(stats.versions).filter(
-    (v) => !TESTED.includes(v.split(".").slice(0, 2).join(".")),
-  );
+  const newer = untested(usage);
   io.out(
     `  ✓ ${n(facts.sessions)} sessions · ${n(facts.activeDays)} active days · ${n(facts.subagents)} subagent transcripts`,
   );
   io.out(
     `  ✓ ${n(facts.calls)} model calls · ${n(facts.prompts)} prompts you actually typed`,
   );
-  if (kept.isDefault) {
+  if (kept.isDefault && claudeStats.files > 0) {
     io.out(
       `  ! claude code already deleted everything older than ${kept.days} days.`,
     );
     io.out("    this receipt covers what survived.");
   }
-  if (untested.length > 0) {
+  if (newer.length > 0) {
     io.out(
-      `  ! parser confidence: medium (claude code ${untested.join(", ")} is newer than our fixtures).`,
+      `  ! parser confidence: medium (${newer.join(", ")} ${newer.length > 1 ? "are" : "is"} newer than our fixtures).`,
     );
     if (options.strict) return 3;
   }

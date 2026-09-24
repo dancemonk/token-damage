@@ -5,9 +5,10 @@
 ```
 ~ $ npx token-damage
 token-damage 0.1.0
-reads ~/.claude on this machine · uploads nothing · no network calls
+reads agent logs on this machine · uploads nothing · no network calls
 
 scanning ~/.claude/projects …
+scanning ~/.codex/sessions, ~/.codex/archived_sessions …
   ✓ 94 sessions · 26 active days · 212 subagent transcripts
   ✓ 7,480 model calls · 612 prompts you actually typed
   ! claude code already deleted everything older than 30 days.
@@ -113,9 +114,9 @@ The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 
 ## Flags
 `--since 30d|YYYY-MM-DD`, `--plan 20|100|200|<usd>`, `--no-anim`, `--no-sound` (reserved), `--json` (schema in
-`schema/receipt.schema.json`; tiers included on every value), `--fixtures <dir>`, `--config-dir <path>`
-(same as `CLAUDE_CONFIG_DIR`), `--daily` (today's slip), `--keep-history 3650` (offers to set `cleanupPeriodDays`;
-asks first), `--audit` (prints every file read and every field stored), `--forget` (deletes `~/.token-damage`).
+`schema/receipt.schema.json`; tiers included on every value), `--fixtures <dir>` (a Claude Code config dir and a
+Codex home in one), `--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>` (same as
+`CODEX_HOME`), `--daily` (today's slip), `--keep-history 3650` (offers to set `cleanupPeriodDays`; asks first), `--audit` (prints every file read and every field stored), `--forget` (deletes `~/.token-damage`).
 
 ## Files it writes
 - `~/.token-damage/history.json` — daily aggregates only (tokens by type/model, calls, sessions, words, first/last
@@ -130,5 +131,6 @@ Never follows symlinks outside the config roots. Streams files; never loads a tr
 (ccusage once hit 4 GB RSS on a 12.7 GB history).
 
 ## Exit codes
-0 ok · 2 no transcripts found (prints where it looked and the env vars that disable writing) · 3 parse
-confidence low (unknown Claude Code version; prints "Parser confidence: medium" and continues unless `--strict`).
+0 ok · 2 no sessions found (prints where it looked and the env vars that disable writing) · 3 parse
+confidence low (an agent version in the period is newer than our fixtures; prints "parser confidence: medium" and
+continues unless `--strict`).

@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,12 +12,25 @@ import { validate } from "./schema.js";
 
 const CLI = fileURLToPath(new URL("../dist/index.js", import.meta.url));
 const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
+const CODEX = join(ROOT, "packages/core/fixtures/codex");
+const NEWEST_ROLLOUT =
+  "sessions/2026/09/22/rollout-2026-09-22T10-00-00-01a0c5f0-0000-7000-8000-000000000001.jsonl";
 let dir = "";
 
 beforeAll(async () => {
   dir = await mkdtemp(join(tmpdir(), "td-cli-"));
   await mkdir(join(dir, "home"));
   await writeSampleMonth(join(dir, "sample-month"));
+  // Claude Code and Codex in one corpus.
+  await cp(join(dir, "sample-month"), join(dir, "both"), { recursive: true });
+  await cp(CODEX, join(dir, "both"), { recursive: true });
+  // One Codex rollout from a version newer than our fixtures.
+  const rollout = await readFile(join(CODEX, NEWEST_ROLLOUT), "utf8");
+  await mkdir(join(dir, "newer", NEWEST_ROLLOUT, ".."), { recursive: true });
+  await writeFile(
+    join(dir, "newer", NEWEST_ROLLOUT),
+    rollout.replace('"cli_version":"0.155.1"', '"cli_version":"0.999.0"'),
+  );
 }, 60_000);
 afterAll(async () => {
   if (dir) await rm(dir, { recursive: true, force: true });
@@ -62,7 +75,7 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
       lines.slice(start, start + expected.split("\n").length).join("\n"),
     ).toBe(expected);
     expect(run.stdout).not.toContain("\x1b[");
-    expect(run.stdout.replace(dir, "<dir>")).toMatchSnapshot();
+    expect(run.stdout.replaceAll(dir, "<dir>")).toMatchSnapshot();
   });
 
   it("prints the banner and scan lines from docs/CLI.md", () => {
@@ -74,7 +87,11 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
     ).stdout.split("\n");
     // The banner shows the current version; the doc's example may lag behind a release.
     flow[1] = (flow[1] ?? "").replace(/\d+\.\d+\.\d+/, VERSION);
-    for (const i of [1, 2, 5, 6, 7])
+    // The fixture corpus stands in for both ~/.claude and ~/.codex.
+    const corpus = join(dir, "sample-month");
+    flow[4] = (flow[4] ?? "").replace("~/.claude", corpus);
+    flow[5] = (flow[5] ?? "").replaceAll("~/.codex", corpus);
+    for (const i of [1, 2, 4, 5, 6, 7, 8])
       expect(out, flow[i]).toContain(
         (flow[i] ?? "").replace(/\s+\(only when.*$/, ""),
       );
@@ -119,12 +136,52 @@ describe("--json", () => {
   });
 });
 
+describe("codex", () => {
+  const receipt = (fixtures: string) => {
+    const run = cli("--fixtures", fixtures, "--json", "--since", "2025-09-01");
+    expect(run.status, run.stderr).toBe(0);
+    return JSON.parse(run.stdout).measured;
+  };
+  const tokens = (m: { byType: Record<string, { value: number }> }) =>
+    Object.values(m.byType).reduce((s, v) => s + v.value, 0);
+
+  it("reads a Codex home", async () => {
+    const { totals } = JSON.parse(
+      await readFile(join(CODEX, "expected.json"), "utf8"),
+    ) as { totals: { tokens: Record<string, number> } };
+    expect(tokens(receipt(CODEX))).toBe(
+      Object.values(totals.tokens).reduce((s, v) => s + v, 0),
+    );
+  });
+
+  it("adds Codex to Claude Code in one receipt", () => {
+    const claude = receipt(join(dir, "sample-month"));
+    const codex = receipt(CODEX);
+    const both = receipt(join(dir, "both"));
+    expect(tokens(both)).toBe(tokens(claude) + tokens(codex));
+    for (const k of ["calls", "sessions", "prompts", "words"])
+      expect(both[k].value, k).toBe(claude[k].value + codex[k].value);
+  });
+
+  it("says when Codex is newer than our fixtures, and --strict exits 3", () => {
+    const run = cli("--fixtures", join(dir, "newer"), "--no-anim");
+    expect(run.status, run.stderr).toBe(0);
+    expect(run.stdout).toContain(
+      "  ! parser confidence: medium (codex 0.999 is newer than our fixtures).",
+    );
+    // No Claude Code logs here, so no word about Claude Code's retention.
+    expect(run.stdout).not.toContain("claude code already deleted");
+    expect(cli("--fixtures", join(dir, "newer"), "--strict").status).toBe(3);
+  });
+});
+
 describe("exit codes", () => {
-  it("exits 2 and says where it looked when there are no transcripts", async () => {
+  it("exits 2 and says where it looked when there are no sessions", async () => {
     await mkdir(join(dir, "empty", "projects"), { recursive: true });
     const run = cli("--fixtures", join(dir, "empty"), "--no-anim");
     expect(run.status).toBe(2);
-    expect(run.stdout).toContain("no claude code transcripts found");
+    expect(run.stdout).toContain("no claude code or codex sessions found");
+    expect(run.stdout).toContain(join(dir, "empty", "archived_sessions"));
     expect(run.stdout).toContain("CLAUDE_CODE_SKIP_PROMPT_HISTORY");
   });
 
@@ -147,6 +204,18 @@ describe("arguments", () => {
         parseGuess,
       ),
     ).toEqual([2e7, 2e7, 2e7, 2e7, 1.2e9, 5e5, undefined, undefined]);
+  });
+
+  it("reads a fixture corpus as both a Claude Code config dir and a Codex home", () => {
+    expect(parseOptions(["--fixtures", "f"])).toMatchObject({
+      configDir: "f",
+      codexHome: "f",
+      fixtures: true,
+    });
+    expect(parseOptions(["--codex-home", "c"])).toMatchObject({
+      configDir: undefined,
+      codexHome: "c",
+    });
   });
 
   it("accepts the -- that pnpm passes through", () => {
