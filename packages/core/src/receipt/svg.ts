@@ -362,7 +362,7 @@ export function receiptSvg(r: Receipt): string {
   }[] = [
     {
       label: "LIST-PRICE VALUE",
-      value: formatUsd(r.priced.listPrice),
+      value: `${formatUsd(r.priced.listPrice)}${r.priced.partlyPriced ? "+" : ""}`,
       mark: "≡",
     },
   ];

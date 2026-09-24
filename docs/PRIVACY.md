@@ -2,7 +2,9 @@
 
 ## Promise (public page text)
 Token Damage runs on your computer. It reads the usage records Claude Code already keeps in `~/.claude`
-(and Codex in `~/.codex`), counts tokens, calls, times and the number of words you typed, and prints a receipt.
+(and Codex in `~/.codex`, Gemini CLI in `~/.gemini/tmp`, OpenCode in `~/.local/share/opencode`), counts tokens,
+calls, times and the number of words you typed, and prints a receipt. OpenCode's database is opened read-only;
+the account and credential tables in it are never queried.
 
 It never reads your code. It never keeps your prompts: words are counted in memory and the text is discarded.
 It never stores project names, folder paths, branch names or file names. It makes no network requests.

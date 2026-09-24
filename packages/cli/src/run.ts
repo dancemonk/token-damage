@@ -13,6 +13,7 @@ import {
   disputeStamp,
   emptyCodexStats,
   emptyGeminiStats,
+  emptyOpenCodeStats,
   emptyStats,
   EXCUSES,
   geminiDirs,
@@ -20,12 +21,14 @@ import {
   loadState,
   nextState,
   observe,
+  opencodeDirs,
   paint,
   receiptLines,
   saveState,
   scanClaude,
   scanCodex,
   scanGemini,
+  scanOpenCode,
   type Excuse,
   type PromptEvent,
   type Receipt,
@@ -42,13 +45,14 @@ import { VERSION } from "./version.js";
 
 /**
  * Newest major.minor per agent the parser has fixtures for (docs/DATA-SOURCES.md §Tested versions).
- * Gemini CLI writes no version into its chats, so it is never flagged.
+ * Gemini CLI writes no version into its chats, so it is never flagged. OpenCode's is its session's.
  */
 const TESTED: Partial<
   Record<Source, { name: string; newest: [number, number] }>
 > = {
   "claude-code": { name: "claude code", newest: [2, 1] },
   codex: { name: "codex", newest: [0, 155] },
+  opencode: { name: "opencode", newest: [1, 17] },
 };
 const DAY_MS = 86_400_000;
 
@@ -214,11 +218,15 @@ export async function run(options: Options, io: Io): Promise<number> {
   const geminiData = options.geminiDir
     ? [options.geminiDir]
     : geminiDirs(process.env, homedir());
+  const opencodeData = options.opencodeDir
+    ? [options.opencodeDir]
+    : opencodeDirs(process.env, homedir());
   // What each agent's scan reads, one line per agent.
   const scanned = [
     roots.map((r) => join(r, "projects")),
     homes.flatMap((h) => [join(h, "sessions"), join(h, "archived_sessions")]),
     geminiData,
+    opencodeData,
   ];
   const p = period(options);
   if (!options.json) {
@@ -234,12 +242,14 @@ export async function run(options: Options, io: Io): Promise<number> {
   const claudeStats = { ...emptyStats(), files: 0, subagentFiles: 0 };
   const codexStats = emptyCodexStats();
   const geminiStats = emptyGeminiStats();
+  const opencodeStats = emptyOpenCodeStats();
   // One deduper for every agent: their dedupe keys never collide.
   const deduper = createDeduper();
   for (const scan of [
     scanClaude(roots, claudeStats),
     scanCodex(homes, codexStats),
     scanGemini(geminiData, geminiStats),
+    scanOpenCode(opencodeData, opencodeStats),
   ]) {
     for await (const record of scan) {
       if (record.ts >= p.from && record.ts < p.to) deduper.add(record);
@@ -247,10 +257,20 @@ export async function run(options: Options, io: Io): Promise<number> {
   }
   const usage: UsageEvent[] = deduper.result();
   const prompts: PromptEvent[] = deduper.prompts();
-  const files = claudeStats.files + codexStats.files + geminiStats.files;
+  if (opencodeStats.noSqlite > 0) {
+    const line = `! opencode needs node 22.13 or newer to read its database (this is ${process.versions.node}); skipped.`;
+    if (options.json) process.stderr.write(line + "\n");
+    else io.out(`  ${line}`);
+  }
+  const files =
+    claudeStats.files +
+    codexStats.files +
+    geminiStats.files +
+    opencodeStats.databases +
+    opencodeStats.files;
   if (files === 0 || usage.length === 0) {
     const lines = [
-      `no claude code, codex or gemini cli sessions found${files > 0 ? " in this period" : ""}.`,
+      `no claude code, codex, gemini cli or opencode sessions found${files > 0 ? " in this period" : ""}.`,
       `looked in: ${scanned.flat().join(", ")}`,
       "claude code writes none when CLAUDE_CODE_SKIP_PROMPT_HISTORY is set or with `claude -p --no-session-persistence`.",
     ];

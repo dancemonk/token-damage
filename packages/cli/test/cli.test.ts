@@ -14,6 +14,7 @@ const CLI = fileURLToPath(new URL("../dist/index.js", import.meta.url));
 const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
 const CODEX = join(ROOT, "packages/core/fixtures/codex");
 const GEMINI = join(ROOT, "packages/core/fixtures/gemini");
+const OPENCODE = join(ROOT, "packages/core/fixtures/opencode");
 const NEWEST_ROLLOUT =
   "sessions/2026/09/22/rollout-2026-09-22T10-00-00-01a0c5f0-0000-7000-8000-000000000001.jsonl";
 let dir = "";
@@ -22,10 +23,11 @@ beforeAll(async () => {
   dir = await mkdtemp(join(tmpdir(), "td-cli-"));
   await mkdir(join(dir, "home"));
   await writeSampleMonth(join(dir, "sample-month"));
-  // Claude Code, Codex and Gemini CLI in one corpus.
+  // Claude Code, Codex, Gemini CLI and OpenCode in one corpus.
   await cp(join(dir, "sample-month"), join(dir, "all"), { recursive: true });
   await cp(CODEX, join(dir, "all"), { recursive: true });
   await cp(GEMINI, join(dir, "all"), { recursive: true });
+  await cp(OPENCODE, join(dir, "all"), { recursive: true });
   // One Codex rollout from a version newer than our fixtures.
   const rollout = await readFile(join(CODEX, NEWEST_ROLLOUT), "utf8");
   await mkdir(join(dir, "newer", NEWEST_ROLLOUT, ".."), { recursive: true });
@@ -94,7 +96,8 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
     flow[4] = (flow[4] ?? "").replace("~/.claude", corpus);
     flow[5] = (flow[5] ?? "").replaceAll("~/.codex", corpus);
     flow[6] = (flow[6] ?? "").replace("~/.gemini", corpus);
-    for (const i of [1, 2, 4, 5, 6, 7, 8, 9])
+    flow[7] = (flow[7] ?? "").replace("~/.local/share", corpus);
+    for (const i of [1, 2, 4, 5, 6, 7, 8, 9, 10])
       expect(out, flow[i]).toContain(
         (flow[i] ?? "").replace(/\s+\(only when.*$/, ""),
       );
@@ -139,7 +142,7 @@ describe("--json", () => {
   });
 });
 
-describe("codex and gemini cli", () => {
+describe("codex, gemini cli and opencode", () => {
   const receipt = (fixtures: string) => {
     const run = cli("--fixtures", fixtures, "--json", "--since", "2025-09-01");
     expect(run.status, run.stderr).toBe(0);
@@ -161,8 +164,14 @@ describe("codex and gemini cli", () => {
     expect(tokens(receipt(GEMINI))).toBe(555_226);
   });
 
-  it("adds Claude Code, Codex and Gemini CLI up in one receipt", () => {
-    const parts = [join(dir, "sample-month"), CODEX, GEMINI].map(receipt);
+  it("reads an OpenCode data dir", () => {
+    expect(tokens(receipt(OPENCODE))).toBe(9_054_733);
+  });
+
+  it("adds Claude Code, Codex, Gemini CLI and OpenCode up in one receipt", () => {
+    const parts = [join(dir, "sample-month"), CODEX, GEMINI, OPENCODE].map(
+      receipt,
+    );
     const all = receipt(join(dir, "all"));
     expect(tokens(all)).toBe(parts.reduce((s, m) => s + tokens(m), 0));
     for (const k of ["calls", "sessions", "prompts", "words"])
@@ -187,9 +196,10 @@ describe("exit codes", () => {
     const run = cli("--fixtures", join(dir, "empty"), "--no-anim");
     expect(run.status).toBe(2);
     expect(run.stdout).toContain(
-      "no claude code, codex or gemini cli sessions found",
+      "no claude code, codex, gemini cli or opencode sessions found",
     );
     expect(run.stdout).toContain(join(dir, "empty", "tmp"));
+    expect(run.stdout).toContain(join(dir, "empty", "opencode"));
     expect(run.stdout).toContain(join(dir, "empty", "archived_sessions"));
     expect(run.stdout).toContain("CLAUDE_CODE_SKIP_PROMPT_HISTORY");
   });

@@ -50,6 +50,7 @@ not charged. A Gemini model Google no longer lists is priced as the nearest vers
 OpenCode runs models from any provider. Its calls are priced by model name from the same table (Claude models at
 Anthropic's price, `gpt-*` at OpenAI's, `gemini-*` at Google's, with those providers' long-context rules). The
 `cost` OpenCode stores is not used. A model with no row here (e.g. `glm-5.2`, `kimi-k2.7-code`) is "not priced".
+Totals that leave out unpriced tokens say so: `≡ $1.56+` means at least that much (`partlyPriced` in the JSON).
 
 Cache writes have two prices: 5-minute TTL 1.25× input, 1-hour TTL 2× input. Claude Code writes the main thread with
 the 1-hour TTL (87% of cache writes on real logs; a single write price understated list price by 7.6%), so

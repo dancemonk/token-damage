@@ -195,6 +195,9 @@
           },
           "notPriced": {
             "const": true
+          },
+          "partlyPriced": {
+            "const": true
           }
         }
       }
@@ -220,6 +223,9 @@
           },
           "notPriced": {
             "const": true
+          },
+          "partlyPriced": {
+            "const": true
           }
         }
       }
@@ -237,6 +243,9 @@
       "properties": {
         "listPrice": {
           "$ref": "#/$defs/priced"
+        },
+        "partlyPriced": {
+          "const": true
         },
         "plan": {
           "anyOf": [

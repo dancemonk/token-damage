@@ -118,6 +118,26 @@ describe("receipt for several agents", () => {
     expect(r.byAgent[0]?.notPriced).toBeUndefined();
   });
 
+  it("shows a price that leaves out unpriced models as a floor", () => {
+    const oc = (model: string) =>
+      call({ source: "opencode", sessionId: "s9", model });
+    const r = receipt([claudeCall, oc("gpt-5.5"), oc("glm-5.2")]);
+    expect(r.priced.partlyPriced).toBe(true);
+    const agent = (name: string) => r.byAgent.find((a) => a.agent === name);
+    expect(agent("opencode")?.partlyPriced).toBe(true);
+    expect(agent("claude-code")?.partlyPriced).toBeUndefined();
+    expect(r.byModel.find((m) => m.name === "glm-5.2")).toMatchObject({
+      notPriced: true,
+    });
+    const lines = text(r);
+    expect(lines).toContainEqual(
+      expect.stringMatching(/^ {2}opencode +\S+ +≡ \$\d+\.\d\d\+$/),
+    );
+    expect(lines.find((l) => l.startsWith("LIST-PRICE VALUE"))).toMatch(/\+$/);
+    expect(lines).toContain("  + at least: models not priced are left out");
+    expect(text(receipt([claudeCall])).join("\n")).not.toContain("at least");
+  });
+
   it("shortens model names too long for the column, keeping the mark", () => {
     const r = receipt([
       call({

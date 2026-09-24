@@ -75,7 +75,9 @@ function kept(r: Receipt): string {
     : `(${p.days} days — claude code kept the last ${p.retentionDays})`;
 }
 
-const priced = (v: Value) => `≡ ${formatUsd(v)}`;
+// "$X+": the price leaves out tokens with no list price, so it is at least that.
+const priced = (v: Value, partly?: true) =>
+  `≡ ${formatUsd(v)}${partly ? "+" : ""}`;
 
 // A row name fits 21 columns (24 less the indent and a space before the tokens); longer names end in "…".
 function rowName(name: string, estModel?: true): string {
@@ -90,7 +92,7 @@ function table(heading: string, rows: [string, PriceRow][]): Line[] {
       text: `${heading.padEnd(24)}${"TOKENS".padStart(6)}${"LIST PRICE".padStart(18)}`,
     },
     ...rows.map(([name, row]) => ({
-      text: `${`  ${rowName(name, row.estModel)}`.padEnd(24)}${compactTokens(row.tokens.value).padStart(6)}${(row.notPriced ? "not priced" : priced(row.listPrice)).padStart(18)}`,
+      text: `${`  ${rowName(name, row.estModel)}`.padEnd(24)}${compactTokens(row.tokens.value).padStart(6)}${(row.notPriced ? "not priced" : priced(row.listPrice, row.partlyPriced)).padStart(18)}`,
     })),
   ];
 }
@@ -145,9 +147,20 @@ export function receiptLines(r: Receipt): Line[] {
           },
         ]
       : []),
+    ...(r.priced.partlyPriced
+      ? [
+          {
+            text: "  + at least: models not priced are left out",
+            style: "muted" as const,
+          },
+        ]
+      : []),
     rule("-"),
     {
-      text: leader("LIST-PRICE VALUE (API-EQUIV.)", priced(r.priced.listPrice)),
+      text: leader(
+        "LIST-PRICE VALUE (API-EQUIV.)",
+        priced(r.priced.listPrice, r.priced.partlyPriced),
+      ),
     },
   ];
   if (r.priced.plan) {

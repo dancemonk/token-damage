@@ -10,6 +10,7 @@ export interface Options {
   configDir: string | undefined;
   codexHome: string | undefined;
   geminiDir: string | undefined;
+  opencodeDir: string | undefined;
   fixtures: boolean;
   strict: boolean;
   help: boolean;
@@ -27,6 +28,7 @@ usage: npx token-damage [options]
   --config-dir <path>   Claude Code config dir (default ~/.claude, or CLAUDE_CONFIG_DIR)
   --codex-home <path>   Codex home (default ~/.codex, or CODEX_HOME)
   --gemini-dir <path>   Gemini CLI data dir (default ~/.gemini/tmp, or GEMINI_DATA_DIR)
+  --opencode-dir <path> OpenCode data dir (default ~/.local/share/opencode, or OPENCODE_DATA_DIR)
   --fixtures <dir>      read a fixture corpus instead of your own logs
   --strict              exit 3 if an agent is newer than anything tested
   -v, --version         print the version
@@ -47,6 +49,7 @@ export function parseOptions(argv: string[]): Options {
       "config-dir": { type: "string" },
       "codex-home": { type: "string" },
       "gemini-dir": { type: "string" },
+      "opencode-dir": { type: "string" },
       strict: { type: "boolean", default: false },
       help: { type: "boolean", short: "h", default: false },
       version: { type: "boolean", short: "v", default: false },
@@ -67,13 +70,18 @@ export function parseOptions(argv: string[]): Options {
     planUsd: plan,
     anim: !values["no-anim"],
     json: values.json,
-    // A fixture corpus is a Claude Code config dir, a Codex home and a Gemini CLI home (`tmp/`) in one.
+    // A fixture corpus is a Claude Code config dir, a Codex home, a Gemini CLI home (`tmp/`) and an OpenCode
+    // data dir (`opencode/`) in one.
     configDir: values.fixtures ?? values["config-dir"],
     codexHome: values.fixtures ?? values["codex-home"],
     geminiDir:
       values.fixtures !== undefined
         ? join(values.fixtures, "tmp")
         : values["gemini-dir"],
+    opencodeDir:
+      values.fixtures !== undefined
+        ? join(values.fixtures, "opencode")
+        : values["opencode-dir"],
     fixtures: values.fixtures !== undefined,
     strict: values.strict,
     help: values.help,

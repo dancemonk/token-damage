@@ -33,6 +33,8 @@ export interface PriceRow {
   estModel?: true;
   /** None of it has a list price: the receipt says "not priced" rather than $0. */
   notPriced?: true;
+  /** Some of it has no list price: `listPrice` leaves those tokens out, so the receipt shows it as "$X+". */
+  partlyPriced?: true;
 }
 
 /** Everything any output shows. Renderers format; they never compute. */
@@ -78,6 +80,8 @@ export interface Receipt {
   byModel: ({ name: string } & PriceRow)[];
   priced: {
     listPrice: Value;
+    /** Some tokens have no list price and are left out of `listPrice` (shown "$X+"). */
+    partlyPriced?: true;
     plan: { usd: number; multiple: Value } | null;
     cacheSaved: Value;
     withoutCache: Value;
@@ -124,6 +128,8 @@ function priceRow(
     listPrice: listPrice(models, prices),
     ...(matches.some((m) => m?.isFallback) && { estModel: true as const }),
     ...(matches.every((m) => !m) && { notPriced: true as const }),
+    ...(matches.some((m) => !m) &&
+      matches.some((m) => m) && { partlyPriced: true as const }),
   };
 }
 
@@ -240,6 +246,9 @@ export function buildReceipt({
     byModel: byFamily(totals.byModel, prices),
     priced: {
       listPrice: list,
+      ...(Object.keys(totals.byModel).some((key) => !priceFor(key, prices)) && {
+        partlyPriced: true as const,
+      }),
       plan: planUsd
         ? { usd: planUsd, multiple: planMultiple(list, planUsd) }
         : null,
