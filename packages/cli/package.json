@@ -1,0 +1,22 @@
+{
+  "name": "token-damage",
+  "version": "0.1.0",
+  "description": "Prints the receipt your AI agent never gave you.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "token-damage": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json && node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  }
+}
