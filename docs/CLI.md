@@ -96,17 +96,18 @@ ADJUSTER'S NOTE
   and a third of it again. per word.
 ------------------------------------------------
 ✶ RAM-X .................... ▲ +$0.0000079/stick
-✶ jevons paradox strikes again. your share:
-  0.0000083 paradoxes.
+✶ anthropic is now valued at $965 billion.
+  your share: 0.0000083 anthropics.
 ✶ satire. economists were not consulted.
 ------------------------------------------------
-whatever our chatbot promised, we honor. a
-  tribunal told air canada to.
-5% off if your ai pilot paid for itself. 95%
-  don't.
+all sales final. this offer is legally
+  binding, no takesies backsies.
+ad-free receipt. chatbots started carrying
+  ads in 2026; receipts are holding out.
 ------------------------------------------------
-meanwhile, oct 2025: openai was valued at
-  $500 billion.
+meanwhile, jan 2026: moltbook opened, a
+  social network only ai agents can post to.
+  humans are welcome to observe.
 ================================================
    ≡ list-price equiv · ≈ estimate · ✶ satire
       method v1 · prices as of 2026-09-24

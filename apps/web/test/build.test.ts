@@ -127,7 +127,8 @@ describe("one language per page", () => {
       "OpenAI Google Meta Berkeley Lab JavaScript DRAM RAM-X API LBNL TrendForce The Climate Brink Epoch AI " +
       "ChatGPT Mistral DOE EcoLogits ISO dev to Samsung Micron Crucial CO USD cookie I II III IV " +
       // Pool lines (docs/ROASTS.md §Pool): companies, products and places in the news.
-      "Microsoft Stargate Nvidia xAI GPU Apple Klarna DeepSeek Collins Hyperion MIT Amazon Chevrolet Air Canada"
+      "Microsoft Stargate Nvidia xAI GPU Apple Klarna DeepSeek Collins Hyperion MIT Amazon Chevrolet Air Canada " +
+      "DDR Raspberry Pi SpaceX Hugging Face Moltbook Tesla"
     ).split(" "),
   );
   /** Visible text and attributes, without scripts, style, code, paths or model ids. */

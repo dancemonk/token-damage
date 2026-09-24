@@ -193,6 +193,8 @@ describe.each(others)("pool in $file", ({ catalog }) => {
     if (l.kind !== "joke") expect(l.source?.url).toMatch(/^https:\/\//);
     // The date in a news line keeps its age honest.
     if (l.kind === "news") expect(l.text).toMatch(/\d{4}/);
+    // Three lines under the paper on a 360px phone (styles.css reserves exactly that).
+    if (l.kind === "news") expect(l.text.length).toBeLessThanOrEqual(120);
   });
 
   it("never repeats an aside", () => {

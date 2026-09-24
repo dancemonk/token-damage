@@ -1109,6 +1109,237 @@
         "date": "2025-03",
         "url": "https://analyticsindiamag.com/ai-news-updates/ai-will-be-writing-90-of-code-in-3-6-months-says-anthropics-dario-amodei/"
       }
+    },
+    {
+      "id": "news.moltbook.1",
+      "kind": "news",
+      "text": "Янв. 2026: открылся Moltbook — соцсеть, где пишут только ИИ-агенты. Людям разрешено смотреть.",
+      "source": {
+        "date": "2026-01",
+        "url": "https://arxiv.org/abs/2602.10127"
+      }
+    },
+    {
+      "id": "news.spacexai.1",
+      "kind": "news",
+      "text": "Февр. 2026: SpaceX объединилась с xAI при общей оценке 1,25 трлн $ — ради дата-центров на орбите.",
+      "source": {
+        "date": "2026-02",
+        "url": "https://www.cnbc.com/2026/02/03/musk-xai-spacex-biggest-merger-ever.html"
+      }
+    },
+    {
+      "id": "news.ads.1",
+      "kind": "news",
+      "text": "Февр. 2026: ChatGPT начал показывать рекламу части бесплатных пользователей в США.",
+      "source": {
+        "date": "2026-02",
+        "url": "https://techcrunch.com/2026/02/09/chatgpt-rolls-out-ads/"
+      }
+    },
+    {
+      "id": "news.superbowl.1",
+      "kind": "news",
+      "text": "Февр. 2026: почти каждая четвёртая реклама на Супербоуле была про ИИ.",
+      "source": {
+        "date": "2026-02",
+        "url": "https://www.emarketer.com/content/ai-took-center-stage-super-bowl-lx"
+      }
+    },
+    {
+      "id": "news.openai852.1",
+      "kind": "news",
+      "text": "Март 2026: OpenAI закрыла раунд на 122 млрд $ при оценке 852 млрд $.",
+      "source": {
+        "date": "2026-03",
+        "url": "https://www.cnbc.com/2026/03/31/openai-funding-round-ipo.html"
+      }
+    },
+    {
+      "id": "news.pocketos.1",
+      "kind": "news",
+      "text": "Апр. 2026: ИИ-агент за девять секунд стёр рабочую базу стартапа вместе с бэкапами. Объяснил: действовал наугад.",
+      "source": {
+        "date": "2026-04",
+        "url": "https://www.xda-developers.com/an-ai-agent-deleted-a-companys-entire-database-in-9-seconds-then-confessed-it-guessed-instead-of-asking/"
+      }
+    },
+    {
+      "id": "news.nvidia55.1",
+      "kind": "news",
+      "text": "Май 2026: Nvidia стала первой в истории компанией стоимостью 5,5 трлн $.",
+      "source": {
+        "date": "2026-05",
+        "url": "https://www.forbes.com/sites/antoniopequenoiv/2026/05/13/nvidia-hits-record-55-trillion-value-first-company-to-ever-reach-mark/"
+      }
+    },
+    {
+      "id": "news.anthropic965.1",
+      "kind": "news",
+      "text": "Май 2026: Anthropic привлекла 65 млрд $ при оценке 965 млрд $.",
+      "source": {
+        "date": "2026-05",
+        "url": "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/"
+      }
+    },
+    {
+      "id": "news.googletokens26.1",
+      "kind": "news",
+      "text": "Май 2026: Google обрабатывает больше 3,2 квадриллиона токенов в месяц — в семь раз больше, чем годом раньше.",
+      "source": {
+        "date": "2026-05",
+        "url": "https://blog.google/innovation-and-ai/sundar-pichai-io-2026/"
+      }
+    },
+    {
+      "id": "news.ddr2.1",
+      "kind": "news",
+      "text": "Июнь 2026: дефицит памяти добрался до DDR2 — стандарта 2003 года. TrendForce ждала подорожания на 55–60% за квартал.",
+      "source": {
+        "date": "2026-06",
+        "url": "https://www.trendforce.com/presscenter/news/20260622-13112.html"
+      }
+    },
+    {
+      "id": "news.terafab.1",
+      "kind": "news",
+      "text": "Авг. 2026: Tesla и SpaceX вложат 16,8 млрд $ в завод чипов в Техасе — в том числе для дата-центров в космосе.",
+      "source": {
+        "date": "2026-08",
+        "url": "https://techcrunch.com/2026/08/06/tesla-and-spacex-will-invest-16-8b-to-start-building-terafab-chip-factory-in-texas/"
+      }
+    },
+    {
+      "id": "news.adsrevenue.1",
+      "kind": "news",
+      "text": "Авг. 2026: реклама в ChatGPT вышла на темп в 1 млрд $ выручки в год.",
+      "source": {
+        "date": "2026-08",
+        "url": "https://www.cnbc.com/2026/08/31/open-ai-chatgpt-ads-revenue.html"
+      }
+    },
+    {
+      "id": "news.huggingface.1",
+      "kind": "news",
+      "text": "Сент. 2026: Nvidia договорилась купить Hugging Face за 12,9 млрд $.",
+      "source": {
+        "date": "2026-09",
+        "url": "https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/"
+      }
+    },
+    {
+      "id": "satire.ddr2.1",
+      "kind": "satire",
+      "text": "Дефицит памяти дошёл до DDR2 — стандарта 2003 года. Ваша доля: {share} планки из бабушкиного системника.",
+      "size": 1,
+      "source": {
+        "date": "2026-06",
+        "url": "https://www.trendforce.com/presscenter/news/20260622-13112.html"
+      }
+    },
+    {
+      "id": "satire.pi.1",
+      "kind": "satire",
+      "text": "Raspberry Pi 5 на 16 ГБ подорожала до 205 $ из-за цен на память. Ваша доля: {share} малинки.",
+      "size": 1,
+      "source": {
+        "date": "2026-02",
+        "url": "https://www.theregister.com/2026/02/02/raspberry_pi_ram_shortage_price_hike/"
+      }
+    },
+    {
+      "id": "satire.orbit.1",
+      "kind": "satire",
+      "text": "SpaceX и xAI объединились ради дата-центров на орбите. Ваша доля: {share} орбиты.",
+      "size": 1,
+      "source": {
+        "date": "2026-02",
+        "url": "https://www.cnbc.com/2026/02/03/musk-xai-spacex-biggest-merger-ever.html"
+      }
+    },
+    {
+      "id": "satire.hug.1",
+      "kind": "satire",
+      "text": "Nvidia покупает Hugging Face за 12,9 млрд $. Ваша доля: {share} обнимашки.",
+      "size": 1,
+      "source": {
+        "date": "2026-09",
+        "url": "https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/"
+      }
+    },
+    {
+      "id": "satire.moltbook.1",
+      "kind": "satire",
+      "text": "У ИИ-агентов появилась своя соцсеть, людям — только смотреть. Ваша доля: {share} лайка.",
+      "size": 1,
+      "source": {
+        "date": "2026-01",
+        "url": "https://arxiv.org/abs/2602.10127"
+      }
+    },
+    {
+      "id": "satire.anthropic.1",
+      "kind": "satire",
+      "text": "Anthropic теперь оценивают в 965 млрд $. Ваша доля: {share} Anthropic.",
+      "size": 1,
+      "source": {
+        "date": "2026-05",
+        "url": "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/"
+      }
+    },
+    {
+      "id": "joke.ads.1",
+      "kind": "joke",
+      "text": "Чек без рекламы. В чат-ботах она появилась в 2026-м, а мы пока держимся.",
+      "source": {
+        "date": "2026-02",
+        "url": "https://techcrunch.com/2026/02/09/chatgpt-rolls-out-ads/"
+      }
+    },
+    {
+      "id": "joke.guessed.1",
+      "kind": "joke",
+      "text": "Гарантия не действует, если агент действовал наугад. Один в апреле так и сделал — вместе с бэкапами.",
+      "source": {
+        "date": "2026-04",
+        "url": "https://www.xda-developers.com/an-ai-agent-deleted-a-companys-entire-database-in-9-seconds-then-confessed-it-guessed-instead-of-asking/"
+      }
+    },
+    {
+      "id": "joke.ddr2.1",
+      "kind": "joke",
+      "text": "Принимаем старую DDR2 в зачёт. Внезапно она нарасхват.",
+      "source": {
+        "date": "2026-06",
+        "url": "https://www.trendforce.com/presscenter/news/20260622-13112.html"
+      }
+    },
+    {
+      "id": "joke.orbit.1",
+      "kind": "joke",
+      "text": "Способы доставки: курьером, самовывозом, на низкую околоземную орбиту.",
+      "source": {
+        "date": "2026-02",
+        "url": "https://www.cnbc.com/2026/02/03/musk-xai-spacex-biggest-merger-ever.html"
+      }
+    },
+    {
+      "id": "joke.fatigue.1",
+      "kind": "joke",
+      "text": "Пока печатался чек, вышла новая модель. Начните заново.",
+      "source": {
+        "date": "2026-09",
+        "url": "https://www.cnbc.com/2026/09/06/meta-google-openai-anthropic-ai-model-fatigue.html"
+      }
+    },
+    {
+      "id": "joke.moltbook.1",
+      "kind": "joke",
+      "text": "У вашего агента теперь своя соцсеть. Вам разрешено смотреть.",
+      "source": {
+        "date": "2026-01",
+        "url": "https://arxiv.org/abs/2602.10127"
+      }
     }
   ]
 }

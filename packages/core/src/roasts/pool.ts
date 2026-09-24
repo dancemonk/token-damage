@@ -849,4 +849,227 @@ export const POOL_EN: PoolLine[] = [
       url: "https://en.wikipedia.org/wiki/Last_call",
     },
   },
+  // September 2026 refresh: events from January to September 2026.
+  {
+    id: "news.moltbook.1",
+    kind: "news",
+    text: "Jan 2026: Moltbook opened, a social network only AI agents can post to. Humans are welcome to observe.",
+    source: { date: "2026-01", url: "https://arxiv.org/abs/2602.10127" },
+  },
+  {
+    id: "news.spacexai.1",
+    kind: "news",
+    text: "Feb 2026: SpaceX merged with xAI at a combined $1.25 trillion, citing plans for data centers in orbit.",
+    source: {
+      date: "2026-02",
+      url: "https://www.cnbc.com/2026/02/03/musk-xai-spacex-biggest-merger-ever.html",
+    },
+  },
+  {
+    id: "news.ads.1",
+    kind: "news",
+    text: "Feb 2026: ChatGPT began showing ads to some free users in the US.",
+    source: {
+      date: "2026-02",
+      url: "https://techcrunch.com/2026/02/09/chatgpt-rolls-out-ads/",
+    },
+  },
+  {
+    id: "news.superbowl.1",
+    kind: "news",
+    text: "Feb 2026: nearly a quarter of Super Bowl ads featured AI.",
+    source: {
+      date: "2026-02",
+      url: "https://www.emarketer.com/content/ai-took-center-stage-super-bowl-lx",
+    },
+  },
+  {
+    id: "news.openai852.1",
+    kind: "news",
+    text: "Mar 2026: OpenAI closed a $122 billion round at an $852 billion valuation.",
+    source: {
+      date: "2026-03",
+      url: "https://www.cnbc.com/2026/03/31/openai-funding-round-ipo.html",
+    },
+  },
+  {
+    id: "news.pocketos.1",
+    kind: "news",
+    text: "Apr 2026: a coding agent wiped a startup's production database and backups in nine seconds. Its excuse: it guessed.",
+    source: {
+      date: "2026-04",
+      url: "https://www.xda-developers.com/an-ai-agent-deleted-a-companys-entire-database-in-9-seconds-then-confessed-it-guessed-instead-of-asking/",
+    },
+  },
+  {
+    id: "news.nvidia55.1",
+    kind: "news",
+    text: "May 2026: Nvidia became the first company worth $5.5 trillion.",
+    source: {
+      date: "2026-05",
+      url: "https://www.forbes.com/sites/antoniopequenoiv/2026/05/13/nvidia-hits-record-55-trillion-value-first-company-to-ever-reach-mark/",
+    },
+  },
+  {
+    id: "news.anthropic965.1",
+    kind: "news",
+    text: "May 2026: Anthropic raised $65 billion at a $965 billion valuation.",
+    source: {
+      date: "2026-05",
+      url: "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/",
+    },
+  },
+  {
+    id: "news.googletokens26.1",
+    kind: "news",
+    text: "May 2026: Google said it processes over 3.2 quadrillion tokens a month, seven times more than a year earlier.",
+    source: {
+      date: "2026-05",
+      url: "https://blog.google/innovation-and-ai/sundar-pichai-io-2026/",
+    },
+  },
+  {
+    id: "news.ddr2.1",
+    kind: "news",
+    text: "Jun 2026: the memory shortage reached DDR2, a standard from 2003. TrendForce forecast a 55–60% rise in a quarter.",
+    source: {
+      date: "2026-06",
+      url: "https://www.trendforce.com/presscenter/news/20260622-13112.html",
+    },
+  },
+  {
+    id: "news.terafab.1",
+    kind: "news",
+    text: "Aug 2026: Tesla and SpaceX committed $16.8 billion to a Texas chip fab, partly for data centers in space.",
+    source: {
+      date: "2026-08",
+      url: "https://techcrunch.com/2026/08/06/tesla-and-spacex-will-invest-16-8b-to-start-building-terafab-chip-factory-in-texas/",
+    },
+  },
+  {
+    id: "news.adsrevenue.1",
+    kind: "news",
+    text: "Aug 2026: ads in ChatGPT reached a $1 billion annual revenue run rate.",
+    source: {
+      date: "2026-08",
+      url: "https://www.cnbc.com/2026/08/31/open-ai-chatgpt-ads-revenue.html",
+    },
+  },
+  {
+    id: "news.huggingface.1",
+    kind: "news",
+    text: "Sep 2026: Nvidia agreed to buy Hugging Face for $12.9 billion.",
+    source: {
+      date: "2026-09",
+      url: "https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/",
+    },
+  },
+  {
+    id: "satire.ddr2.1",
+    kind: "satire",
+    text: "The memory shortage reached DDR2, a standard from 2003. Your share: {share} sticks of it.",
+    size: 1,
+    source: {
+      date: "2026-06",
+      url: "https://www.trendforce.com/presscenter/news/20260622-13112.html",
+    },
+  },
+  {
+    id: "satire.pi.1",
+    kind: "satire",
+    text: "RAM prices pushed the 16 GB Raspberry Pi 5 to $205. Your share: {share} Raspberry Pis.",
+    size: 1,
+    source: {
+      date: "2026-02",
+      url: "https://www.theregister.com/2026/02/02/raspberry_pi_ram_shortage_price_hike/",
+    },
+  },
+  {
+    id: "satire.orbit.1",
+    kind: "satire",
+    text: "SpaceX and xAI merged, citing data centers in orbit. Your share: {share} orbits.",
+    size: 1,
+    source: {
+      date: "2026-02",
+      url: "https://www.cnbc.com/2026/02/03/musk-xai-spacex-biggest-merger-ever.html",
+    },
+  },
+  {
+    id: "satire.hug.1",
+    kind: "satire",
+    text: "Nvidia is buying Hugging Face for $12.9 billion. Your share: {share} hugs.",
+    size: 1,
+    source: {
+      date: "2026-09",
+      url: "https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/",
+    },
+  },
+  {
+    id: "satire.moltbook.1",
+    kind: "satire",
+    text: "AI agents got a social network where humans may only watch. Your share: {share} likes.",
+    size: 1,
+    source: { date: "2026-01", url: "https://arxiv.org/abs/2602.10127" },
+  },
+  {
+    id: "satire.anthropic.1",
+    kind: "satire",
+    text: "Anthropic is now valued at $965 billion. Your share: {share} Anthropics.",
+    size: 1,
+    source: {
+      date: "2026-05",
+      url: "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/",
+    },
+  },
+  {
+    id: "joke.ads.1",
+    kind: "joke",
+    text: "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
+    source: {
+      date: "2026-02",
+      url: "https://techcrunch.com/2026/02/09/chatgpt-rolls-out-ads/",
+    },
+  },
+  {
+    id: "joke.guessed.1",
+    kind: "joke",
+    text: "Warranty void if your agent guesses. One did in April and took the backups with it.",
+    source: {
+      date: "2026-04",
+      url: "https://www.xda-developers.com/an-ai-agent-deleted-a-companys-entire-database-in-9-seconds-then-confessed-it-guessed-instead-of-asking/",
+    },
+  },
+  {
+    id: "joke.ddr2.1",
+    kind: "joke",
+    text: "Trade-in desk: old DDR2 accepted. Suddenly, it's in demand.",
+    source: {
+      date: "2026-06",
+      url: "https://www.trendforce.com/presscenter/news/20260622-13112.html",
+    },
+  },
+  {
+    id: "joke.orbit.1",
+    kind: "joke",
+    text: "Delivery options: standard, express, low Earth orbit.",
+    source: {
+      date: "2026-02",
+      url: "https://www.cnbc.com/2026/02/03/musk-xai-spacex-biggest-merger-ever.html",
+    },
+  },
+  {
+    id: "joke.fatigue.1",
+    kind: "joke",
+    text: "A newer model came out while this receipt printed. Please start over.",
+    source: {
+      date: "2026-09",
+      url: "https://www.cnbc.com/2026/09/06/meta-google-openai-anthropic-ai-model-fatigue.html",
+    },
+  },
+  {
+    id: "joke.moltbook.1",
+    kind: "joke",
+    text: "Your agent has its own social network now. You're welcome to observe.",
+    source: { date: "2026-01", url: "https://arxiv.org/abs/2602.10127" },
+  },
 ];

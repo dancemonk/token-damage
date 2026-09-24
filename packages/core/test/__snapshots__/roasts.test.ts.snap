@@ -88,9 +88,9 @@ exports[`sample customers > 0041: output is frozen 1`] = `
   },
   "deck": {
     "last": {
-      "joke": "joke.mit.1",
-      "news": "news.kairos.1",
-      "satire": "satire.jevons.1",
+      "joke": "joke.ads.1",
+      "news": "news.aircanada.1",
+      "satire": "satire.anthropic.1",
     },
     "round": {
       "joke": 0,
@@ -100,27 +100,27 @@ exports[`sample customers > 0041: output is frozen 1`] = `
     "seed": 0,
     "used": {
       "joke": [
-        "joke.aircanada.1",
-        "joke.mit.1",
+        "joke.tahoe.1",
+        "joke.ads.1",
       ],
       "news": [
-        "news.kairos.1",
+        "news.aircanada.1",
       ],
       "satire": [
-        "satire.jevons.1",
+        "satire.anthropic.1",
       ],
     },
   },
   "jokes": [
-    "Whatever our chatbot promised, we honor. A tribunal told Air Canada to.",
-    "5% off if your AI pilot paid for itself. 95% don't.",
+    "All sales final. This offer is legally binding, no takesies backsies.",
+    "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
   ],
   "news": {
     "source": {
-      "date": "2024-10",
-      "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+      "date": "2024-02",
+      "url": "https://www.cbc.ca/news/canada/british-columbia/air-canada-chatbot-lawsuit-1.7116416",
     },
-    "text": "Oct 2024: Google and Amazon signed deals for small nuclear reactors.",
+    "text": "Feb 2024: a tribunal held Air Canada responsible for what its chatbot promised.",
   },
   "note": {
     "family": "iceberg",
@@ -132,10 +132,10 @@ exports[`sample customers > 0041: output is frozen 1`] = `
   },
   "satire": {
     "source": {
-      "date": "2025-01",
-      "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/",
+      "date": "2026-05",
+      "url": "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/",
     },
-    "text": "Jevons paradox strikes again. Your share: 0.0000083 paradoxes.",
+    "text": "Anthropic is now valued at $965 billion. Your share: 0.0000083 Anthropics.",
   },
   "verdicts": [
     "CLAIM #0041 · "It was research" · DENIED | DENIED. 1.18 billion tokens. Research rarely happens at 3:47 AM.",
@@ -230,9 +230,9 @@ exports[`sample customers > 0042: output is frozen 1`] = `
   },
   "deck": {
     "last": {
-      "joke": "joke.mit.1",
-      "news": "news.kairos.1",
-      "satire": "satire.jevons.1",
+      "joke": "joke.ads.1",
+      "news": "news.aircanada.1",
+      "satire": "satire.anthropic.1",
     },
     "round": {
       "joke": 0,
@@ -242,27 +242,27 @@ exports[`sample customers > 0042: output is frozen 1`] = `
     "seed": 0,
     "used": {
       "joke": [
-        "joke.aircanada.1",
-        "joke.mit.1",
+        "joke.tahoe.1",
+        "joke.ads.1",
       ],
       "news": [
-        "news.kairos.1",
+        "news.aircanada.1",
       ],
       "satire": [
-        "satire.jevons.1",
+        "satire.anthropic.1",
       ],
     },
   },
   "jokes": [
-    "Whatever our chatbot promised, we honor. A tribunal told Air Canada to.",
-    "5% off if your AI pilot paid for itself. 95% don't.",
+    "All sales final. This offer is legally binding, no takesies backsies.",
+    "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
   ],
   "news": {
     "source": {
-      "date": "2024-10",
-      "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+      "date": "2024-02",
+      "url": "https://www.cbc.ca/news/canada/british-columbia/air-canada-chatbot-lawsuit-1.7116416",
     },
-    "text": "Oct 2024: Google and Amazon signed deals for small nuclear reactors.",
+    "text": "Feb 2024: a tribunal held Air Canada responsible for what its chatbot promised.",
   },
   "note": {
     "family": "few-commits",
@@ -274,10 +274,10 @@ exports[`sample customers > 0042: output is frozen 1`] = `
   },
   "satire": {
     "source": {
-      "date": "2025-01",
-      "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/",
+      "date": "2026-05",
+      "url": "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/",
     },
-    "text": "Jevons paradox strikes again. Your share: 0.0000013 paradoxes.",
+    "text": "Anthropic is now valued at $965 billion. Your share: 0.0000013 Anthropics.",
   },
   "verdicts": [
     "CLAIM #0042 · "It was research" · DENIED | DENIED. 187 million tokens. 2 commits. Research rarely happens at 4:12 AM.",
@@ -333,9 +333,9 @@ exports[`sample customers > 0043: output is frozen 1`] = `
   },
   "deck": {
     "last": {
-      "joke": "joke.mit.1",
-      "news": "news.kairos.1",
-      "satire": "satire.jevons.1",
+      "joke": "joke.ads.1",
+      "news": "news.aircanada.1",
+      "satire": "satire.anthropic.1",
     },
     "round": {
       "joke": 0,
@@ -345,27 +345,27 @@ exports[`sample customers > 0043: output is frozen 1`] = `
     "seed": 0,
     "used": {
       "joke": [
-        "joke.aircanada.1",
-        "joke.mit.1",
+        "joke.tahoe.1",
+        "joke.ads.1",
       ],
       "news": [
-        "news.kairos.1",
+        "news.aircanada.1",
       ],
       "satire": [
-        "satire.jevons.1",
+        "satire.anthropic.1",
       ],
     },
   },
   "jokes": [
-    "Whatever our chatbot promised, we honor. A tribunal told Air Canada to.",
-    "5% off if your AI pilot paid for itself. 95% don't.",
+    "All sales final. This offer is legally binding, no takesies backsies.",
+    "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
   ],
   "news": {
     "source": {
-      "date": "2024-10",
-      "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+      "date": "2024-02",
+      "url": "https://www.cbc.ca/news/canada/british-columbia/air-canada-chatbot-lawsuit-1.7116416",
     },
-    "text": "Oct 2024: Google and Amazon signed deals for small nuclear reactors.",
+    "text": "Feb 2024: a tribunal held Air Canada responsible for what its chatbot promised.",
   },
   "note": {
     "family": "restraint",
@@ -377,10 +377,10 @@ exports[`sample customers > 0043: output is frozen 1`] = `
   },
   "satire": {
     "source": {
-      "date": "2025-01",
-      "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/",
+      "date": "2026-05",
+      "url": "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/",
     },
-    "text": "Jevons paradox strikes again. Your share: 0.000000021 paradoxes.",
+    "text": "Anthropic is now valued at $965 billion. Your share: 0.000000021 Anthropics.",
   },
   "verdicts": [
     "CLAIM #0043 · "It was research" · DENIED | DENIED. 2.96 million tokens. Research at this scale usually comes with a bibliography.",
@@ -489,9 +489,9 @@ exports[`sample customers > 0044: output is frozen 1`] = `
   },
   "deck": {
     "last": {
-      "joke": "joke.mit.1",
-      "news": "news.kairos.1",
-      "satire": "satire.jevons.1",
+      "joke": "joke.ads.1",
+      "news": "news.aircanada.1",
+      "satire": "satire.anthropic.1",
     },
     "round": {
       "joke": 0,
@@ -501,27 +501,27 @@ exports[`sample customers > 0044: output is frozen 1`] = `
     "seed": 0,
     "used": {
       "joke": [
-        "joke.aircanada.1",
-        "joke.mit.1",
+        "joke.tahoe.1",
+        "joke.ads.1",
       ],
       "news": [
-        "news.kairos.1",
+        "news.aircanada.1",
       ],
       "satire": [
-        "satire.jevons.1",
+        "satire.anthropic.1",
       ],
     },
   },
   "jokes": [
-    "Whatever our chatbot promised, we honor. A tribunal told Air Canada to.",
-    "5% off if your AI pilot paid for itself. 95% don't.",
+    "All sales final. This offer is legally binding, no takesies backsies.",
+    "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
   ],
   "news": {
     "source": {
-      "date": "2024-10",
-      "url": "https://blog.google/company-news/outreach-and-initiatives/sustainability/google-kairos-power-nuclear-energy-agreement/",
+      "date": "2024-02",
+      "url": "https://www.cbc.ca/news/canada/british-columbia/air-canada-chatbot-lawsuit-1.7116416",
     },
-    "text": "Oct 2024: Google and Amazon signed deals for small nuclear reactors.",
+    "text": "Feb 2024: a tribunal held Air Canada responsible for what its chatbot promised.",
   },
   "note": {
     "family": "uninsurable",
@@ -533,10 +533,10 @@ exports[`sample customers > 0044: output is frozen 1`] = `
   },
   "satire": {
     "source": {
-      "date": "2025-01",
-      "url": "https://www.geekwire.com/2025/microsoft-ceo-says-ai-use-will-skyrocket-with-more-efficiency-amid-craze-over-deepseek/",
+      "date": "2026-05",
+      "url": "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/",
     },
-    "text": "Jevons paradox strikes again. Your share: 0.000069 paradoxes.",
+    "text": "Anthropic is now valued at $965 billion. Your share: 0.000069 Anthropics.",
   },
   "verdicts": [
     "CLAIM #0044 · "It was research" · DENIED | DENIED. 9.84 billion tokens. Research rarely happens at 2:05 AM.",

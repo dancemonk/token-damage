@@ -94,6 +94,8 @@ describe("the English pool", () => {
     if (line.kind !== "joke") expect(line.source?.url).toMatch(/^https:\/\//);
     // "2024-09", "2024", or "-" for a standing fact (the site's /method list reads all three).
     if (line.source) expect(line.source.date).toMatch(/^(\d{4}(-\d{2})?|-)$/);
+    // Three lines under the paper on a 360px phone, where the home page reserves exactly that much.
+    if (line.kind === "news") expect(line.text.length).toBeLessThanOrEqual(120);
     if (line.kind === "news")
       expect(line.text).toMatch(/^(\w{3} )?\d{4}|^Q\d \d{4}/);
   });
