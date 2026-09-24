@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Token Damage — hero interaction reference (pull, tear, print next)</title>
+<!-- Reference implementation of the home-page hero: drag the receipt down past 110px and release. Numbers here are the tuned ones; see docs/DESIGN.md §Motion. -->
+<style>
+body{margin:0;background:#0e0e0d;font-family:ui-monospace,Menlo,monospace;color:#d8d4ca}
+#root{position:relative;width:1440px;height:900px;overflow:hidden;background-color:#0e0e0d;background-image:radial-gradient(ellipse 900px 640px at 50% -8%, rgba(255,238,210,0.11), rgba(255,238,210,0) 62%),radial-gradient(circle,#21201d 1px,transparent 1.3px);background-size:100% 100%,28px 28px}
+.printer{position:absolute;left:50%;margin-left:-280px;top:60px;width:560px;height:36px;border-radius:18px;background:linear-gradient(#1c1b19,#131311);box-shadow:0 1px 0 #2e2c28 inset,0 12px 30px -10px rgba(0,0,0,.9);z-index:6}
+.slot{position:absolute;left:22px;right:22px;top:7px;height:22px;border-radius:11px;background:#060606;box-shadow:inset 0 4px 8px rgba(0,0,0,.95)}
+.led{position:absolute;right:9px;top:15px;width:7px;height:7px;border-radius:7px;background:#3fbf6b;box-shadow:0 0 8px #3fbf6b}
+.led.wait{background:#e5ad55;box-shadow:0 0 8px #e5ad55}
+/* the strip that stays in the printer, with teeth pointing down */
+.strip{position:absolute;left:50%;margin-left:-240px;top:84px;width:480px;height:14px;background:#f9f6ee;z-index:5}
+.strip:after{content:"";position:absolute;left:0;right:0;top:14px;height:12px;background:linear-gradient(135deg,#f9f6ee 50%,transparent 50%) left top/20px 20px repeat-x,linear-gradient(-135deg,#f9f6ee 50%,transparent 50%) left top/20px 20px repeat-x}
+.strip .perf{position:absolute;left:24px;right:24px;top:6px;border-top:2px dashed rgba(23,22,15,.55)}
+/* the receipt body; its top is teeth pointing up, phase-shifted half a cell */
+.body{position:absolute;left:50%;margin-left:-240px;top:98px;width:480px;z-index:4;transform-origin:50% 0;will-change:transform}
+.teeth{height:12px;background:linear-gradient(45deg,#f9f6ee 50%,transparent 50%) 10px bottom/20px 20px repeat-x,linear-gradient(-45deg,#f9f6ee 50%,transparent 50%) 10px bottom/20px 20px repeat-x}
+.paper{background:linear-gradient(#f9f6ee,#f3efe4);color:#17160f;box-shadow:0 50px 90px -30px rgba(0,0,0,.95),0 10px 24px -12px rgba(0,0,0,.6);padding:26px 30px 16px;display:flex;flex-direction:column;gap:14px}
+.paper .n{font-size:50px;font-weight:700;text-align:center;letter-spacing:-.03em}
+.paper .l{display:flex;justify-content:space-between;font-size:13.5px}
+.paper .dash{border-top:2px dashed #17160f}
+.paper .stamp{align-self:flex-end;font-size:24px;color:#e0331b;border:4px double #e0331b;padding:7px 10px 4px;transform:rotate(-7deg)}
+.bottom{height:12px;background:linear-gradient(135deg,#f3efe4 50%,transparent 50%) left top/20px 20px repeat-x,linear-gradient(-135deg,#f3efe4 50%,transparent 50%) left top/20px 20px repeat-x}
+.feed{animation:tdFeed 1.5s steps(30,end) both}
+@keyframes tdFeed{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(-40px -80px -260px -80px)}}
+.tearoff{animation:tdTearOff 1.2s forwards!important;pointer-events:none}
+@keyframes tdTearOff{
+ 0%{transform:translateY(var(--dy)) rotate(var(--rot)) scaleY(var(--sy));animation-timing-function:linear}
+ 13%{transform:translateY(calc(var(--dy) + 6px)) rotate(calc(var(--rot) + var(--dir) * 3.2deg)) scaleY(1.01);animation-timing-function:cubic-bezier(.2,.9,.3,1)}
+ 17%{transform:translateY(calc(var(--dy) + 24px)) rotate(calc(var(--rot) + var(--dir) * 3.8deg));animation-timing-function:cubic-bezier(.55,0,1,.5)}
+ 100%{transform:translateY(calc(var(--dy) + var(--fall))) translateX(calc(var(--dir) * 40px)) rotate(calc(var(--rot) + var(--dir) * 11deg)) rotateX(12deg)}
+}
+.pile{position:absolute;left:50%;margin-left:-240px;top:98px;width:480px;z-index:2;transform-origin:50% 0;transition:transform .35s ease-out}
+.spk{position:absolute;width:6px;height:3px;background:#f3efe4;border-radius:1px;animation:tdSpk .95s cubic-bezier(.3,0,.9,.6) forwards;pointer-events:none;z-index:7}
+@keyframes tdSpk{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--sx),var(--sd)) rotate(var(--sr));opacity:0}}
+.hint{position:absolute;left:50%;top:104px;margin-left:300px;font-size:12px;color:#8a857a}
+</style>
+</head>
+<body>
+<div id="root" style="perspective:1200px">
+  <div class="printer"><div class="slot"></div><div class="led" id="led"></div></div>
+  <div class="strip" id="strip"><div class="perf"></div></div>
+  <div id="stage"></div>
+  <div id="pile"></div>
+  <div id="specks"></div>
+  <div class="hint" id="hint"></div>
+</div>
+<script>
+const CUST=[["1,183,400,000","ACT OF GOD"],["187,022,000","STRUCTURAL"],["2,958,400","FENDER BENDER"],["9,842,000,000","UNINSURABLE"]];
+let idx=0, dragging=false, sx=0, sy0=0, dx=0, dy=0, busy=false, pile=[];
+const FALL=880;
+function paperHTML(c){return `<div class="teeth"></div><div class="paper"><div style="text-align:center;font-weight:700;letter-spacing:.14em;font-size:20px">TOKEN DAMAGE</div><div class="dash"></div><div class="n">${c[0]}</div><div class="dash"></div><div class="l"><span>≡ PRICE WITHOUT YOUR PLAN</span><b>$809.65</b></div><div class="l"><span>≡ YOU SAVED (CACHE CARD)</span><b>$4,383.85</b></div><div class="l" style="color:#7a5a12"><span>≈ ELECTRICITY</span><b>26–120 kWh</b></div><div class="l" style="color:#b3261e"><span>✶ RAM SURCHARGE (GAMERS)</span><b>+$0.0000079</b></div><div class="dash"></div><div style="display:flex;justify-content:space-between;align-items:center"><i style="font-size:15px">You typed a paragraph.<br>It read a library.</i><span class="stamp">${c[1]}</span></div><div class="dash"></div><div style="text-align:center;font-size:9.5px;letter-spacing:.18em;color:#6d685e">SAMPLE · NOT YOUR NUMBERS (YET)</div><div style="height:28px;background:repeating-linear-gradient(90deg,#17160f 0 2px,transparent 2px 5px,#17160f 5px 6px,transparent 6px 9px);margin:0 80px"></div></div><div class="bottom"></div>`;}
+function mount(){const st=document.getElementById('stage');st.innerHTML=`<div class="body feed" id="body">${paperHTML(CUST[idx])}</div>`;bindDrag(document.getElementById('body'));}
+function vis(){const visY=dy<50?dy*0.3:15+(dy-50)*0.1;const sy=1+Math.min(dy,140)/140*0.02;const rot=Math.max(-6,Math.min(6,dx/45));return {visY,sy,rot,dir:dx<0?-1:1};}
+function apply(el){const v=vis();el.style.transition=dragging?'none':'transform .7s cubic-bezier(.2,1.5,.3,1)';el.style.transform=`translateY(${v.visY}px) rotate(${v.rot}deg) scaleY(${v.sy})`;document.getElementById('hint').textContent=dragging?(dy>110?'Let go.':(dy>0?'Keep pulling…':'')):'';}
+function bindDrag(el){el.addEventListener('mousedown',e=>{if(busy)return;dragging=true;sx=e.clientX;sy0=e.clientY;dx=0;dy=0;});
+ window.addEventListener('mousemove',e=>{if(!dragging)return;dy=Math.max(0,Math.min(320,e.clientY-sy0));dx=Math.max(-200,Math.min(200,e.clientX-sx));apply(el);});
+ window.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;if(dy>110){tear(el);}else{dy=0;dx=0;apply(el);}});}
+function tear(el){busy=true;const v=vis();const dir=v.dir;el.classList.remove('feed');el.style.transformOrigin=dir===1?'0% 0%':'100% 0%';
+ el.style.setProperty('--dy',v.visY+'px');el.style.setProperty('--rot',v.rot+'deg');el.style.setProperty('--sy',v.sy);el.style.setProperty('--dir',dir);el.style.setProperty('--fall',FALL+'px');
+ el.style.transition='none';el.classList.add('tearoff');el.id='falling';document.getElementById('pile').appendChild(el);
+ document.getElementById('led').classList.add('wait');
+ setTimeout(()=>{specks();},150);
+ setTimeout(()=>{idx=(idx+1)%CUST.length;dy=0;dx=0;document.getElementById('led').classList.remove('wait');mount();},620);
+ setTimeout(()=>{el.remove();busy=false;},1220);}
+function land(el,v,dir){el.classList.remove('tearoff');el.className='pile';el.style.transformOrigin=dir===1?'0% 0%':'100% 0%';el.style.transform=`translateY(${v.visY+FALL}px) translateX(${dir*28}px) rotate(${v.rot+dir*6.6}deg)`;
+ document.getElementById('pile').appendChild(el);pile.push(el);
+ // nudge the ones underneath
+ pile.slice(0,-1).forEach((p,i)=>{p.style.transform+=' translateY(3px)';});
+ if(pile.length>3){const old=pile.shift();old.style.transition='opacity .4s';old.style.opacity=0;setTimeout(()=>old.remove(),450);}}
+function specks(){const s=document.getElementById('specks');const pts=[[12,-26,150,220],[30,14,190,-160],[47,-8,130,300],[61,30,210,-260],[78,10,160,140],[90,34,120,-90]];s.innerHTML=pts.map(([l,x,d,r],i)=>`<span class="spk" style="left:calc(50% - 240px + ${l*4.8}px);top:96px;--sx:${x}px;--sd:${d}px;--sr:${r}deg;animation-delay:${(i%3)*0.02}s"></span>`).join('');setTimeout(()=>s.innerHTML='',1100);}
+mount();
+window.td={drag(x,y){dragging=true;sx=0;sy0=0;dx=x;dy=y;apply(document.getElementById('body'));},release(){dragging=false;const el=document.getElementById('body');if(dy>110)tear(el);else{dy=0;dx=0;apply(el);}}};
+</script>
+</body>
+</html>
