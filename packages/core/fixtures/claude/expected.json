@@ -1,0 +1,126 @@
+{
+  "timeZone": "UTC",
+  "totals": {
+    "tokens": {
+      "input": 1212,
+      "cacheWrite": 68329,
+      "cacheRead": 276450,
+      "output": 2060
+    },
+    "byModel": {
+      "claude-opus-5": {
+        "input": 1202,
+        "cacheWrite": 26733,
+        "cacheRead": 18000,
+        "output": 745
+      },
+      "claude-opus-5-5": {
+        "input": 10,
+        "cacheWrite": 41596,
+        "cacheRead": 258450,
+        "output": 1315
+      }
+    },
+    "bySource": {
+      "claude-code": {
+        "input": 1212,
+        "cacheWrite": 68329,
+        "cacheRead": 276450,
+        "output": 2060
+      }
+    },
+    "calls": 7,
+    "sessions": 2,
+    "activeDays": 2,
+    "subagents": 2,
+    "wordsTyped": 0,
+    "firstCall": "2026-08-22T16:56:15.452Z",
+    "lastCall": "2026-09-23T23:59:23.856Z",
+    "longestSession": {
+      "start": "2026-09-23T23:40:54.927Z",
+      "end": "2026-09-23T23:59:23.856Z"
+    }
+  },
+  "daily": [
+    {
+      "day": "2026-08-22",
+      "byModel": {
+        "claude-opus-5": {
+          "input": 2,
+          "cacheWrite": 26733,
+          "cacheRead": 0,
+          "output": 395
+        }
+      },
+      "bySource": {
+        "claude-code": {
+          "input": 2,
+          "cacheWrite": 26733,
+          "cacheRead": 0,
+          "output": 395
+        }
+      },
+      "calls": 1,
+      "sessions": 1,
+      "subagents": 1,
+      "wordsTyped": 0,
+      "firstCall": "2026-08-22T16:56:15.452Z",
+      "lastCall": "2026-08-22T16:56:15.452Z"
+    },
+    {
+      "day": "2026-09-23",
+      "byModel": {
+        "claude-opus-5": {
+          "input": 1200,
+          "cacheWrite": 0,
+          "cacheRead": 18000,
+          "output": 350
+        },
+        "claude-opus-5-5": {
+          "input": 10,
+          "cacheWrite": 41596,
+          "cacheRead": 258450,
+          "output": 1315
+        }
+      },
+      "bySource": {
+        "claude-code": {
+          "input": 1210,
+          "cacheWrite": 41596,
+          "cacheRead": 276450,
+          "output": 1665
+        }
+      },
+      "calls": 6,
+      "sessions": 1,
+      "subagents": 1,
+      "wordsTyped": 0,
+      "firstCall": "2026-09-23T23:40:54.927Z",
+      "lastCall": "2026-09-23T23:59:23.856Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "f96074a5-eb3f-42d9-a64c-0454d4bb4c41",
+      "start": "2026-08-22T16:56:15.452Z",
+      "end": "2026-08-22T16:56:15.452Z",
+      "calls": 1,
+      "subagents": 1,
+      "longestStretch": {
+        "start": "2026-08-22T16:56:15.452Z",
+        "end": "2026-08-22T16:56:15.452Z"
+      }
+    },
+    {
+      "sessionId": "4aaff5d2-be7b-4975-9f06-ceeb9fcdd99a",
+      "start": "2026-09-23T23:40:54.927Z",
+      "end": "2026-09-23T23:59:23.856Z",
+      "calls": 6,
+      "subagents": 1,
+      "longestStretch": {
+        "start": "2026-09-23T23:40:54.927Z",
+        "end": "2026-09-23T23:59:23.856Z"
+      }
+    }
+  ]
+}

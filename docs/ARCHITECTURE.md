@@ -40,8 +40,16 @@ interface UsageEvent {
   isSidechain?: boolean;
   version?: string;                // tool version that wrote the line (version sniffing)
 }
-interface DailyTotals { day: string /* local YYYY-MM-DD */; byModel: Record<string, TokenSums>; calls: number;
+interface TokenSums { input: number; cacheWrite: number; cacheRead: number; output: number }
+interface Span { start: number; end: number }   // epoch ms
+interface DailyTotals { day: string /* local YYYY-MM-DD */; byModel: Record<string, TokenSums>;
+  bySource: Partial<Record<Source, TokenSums>>; calls: number;
   sessions: number; subagents: number; wordsTyped: number; firstCall: number; lastCall: number; }
+interface SessionSummary { sessionId: string; start: number; end: number; calls: number; subagents: number;
+  longestStretch: Span /* split on idle gaps > 12h */ }
+interface Totals { tokens: TokenSums; byModel: Record<string, TokenSums>; bySource: Partial<Record<Source, TokenSums>>;
+  calls: number; sessions: number; activeDays: number; subagents: number; wordsTyped: number;
+  firstCall: number | null; lastCall: number | null; longestSession: Span | null }
 type Tier = "measured" | "priced" | "estimated" | "satire";
 interface Value<T = number> { value: T; tier: Tier; low?: number; high?: number; note?: string }
 interface Receipt { period: {start: string; end: string}; measured: {...}; priced: {...}; estimated: {...};

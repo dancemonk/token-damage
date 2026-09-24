@@ -22,3 +22,12 @@ Observed in real logs (2.1.205–2.1.281, 2026-09):
 - Streaming snapshots only appear in subagent files. Main files write one line per content block, each with the final usage.
 - Every subagent line has `isSidechain: true`, an `agentId` equal to the file name, and the parent's `sessionId`.
 - The same `message.id` + `requestId` appears in two main session files with different `sessionId` (resumed sessions).
+
+## `expected.json`
+
+Hand-computed totals for the whole corpus, deduped, in UTC. Derivation:
+- 16 parsed events share 8 dedupe keys. Streaming (3 copies), parallel tool use (3 + the valid line in
+  `malformed.jsonl`), and the normal line (repeated in the advisor and replay cases) each collapse to one; its split copy in `malformed.jsonl` is not an event.
+- The replay (`isSidechain`, new `requestId`) is dropped: its `message.id` has a main-thread copy.
+- The missing-`requestId` line is keyed by session, so it stays separate from the normal line: 7 events.
+- Subagent snapshots `AVr7Z` (output 4, 160) keep 160; `t96vL` keeps 121.

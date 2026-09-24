@@ -4,6 +4,7 @@ import type { UsageEvent } from "../../types.js";
 import { findTranscripts } from "./discover.js";
 import { parseLines, type ParseStats } from "./parse.js";
 
+export { createDeduper, dedupe, type Deduper } from "./dedupe.js";
 export {
   claudeRoots,
   findTranscripts,
