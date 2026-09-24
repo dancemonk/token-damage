@@ -7,7 +7,10 @@ import { sanitizeLine } from "../scripts/sanitize-fixture.js";
 const root = fileURLToPath(new URL("../fixtures", import.meta.url));
 // Word counting needs real-looking prose, so these prompts are invented: the words fixture (see its README)
 // and the generated sample-month corpus (scripts/sample-month.ts).
-const INVENTED_TEXT = new Set(["claude/2.1.281/words-typed.jsonl"]);
+const INVENTED_TEXT = new Set([
+  "claude/2.1.281/words-typed.jsonl",
+  "codex/sessions/2026/09/22/rollout-2026-09-22T10-00-00-01a0c5f0-0000-7000-8000-000000000001.jsonl",
+]);
 const files = readdirSync(root, { recursive: true, encoding: "utf8" }).filter(
   (f) =>
     f.endsWith(".jsonl") &&

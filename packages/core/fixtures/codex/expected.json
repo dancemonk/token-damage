@@ -1,0 +1,428 @@
+{
+  "timeZone": "UTC",
+  "totals": {
+    "tokens": {
+      "input": 90341,
+      "cacheWrite": 0,
+      "cacheWrite1h": 0,
+      "cacheRead": 989344,
+      "output": 20369
+    },
+    "byModel": {
+      "gpt-5": {
+        "input": 8000,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 2000,
+        "output": 500
+      },
+      "gpt-5-codex": {
+        "input": 5000,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 10000,
+        "output": 400
+      },
+      "gpt-5.5": {
+        "input": 7144,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 51712,
+        "output": 296
+      },
+      "codex-auto-review": {
+        "input": 3025,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 3072,
+        "output": 124
+      },
+      "gpt-5.6-sol": {
+        "input": 61130,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 721344,
+        "output": 17294
+      },
+      "gpt-5.6-terra": {
+        "input": 6042,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 201216,
+        "output": 1755
+      }
+    },
+    "bySource": {
+      "codex": {
+        "input": 90341,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 989344,
+        "output": 20369
+      }
+    },
+    "calls": 24,
+    "sessions": 8,
+    "activeDays": 9,
+    "subagents": 4,
+    "prompts": 8,
+    "wordsTyped": 23,
+    "firstCall": "2025-09-06T14:00:04.000Z",
+    "lastCall": "2026-09-22T14:00:09.000Z",
+    "longestSession": {
+      "start": "2026-05-10T23:20:20.704Z",
+      "end": "2026-05-10T23:41:32.940Z"
+    }
+  },
+  "daily": [
+    {
+      "day": "2025-09-06",
+      "byModel": {
+        "gpt-5": {
+          "input": 8000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 2000,
+          "output": 500
+        },
+        "gpt-5-codex": {
+          "input": 5000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 10000,
+          "output": 400
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 13000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 12000,
+          "output": 900
+        }
+      },
+      "calls": 2,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 0,
+      "wordsTyped": 0,
+      "firstCall": "2025-09-06T14:00:04.000Z",
+      "lastCall": "2025-09-06T14:01:09.000Z"
+    },
+    {
+      "day": "2026-05-10",
+      "byModel": {
+        "gpt-5.5": {
+          "input": 7144,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 51712,
+          "output": 296
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 7144,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 51712,
+          "output": 296
+        }
+      },
+      "calls": 4,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 2,
+      "wordsTyped": 2,
+      "firstCall": "2026-05-10T23:20:20.704Z",
+      "lastCall": "2026-05-10T23:41:32.940Z"
+    },
+    {
+      "day": "2026-07-10",
+      "byModel": {
+        "codex-auto-review": {
+          "input": 3025,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 3072,
+          "output": 124
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 3025,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 3072,
+          "output": 124
+        }
+      },
+      "calls": 1,
+      "sessions": 1,
+      "subagents": 1,
+      "prompts": 0,
+      "wordsTyped": 0,
+      "firstCall": "2026-07-10T13:14:26.216Z",
+      "lastCall": "2026-07-10T13:14:26.216Z"
+    },
+    {
+      "day": "2026-07-27",
+      "byModel": {
+        "gpt-5.6-sol": {
+          "input": 9483,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 28160,
+          "output": 216
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 9483,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 28160,
+          "output": 216
+        }
+      },
+      "calls": 2,
+      "sessions": 1,
+      "subagents": 1,
+      "prompts": 0,
+      "wordsTyped": 0,
+      "firstCall": "2026-07-27T15:17:33.982Z",
+      "lastCall": "2026-07-27T15:17:37.212Z"
+    },
+    {
+      "day": "2026-08-12",
+      "byModel": {
+        "gpt-5.6-terra": {
+          "input": 6042,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 201216,
+          "output": 1755
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 6042,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 201216,
+          "output": 1755
+        }
+      },
+      "calls": 6,
+      "sessions": 1,
+      "subagents": 2,
+      "prompts": 0,
+      "wordsTyped": 0,
+      "firstCall": "2026-08-12T01:11:09.414Z",
+      "lastCall": "2026-08-12T01:18:42.180Z"
+    },
+    {
+      "day": "2026-09-11",
+      "byModel": {
+        "gpt-5.6-sol": {
+          "input": 7570,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 592640,
+          "output": 14565
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 7570,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 592640,
+          "output": 14565
+        }
+      },
+      "calls": 3,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 0,
+      "wordsTyped": 0,
+      "firstCall": "2026-09-11T03:16:55.722Z",
+      "lastCall": "2026-09-11T04:34:52.365Z"
+    },
+    {
+      "day": "2026-09-19",
+      "byModel": {
+        "gpt-5.6-sol": {
+          "input": 15077,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 76544,
+          "output": 1613
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 15077,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 76544,
+          "output": 1613
+        }
+      },
+      "calls": 3,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 2,
+      "wordsTyped": 2,
+      "firstCall": "2026-09-19T17:54:10.031Z",
+      "lastCall": "2026-09-19T17:56:22.108Z"
+    },
+    {
+      "day": "2026-09-20",
+      "byModel": {
+        "gpt-5.6-sol": {
+          "input": 17000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 24000,
+          "output": 700
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 17000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 24000,
+          "output": 700
+        }
+      },
+      "calls": 2,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 0,
+      "wordsTyped": 0,
+      "firstCall": "2026-09-20T13:00:09.000Z",
+      "lastCall": "2026-09-20T13:00:20.000Z"
+    },
+    {
+      "day": "2026-09-22",
+      "byModel": {
+        "gpt-5.6-sol": {
+          "input": 12000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 200
+        }
+      },
+      "bySource": {
+        "codex": {
+          "input": 12000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 200
+        }
+      },
+      "calls": 1,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 4,
+      "wordsTyped": 19,
+      "firstCall": "2026-09-22T14:00:09.000Z",
+      "lastCall": "2026-09-22T14:00:09.000Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "0199200a-0000-7000-8000-000000000001",
+      "start": "2025-09-06T14:00:04.000Z",
+      "end": "2025-09-06T14:01:09.000Z",
+      "calls": 2,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2025-09-06T14:00:04.000Z",
+        "end": "2025-09-06T14:01:09.000Z"
+      }
+    },
+    {
+      "sessionId": "019e1430-d753-78a1-99b7-4e745cc2f417",
+      "start": "2026-05-10T23:20:20.704Z",
+      "end": "2026-05-10T23:41:32.940Z",
+      "calls": 4,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-05-10T23:20:20.704Z",
+        "end": "2026-05-10T23:41:32.940Z"
+      }
+    },
+    {
+      "sessionId": "019f4c29-7a09-77e0-97c5-0f104d86a576",
+      "start": "2026-07-10T13:14:26.216Z",
+      "end": "2026-07-10T13:14:26.216Z",
+      "calls": 1,
+      "subagents": 1,
+      "longestStretch": {
+        "start": "2026-07-10T13:14:26.216Z",
+        "end": "2026-07-10T13:14:26.216Z"
+      }
+    },
+    {
+      "sessionId": "019fa422-262b-7e73-a7f6-69a5ea78ace8",
+      "start": "2026-07-27T15:17:33.982Z",
+      "end": "2026-07-27T15:17:37.212Z",
+      "calls": 2,
+      "subagents": 1,
+      "longestStretch": {
+        "start": "2026-07-27T15:17:33.982Z",
+        "end": "2026-07-27T15:17:37.212Z"
+      }
+    },
+    {
+      "sessionId": "019fee34-f718-7561-b7a9-1140d0565f41",
+      "start": "2026-08-12T01:11:09.414Z",
+      "end": "2026-08-12T01:18:42.180Z",
+      "calls": 6,
+      "subagents": 2,
+      "longestStretch": {
+        "start": "2026-08-12T01:11:09.414Z",
+        "end": "2026-08-12T01:18:42.180Z"
+      }
+    },
+    {
+      "sessionId": "01a08b4d-02d1-77b2-be58-509f0e01b656",
+      "start": "2026-09-11T03:16:55.722Z",
+      "end": "2026-09-11T04:34:52.365Z",
+      "calls": 3,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-09-11T04:28:19.104Z",
+        "end": "2026-09-11T04:34:52.365Z"
+      }
+    },
+    {
+      "sessionId": "01a0bacd-b82b-7cb1-8dca-739c09d03936",
+      "start": "2026-09-19T17:54:10.031Z",
+      "end": "2026-09-20T13:00:20.000Z",
+      "calls": 5,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-09-19T17:54:10.031Z",
+        "end": "2026-09-19T17:56:22.108Z"
+      }
+    },
+    {
+      "sessionId": "01a0c5f0-0000-7000-8000-000000000001",
+      "start": "2026-09-22T14:00:09.000Z",
+      "end": "2026-09-22T14:00:09.000Z",
+      "calls": 1,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-09-22T14:00:09.000Z",
+        "end": "2026-09-22T14:00:09.000Z"
+      }
+    }
+  ]
+}

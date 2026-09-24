@@ -101,36 +101,65 @@ User prompts are `type: "user"` lines. Count words only when:
 
 ## Codex (V1)
 
+Rules below match ccusage 20.0.24 (`rust/adapters/codex/src/`), checked with `pnpm oracle --agent codex`.
+Code: `packages/core/src/adapters/codex/`. Fixtures: `packages/core/fixtures/codex/` (a Codex home).
+
 ### Where
-`$CODEX_HOME` (default `~/.codex`) → `sessions/YYYY/MM/DD/rollout-<timestamp>-<uuid>.jsonl`, plus
+`$CODEX_HOME` (comma-separated; default `~/.codex`) → `sessions/YYYY/MM/DD/rollout-<timestamp>-<uuid>.jsonl`, plus
 `archived_sessions/`. When both hold the same relative path, the active `sessions/` copy wins.
 
 ### Structure
-Lines have `timestamp`, `type`, `payload`.
-- `session_meta`: `id`/`session_id`, `cwd`, `originator`, `cli_version`, `model_provider`.
-- `turn_context`: the active model for subsequent usage.
-- `event_msg` with `payload.type == "token_count"`: `info.total_token_usage` (cumulative) and
-  `info.last_token_usage` (per response), `info.model_context_window`.
-- `event_msg` with `payload.type == "thread_settings_applied"` (CLI ≥ 0.144.0): `service_tier` priority/fast vs
-  default/standard (pricing tier; inherited by later usage).
-- Token fields: `input_tokens` (**includes** cached), `cached_input_tokens`, `cache_write_input_tokens`
-  (newer, default 0), `output_tokens` (**includes** reasoning), `reasoning_output_tokens` (informational),
-  `total_tokens`.
+Lines have `timestamp`, `type`, `payload`. Only four kinds are read; everything else (tool calls, reasoning,
+messages, `world_state`) is skipped unparsed.
+- `session_meta` (first line): `id` (this thread), `session_id` (the root session; equal to `id` on main threads),
+  `cli_version`, `source`. `source` is a string (`cli`, `vscode`, …) on main threads and an object
+  `{subagent: …}` on threads another thread started: `thread_spawn.parent_thread_id` for spawned agents, `other`
+  for auto-review and similar. `forked_from_id` marks a fork.
+- `turn_context`: `model`, the active model for later usage.
+- `event_msg` / `token_count`: `info.total_token_usage` (cumulative) and `info.last_token_usage` (per response).
+  `info` is `null` on rate-limit-only updates.
+- `event_msg` / `thread_settings_applied` (CLI ≥ 0.144.0): `thread_settings.service_tier` `priority`/`fast` →
+  fast, `default`/`standard` → standard (Desktop writes `standard`). Inherited by later usage; a settings event
+  without the key keeps the tier, an unknown value clears it. Kept on each event as `serviceTier`.
+- `event_msg` / `item_completed` with `item.type == "UserMessage"`: a prompt. Words = text parts only.
+  Dedupe key `turn_id:item.id`. Prompts in subagent rollouts were written by the parent thread: not counted.
+- Token fields: `input_tokens` (**includes** cached input and cache writes), `cached_input_tokens`,
+  `cache_write_input_tokens` (newer, default 0), `output_tokens` (**includes** reasoning),
+  `reasoning_output_tokens` (informational), `total_tokens` (0 or missing → input + output).
 
-### Traps (each needs a fixture)
-1. Token events exist only from 2025-09-06; some Sept-2025 builds lack `turn_context` → price as fallback model
-   and mark `isFallback`.
-2. **Resume** writes a new file with the same session id and a **restarted** cumulative counter. Sum per-file
-   segments; never overwrite by session id.
-3. Newer builds emit streaming `token_usage_record` / `turn_token_usage` snapshots several times per turn.
-   Use deltas only when the cumulative total **advances**; never sum snapshots.
-4. Codex can overwrite its running total with a synthetic "context window full" value
-   (`fill_to_context_window`). A delta must never be negative and never exceed the context window; discard such steps.
-5. MultiAgent V2 subagent rollouts replay the parent's history: usage before `task_started` /
-   `inter_agent_communication(_metadata)` with `trigger_turn === true` is inherited, not new.
-6. `codex-auto-review` is a server-routed alias; effective model must be inferred from a dated table.
-7. Normalize: fresh input = `input_tokens − cached_input_tokens`; cache read = `cached_input_tokens`;
-   cache write = `cache_write_input_tokens`; output = `output_tokens`. Never add reasoning again.
+### Per-response usage
+Per rollout file: use `last_token_usage` when the cumulative total differs from the previous line's total
+(first line included); otherwise use `total − previous total` (saturating per field). A repeated total therefore
+adds nothing (289 such lines in real logs; summing `last_token_usage` would double-count them). Cap
+`cached ≤ input` and `cacheWrite ≤ input − cached`, then skip all-zero usage.
+Normalize: fresh input = `input − cached − cacheWrite`; cache read = `cached`; cache write = `cacheWrite`;
+output = `output`. Never add reasoning again.
+
+### Traps (each has a fixture)
+1. No `turn_context` before the first usage (Sept-2025 builds) → model `gpt-5`, `isFallbackModel`. A later
+   `turn_context` ends the fallback.
+2. **Resume** writes a new file with the same session id and a **restarted** cumulative counter. Totals are
+   tracked per file; the two files count as one session.
+3. Newer builds also write top-level `token_usage_record` lines (streaming snapshots, 3,489 in real logs). Never
+   read them: `token_count` alone has the per-response numbers.
+4. The total can go **backwards** (counter restarted inside one file). The total changed, so
+   `last_token_usage` counts; no negative deltas.
+5. **Replayed history.** A fork (`forked_from_id`) or spawned subagent (`thread_spawn.parent_thread_id`) may
+   start by copying its parent's usage. Its parent is the first other rollout whose `id` is that thread. The
+   copy is the parent's usage up to the child's `session_meta` time; drop child events while they equal it in
+   order (all six raw fields). If the first child event does not match (parent log missing, or history
+   rewritten), check the head of the file: when its first two `token_count` lines with usage are ≤ 1 s apart, the
+   copy is a rewritten burst; drop events while each is ≤ 1 s after the previous one. In real logs this dropped
+   826 events (4 prefix-matched forks, 8 bursts).
+6. `codex-auto-review` is a server-routed alias. We keep it as the model name; ccusage resolves it by date
+   (`gpt-5.4` from 2026-03-05, `gpt-5.6-luna` from 2026-07-30) for pricing. Pricing must do the same and mark it
+   as estimated.
+7. The same response can appear in several files (archive copies, forks). Dedupe globally on
+   `(timestamp ms, model, input, cached, cacheWrite, output, reasoning, total)`; conflicting tiers keep standard.
+
+### Sessions
+A subagent's usage counts toward its root session (`session_id`, or the spawning thread's root when `session_id`
+repeats the thread's own id), as one subagent. 202 of 275 real rollouts are subagents.
 
 ### Not comparable across providers
 Tokenizers and cache semantics differ. Show raw tokens per provider; compare in `≡` dollars and `≈` Wh.
@@ -139,6 +168,7 @@ Tokenizers and cache semantics differ. Show raw tokens per provider; compare in 
 | Tool | Versions | Fixtures |
 | --- | --- | --- |
 | Claude Code | 2.1.237, 2.1.281 (real logs 2.1.205–2.1.281 scanned) | `packages/core/fixtures/claude/` |
+| Codex | 0.130.0, 0.143.0, 0.144.0-alpha.4, 0.147.0-alpha.6.5, 0.153.4, 0.155.1 (real logs 0.130.0–0.155.1, 275 rollouts) | `packages/core/fixtures/codex/` |
 
 ## Later sources
 Gemini CLI and Copilot CLI (ccusage parses both), Cursor/OpenCode (SQLite; Cursor needs a cloud token → opt-in
@@ -151,8 +181,13 @@ Keep this list current. Check with `pnpm oracle` (local logs) and `pnpm oracle:f
 2 days), and so did 24 days of real logs (3.79B tokens) in every field. ccusage has fixed #888 (first-seen
 undercount) and #913 (`/btw` overcount), and handles advisor iterations and missing `requestId` the same way.
 
+Codex (`ccusage codex daily`, 2026-09-24): the fixture corpus matches exactly (1,100,054 tokens, 9 days), and so
+did 44 days of real logs (1.96B tokens) in every field. Model names differ on purpose: ccusage reports
+`codex-auto-review` usage under its dated guess (`gpt-5.4`, `gpt-5.6-luna`); we keep the alias. We do not read
+the "headless" `codex exec --json` shapes ccusage also accepts (a top-level `usage` object); none appear in rollouts.
+
 Not compared, because ccusage does not report them: words typed and prompts. A day with prompts but no model
 call exists only on our side, with zero tokens; the oracle skips all-zero days.
 
-Use `ccusage claude daily`, not `ccusage daily`: since v20 the top-level report also includes Codex, Gemini,
-OpenCode and Amp logs from the home directory.
+Use `ccusage claude daily` / `ccusage codex daily`, not `ccusage daily`: since v20 the top-level report mixes
+Claude Code, Codex, Gemini, OpenCode and Amp logs from the home directory.

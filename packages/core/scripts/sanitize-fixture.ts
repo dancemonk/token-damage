@@ -32,6 +32,14 @@ const KEEP = new Set([
   "userType",
   "agentId",
   "effort",
+  // Codex rollouts
+  "cli_version",
+  "originator",
+  "source",
+  "forked_from_id",
+  "parent_thread_id",
+  "thread_id",
+  "turn_id",
 ]);
 // Subtrees holding tool inputs and outputs: arbitrary user data, so nothing in them is kept.
 const SCRUB = new Set(["input", "wireToolInputs", "toolUseResult"]);

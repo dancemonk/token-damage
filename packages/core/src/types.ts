@@ -32,6 +32,8 @@ export interface UsageEvent {
   messageId: string;
   dedupeKey: string;
   isSidechain?: boolean;
+  /** Codex pricing tier ("fast" = priority), when the rollout recorded one. */
+  serviceTier?: "standard" | "fast";
   /** Version of the tool that wrote the line. */
   version?: string;
 }

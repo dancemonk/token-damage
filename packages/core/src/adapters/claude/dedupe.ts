@@ -18,8 +18,14 @@ function earlier(a: UsageEvent, b: UsageEvent): boolean {
 // Duplicates keep the earliest copy (the original response, not a resumed session's copy)
 // with the per-field maximum usage (the final streaming snapshot has the largest output).
 function merge(a: UsageEvent, b: UsageEvent): UsageEvent {
+  // Copies of a Codex event that disagree on the tier keep the standard one: the lower, safer price.
+  const serviceTier =
+    a.serviceTier === "standard" || b.serviceTier === "standard"
+      ? "standard"
+      : (a.serviceTier ?? b.serviceTier);
   return {
     ...(earlier(a, b) ? a : b),
+    ...(serviceTier && { serviceTier }),
     input: Math.max(a.input, b.input),
     cacheWrite: Math.max(a.cacheWrite, b.cacheWrite),
     cacheWrite1h: Math.max(a.cacheWrite1h, b.cacheWrite1h),

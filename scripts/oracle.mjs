@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Oracle: compares our daily token totals with ccusage on the same Claude Code logs.
-// Usage: pnpm oracle [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
+// Oracle: compares our daily token totals with ccusage on the same agent logs.
+// Usage: pnpm oracle [--agent claude|codex] [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
+// --config-dir sets CLAUDE_CONFIG_DIR for claude and CODEX_HOME for codex.
 // Exits 1 when any day's field differs by more than 1%, 2 when ccusage cannot run.
 // Dev tool only: it fetches ccusage through npx. The CLI itself never touches the network.
 import { execFileSync } from "node:child_process";
@@ -13,6 +14,10 @@ export const TOLERANCE = 0.01;
 const FIELDS = ["input", "cacheWrite", "cacheRead", "output"];
 const ZERO = { input: 0, cacheWrite: 0, cacheRead: 0, output: 0 };
 const total = (t) => t.input + t.cacheWrite + t.cacheRead + t.output;
+const AGENTS = {
+  claude: { env: "CLAUDE_CONFIG_DIR", label: "Claude Code" },
+  codex: { env: "CODEX_HOME", label: "Codex" },
+};
 
 /** Per-day comparison. `ours`/`theirs`: Map<day, {input, cacheWrite, cacheRead, output}>. */
 export function compare(ours, theirs, tolerance = TOLERANCE) {
@@ -44,13 +49,20 @@ export function compare(ours, theirs, tolerance = TOLERANCE) {
 }
 
 function parseArgs(argv) {
-  const args = { fixtures: false, configDir: undefined, timeZone: undefined };
+  const args = {
+    agent: "claude",
+    fixtures: false,
+    configDir: undefined,
+    timeZone: undefined,
+  };
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === "--fixtures") args.fixtures = true;
+    if (argv[i] === "--agent") args.agent = argv[++i];
+    else if (argv[i] === "--fixtures") args.fixtures = true;
     else if (argv[i] === "--config-dir") args.configDir = argv[++i];
     else if (argv[i] === "--timezone") args.timeZone = argv[++i];
     else throw new Error(`unknown argument: ${argv[i]}`);
   }
+  if (!AGENTS[args.agent]) throw new Error(`unknown agent: ${args.agent}`);
   return args;
 }
 
@@ -75,15 +87,22 @@ function fixtureConfigDir() {
   return dir;
 }
 
-async function ourDaily(env, timeZone) {
+// The Codex fixtures are already a Codex home.
+const codexFixtures = () =>
+  fileURLToPath(new URL("../packages/core/fixtures/codex/", import.meta.url));
+
+async function ourDaily(agent, env, timeZone) {
   const core = await import("../packages/core/dist/index.js");
-  const stats = { ...core.emptyStats(), files: 0, subagentFiles: 0 };
+  const records =
+    agent === "codex"
+      ? core.scanCodex(core.codexHomes(env, homedir()), core.emptyCodexStats())
+      : core.scanClaude(core.claudeRoots(env, homedir()), {
+          ...core.emptyStats(),
+          files: 0,
+          subagentFiles: 0,
+        });
   const deduper = core.createDeduper();
-  for await (const record of core.scanClaude(
-    core.claudeRoots(env, homedir()),
-    stats,
-  ))
-    deduper.add(record);
+  for await (const record of records) deduper.add(record);
   const { daily } = core.aggregate({ usage: deduper.result() }, { timeZone });
   return new Map(
     daily.map((d) => [
@@ -111,10 +130,11 @@ function ccusage(args, env) {
   });
 }
 
-function theirDaily(env, timeZone) {
+// For codex, inputTokens already excludes cached input, as ours does.
+function theirDaily(agent, env, timeZone) {
   const report = JSON.parse(
     ccusage(
-      ["claude", "daily", "--json", "--offline", "--timezone", timeZone],
+      [agent, "daily", "--json", "--offline", "--timezone", timeZone],
       env,
     ),
   );
@@ -136,9 +156,17 @@ const pct = (off) => (off === Infinity ? "∞" : `${(off * 100).toFixed(2)}%`);
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const configDir = args.fixtures ? fixtureConfigDir() : args.configDir;
+  const agent = AGENTS[args.agent];
+  // Only the Claude fixtures are copied into a temporary config dir; that copy is removed at the end.
+  const tempDir =
+    args.fixtures && args.agent === "claude" ? fixtureConfigDir() : undefined;
+  const configDir =
+    tempDir ??
+    (args.fixtures && args.agent === "codex"
+      ? codexFixtures()
+      : args.configDir);
   const env = configDir
-    ? { ...process.env, CLAUDE_CONFIG_DIR: configDir }
+    ? { ...process.env, [agent.env]: configDir }
     : process.env;
   const timeZone =
     args.timeZone ??
@@ -147,7 +175,7 @@ async function main() {
     let version, theirs;
     try {
       version = ccusage(["--version"], env).trim();
-      theirs = theirDaily(env, timeZone);
+      theirs = theirDaily(args.agent, env, timeZone);
     } catch (error) {
       process.stderr.write(
         `ccusage failed: ${error.stderr || error.message}\n`,
@@ -155,9 +183,9 @@ async function main() {
       process.exitCode = 2;
       return;
     }
-    const rows = compare(await ourDaily(env, timeZone), theirs);
+    const rows = compare(await ourDaily(args.agent, env, timeZone), theirs);
     console.log(
-      `${version} · ${args.fixtures ? "fixture corpus" : "local logs"} · ${timeZone} · tolerance ${pct(TOLERANCE)}`,
+      `${version} · ${agent.label} · ${args.fixtures ? "fixture corpus" : "local logs"} · ${timeZone} · tolerance ${pct(TOLERANCE)}`,
     );
     console.log(
       `${"day".padEnd(12)}${"ours".padStart(16)}${"ccusage".padStart(16)}   worst field`,
@@ -184,8 +212,7 @@ async function main() {
     );
     if (over.length) process.exitCode = 1;
   } finally {
-    if (args.fixtures && configDir)
-      rmSync(configDir, { recursive: true, force: true });
+    if (tempDir) rmSync(tempDir, { recursive: true, force: true });
   }
 }
 

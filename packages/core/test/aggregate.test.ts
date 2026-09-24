@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   aggregate,
+  createDeduper,
   dedupe,
   dedupePrompts,
   IDLE_SPLIT_MS,
@@ -9,6 +10,7 @@ import {
   type UsageEvent,
 } from "../src/index.js";
 import { corpusEvents, corpusPrompts, FIXTURES } from "./claude/support.js";
+import { CODEX_FIXTURES, scanFixtures } from "./codex/support.js";
 
 const iso = (ts: number | null) =>
   ts === null ? null : new Date(ts).toISOString();
@@ -64,6 +66,20 @@ describe("aggregate", () => {
         usage: dedupe(await corpusEvents()),
         prompts: dedupePrompts(await corpusPrompts()),
       },
+      { timeZone },
+    );
+    expect(readable(result)).toEqual(expected);
+  });
+
+  it("Codex fixture corpus totals equal the expected JSON", async () => {
+    const { timeZone, ...expected } = JSON.parse(
+      readFileSync(`${CODEX_FIXTURES}expected.json`, "utf8"),
+    );
+    const { usage, prompts } = await scanFixtures();
+    const deduper = createDeduper();
+    for (const r of [...usage, ...prompts]) deduper.add(r);
+    const result = aggregate(
+      { usage: deduper.result(), prompts: deduper.prompts() },
       { timeZone },
     );
     expect(readable(result)).toEqual(expected);
