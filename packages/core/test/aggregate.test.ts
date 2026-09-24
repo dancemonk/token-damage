@@ -72,22 +72,22 @@ describe("aggregate", () => {
     ).toEqual(["2026-08-22", "2026-09-23"]);
   });
 
-  it("splits a session's longest stretch on idle gaps over 12h", () => {
-    const h = 3_600_000;
+  it("splits a session's longest stretch on idle gaps over 1h", () => {
+    expect(IDLE_SPLIT_MS).toBe(3_600_000);
+    const half = IDLE_SPLIT_MS / 2;
+    const resumed = half + IDLE_SPLIT_MS + 1;
     const { sessions, totals } = aggregate(
-      [event(0), event(1 * h), event(1 * h + IDLE_SPLIT_MS + 1), event(15 * h)],
-      {
-        timeZone: "UTC",
-      },
+      [event(0), event(half), event(resumed), event(resumed + IDLE_SPLIT_MS)],
+      { timeZone: "UTC" },
     );
     expect(sessions[0]?.longestStretch).toEqual({
-      start: 1 * h + IDLE_SPLIT_MS + 1,
-      end: 15 * h,
+      start: resumed,
+      end: resumed + IDLE_SPLIT_MS,
     });
     expect(totals.longestSession).toEqual(sessions[0]?.longestStretch);
   });
 
-  it("does not split on a gap of exactly 12h", () => {
+  it("does not split on a gap of exactly the limit", () => {
     const { totals } = aggregate([event(0), event(IDLE_SPLIT_MS)], {
       timeZone: "UTC",
     });

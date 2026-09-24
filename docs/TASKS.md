@@ -30,7 +30,7 @@ sidechain replay (`/btw`), subagent file, synthetic model, missing requestId, ad
 Implement dedupe exactly per `docs/DATA-SOURCES.md` §Dedupe. Then aggregate `UsageEvent[]` into
 `DailyTotals` and `Totals` by day (local time), model, and source. Sessions: group by `sessionId`;
 subagent events attach to the parent session. Compute model calls, sessions, active days, first/last call
-per day, longest session (first→last event gap, capped at 12h idle split), subagent count.
+per day, longest session (first→last event gap, split on idle gaps > 1h), subagent count.
 **Accept:** totals on the fixture corpus equal the hand-computed expected JSON; no double counting on the
 streaming/parallel/sidechain fixtures; the "undercount" and "overcount" regression tests both pass.
 

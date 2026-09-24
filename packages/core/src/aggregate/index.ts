@@ -9,7 +9,7 @@ import type {
 } from "../types.js";
 
 /** Idle gaps longer than this split a session when measuring its longest stretch. */
-export const IDLE_SPLIT_MS = 12 * 60 * 60 * 1000;
+export const IDLE_SPLIT_MS = 60 * 60 * 1000;
 
 export interface AggregateOptions {
   /** IANA time zone for calendar days; defaults to the machine's. */

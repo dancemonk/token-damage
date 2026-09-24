@@ -54,7 +54,7 @@ export interface SessionSummary {
   end: number;
   calls: number;
   subagents: number;
-  /** Longest run of activity without an idle gap over 12h. */
+  /** Longest run of activity without an idle gap over 1h. */
   longestStretch: Span;
 }
 

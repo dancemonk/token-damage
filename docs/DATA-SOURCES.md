@@ -75,7 +75,7 @@ User prompts are `type: "user"` lines. Count words only when:
 
 ### Sessions and time
 - `timestamp` is ISO 8601 UTC. Convert to the machine's local time zone for days, hours, "3:47 AM".
-- Session = `sessionId`. Longest session = first→last event span; split the span on idle gaps > 12h.
+- Session = `sessionId`. Longest session = first→last event span; split the span on idle gaps > 1h, so breaks and overnight pauses end a stretch.
 - Model calls = number of deduped assistant events. Subagents = distinct `agentId` (or subagent files).
 
 ### Other channels (V1)

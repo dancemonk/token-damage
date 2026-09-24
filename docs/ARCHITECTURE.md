@@ -46,7 +46,7 @@ interface DailyTotals { day: string /* local YYYY-MM-DD */; byModel: Record<stri
   bySource: Partial<Record<Source, TokenSums>>; calls: number;
   sessions: number; subagents: number; wordsTyped: number; firstCall: number; lastCall: number; }
 interface SessionSummary { sessionId: string; start: number; end: number; calls: number; subagents: number;
-  longestStretch: Span /* split on idle gaps > 12h */ }
+  longestStretch: Span /* split on idle gaps > 1h */ }
 interface Totals { tokens: TokenSums; byModel: Record<string, TokenSums>; bySource: Partial<Record<Source, TokenSums>>;
   calls: number; sessions: number; activeDays: number; subagents: number; wordsTyped: number;
   firstCall: number | null; lastCall: number | null; longestSession: Span | null }
