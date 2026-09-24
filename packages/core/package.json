@@ -1,7 +1,6 @@
 {
   "name": "@token-damage/core",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "exports": {
     ".": {
@@ -31,5 +30,8 @@
     "url": "https://github.com/dancemonk/token-damage/issues"
   },
   "author": "Vlad Guliakin",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }
