@@ -34,7 +34,7 @@ Everything else in `docs/` is reference for the specific piece you are working o
 
 ## Stack
 
-- TypeScript, Node ≥ 20, pnpm workspaces. ESM only.
+- TypeScript, Node ≥ 22 (dev tooling ≥ 22.12), pnpm workspaces. ESM only.
 - `packages/core` (parsing, metrics, roasts; zero runtime deps), `packages/cli` (`npx token-damage`),
   `apps/web` (static site, no framework required).
 - Tests: vitest. Fixtures in `packages/core/fixtures/`. Lint: eslint + prettier defaults.
