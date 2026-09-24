@@ -44,6 +44,12 @@ const KEEP = new Set([
   "kind",
   "startTime",
   "lastUpdated",
+  // OpenCode messages and parts
+  "modelID",
+  "providerID",
+  "sessionID",
+  "messageID",
+  "parentID",
 ]);
 // Subtrees holding tool inputs and outputs: arbitrary user data, so nothing in them is kept.
 const SCRUB = new Set(["input", "wireToolInputs", "toolUseResult"]);

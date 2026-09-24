@@ -22,6 +22,7 @@ export const AGENT_NAMES: Record<Source, string> = {
   "claude-code": "Claude Code",
   codex: "Codex",
   gemini: "Gemini CLI",
+  opencode: "OpenCode",
 };
 
 /** Tokens and list price of some `byModel` keys. */

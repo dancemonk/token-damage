@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Oracle: compares our daily token totals with ccusage on the same agent logs.
-// Usage: pnpm oracle [--agent claude|codex|gemini] [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
-// --config-dir sets CLAUDE_CONFIG_DIR for claude, CODEX_HOME for codex and GEMINI_DATA_DIR for gemini.
+// Usage: pnpm oracle [--agent claude|codex|gemini|opencode] [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
+// --config-dir sets CLAUDE_CONFIG_DIR for claude, CODEX_HOME for codex, GEMINI_DATA_DIR for gemini and
+// OPENCODE_DATA_DIR for opencode.
 // Exits 1 when any day's field differs by more than 1%, 2 when ccusage cannot run.
 // Dev tool only: it fetches ccusage through npx. The CLI itself never touches the network.
 import { execFileSync } from "node:child_process";
@@ -18,6 +19,7 @@ const AGENTS = {
   claude: { env: "CLAUDE_CONFIG_DIR", label: "Claude Code" },
   codex: { env: "CODEX_HOME", label: "Codex" },
   gemini: { env: "GEMINI_DATA_DIR", label: "Gemini CLI" },
+  opencode: { env: "OPENCODE_DATA_DIR", label: "OpenCode" },
 };
 
 /** Per-day comparison. `ours`/`theirs`: Map<day, {input, cacheWrite, cacheRead, output}>. */
@@ -88,12 +90,17 @@ function fixtureConfigDir() {
   return dir;
 }
 
-// The Codex fixtures are already a Codex home, the Gemini fixtures a Gemini CLI data dir.
+// The Codex fixtures are already a Codex home, the Gemini fixtures a Gemini CLI data dir, the OpenCode
+// fixtures an OpenCode data dir.
 const codexFixtures = () =>
   fileURLToPath(new URL("../packages/core/fixtures/codex/", import.meta.url));
 const geminiFixtures = () =>
   fileURLToPath(
     new URL("../packages/core/fixtures/gemini/tmp/", import.meta.url),
+  );
+const opencodeFixtures = () =>
+  fileURLToPath(
+    new URL("../packages/core/fixtures/opencode/opencode/", import.meta.url),
   );
 
 async function ourDaily(agent, env, timeZone) {
@@ -106,11 +113,16 @@ async function ourDaily(agent, env, timeZone) {
             core.geminiDirs(env, homedir()),
             core.emptyGeminiStats(),
           )
-        : core.scanClaude(core.claudeRoots(env, homedir()), {
-            ...core.emptyStats(),
-            files: 0,
-            subagentFiles: 0,
-          });
+        : agent === "opencode"
+          ? core.scanOpenCode(
+              core.opencodeDirs(env, homedir()),
+              core.emptyOpenCodeStats(),
+            )
+          : core.scanClaude(core.claudeRoots(env, homedir()), {
+              ...core.emptyStats(),
+              files: 0,
+              subagentFiles: 0,
+            });
   const deduper = core.createDeduper();
   for await (const record of records) deduper.add(record);
   const { daily } = core.aggregate({ usage: deduper.result() }, { timeZone });
@@ -140,8 +152,8 @@ function ccusage(args, env) {
   });
 }
 
-// For codex, inputTokens already excludes cached input, as ours does. For gemini, outputTokens leaves out
-// thinking, which only totalTokens has; ours counts it as output, as it is billed.
+// For codex, inputTokens already excludes cached input, as ours does. For gemini and opencode, outputTokens
+// leaves out thinking (reasoning), which only totalTokens has; ours counts it as output, as it is billed.
 function theirDaily(agent, env, timeZone) {
   const report = JSON.parse(
     ccusage(
@@ -157,7 +169,7 @@ function theirDaily(agent, env, timeZone) {
         cacheWrite: d.cacheCreationTokens,
         cacheRead: d.cacheReadTokens,
         output:
-          agent === "gemini"
+          agent === "gemini" || agent === "opencode"
             ? d.totalTokens -
               d.inputTokens -
               d.cacheCreationTokens -
@@ -183,7 +195,9 @@ async function main() {
       ? codexFixtures()
       : args.fixtures && args.agent === "gemini"
         ? geminiFixtures()
-        : args.configDir);
+        : args.fixtures && args.agent === "opencode"
+          ? opencodeFixtures()
+          : args.configDir);
   const env = configDir
     ? { ...process.env, [agent.env]: configDir }
     : process.env;

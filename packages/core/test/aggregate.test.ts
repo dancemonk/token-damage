@@ -15,6 +15,10 @@ import {
   GEMINI_FIXTURES,
   scanFixtures as scanGeminiFixtures,
 } from "./gemini/support.js";
+import {
+  OPENCODE_FIXTURES,
+  scanFixtures as scanOpenCodeFixtures,
+} from "./opencode/support.js";
 
 const iso = (ts: number | null) =>
   ts === null ? null : new Date(ts).toISOString();
@@ -94,6 +98,20 @@ describe("aggregate", () => {
       readFileSync(`${GEMINI_FIXTURES}../expected.json`, "utf8"),
     );
     const { usage, prompts } = await scanGeminiFixtures();
+    const deduper = createDeduper();
+    for (const r of [...usage, ...prompts]) deduper.add(r);
+    const result = aggregate(
+      { usage: deduper.result(), prompts: deduper.prompts() },
+      { timeZone },
+    );
+    expect(readable(result)).toEqual(expected);
+  });
+
+  it("OpenCode fixture corpus totals equal the expected JSON", async () => {
+    const { timeZone, ...expected } = JSON.parse(
+      readFileSync(`${OPENCODE_FIXTURES}../expected.json`, "utf8"),
+    );
+    const { usage, prompts } = await scanOpenCodeFixtures();
     const deduper = createDeduper();
     for (const r of [...usage, ...prompts]) deduper.add(r);
     const result = aggregate(

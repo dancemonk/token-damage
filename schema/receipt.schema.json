@@ -182,7 +182,7 @@
         "required": ["agent", "tokens", "listPrice"],
         "properties": {
           "agent": {
-            "enum": ["claude-code", "codex", "gemini"]
+            "enum": ["claude-code", "codex", "gemini", "opencode"]
           },
           "tokens": {
             "$ref": "#/$defs/measured"

@@ -1,0 +1,20 @@
+{
+  "id": "msg_legacy_1",
+  "sessionID": "ses_legacy",
+  "role": "assistant",
+  "modelID": "gpt-5.5",
+  "providerID": "openai",
+  "time": {
+    "created": 1783681200000
+  },
+  "tokens": {
+    "input": 400,
+    "output": 60,
+    "reasoning": 0,
+    "cache": {
+      "read": 3000,
+      "write": 0
+    }
+  },
+  "cost": 0
+}

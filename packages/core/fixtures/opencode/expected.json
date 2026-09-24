@@ -1,0 +1,419 @@
+{
+  "timeZone": "UTC",
+  "totals": {
+    "tokens": {
+      "input": 1380735,
+      "cacheWrite": 161228,
+      "cacheWrite1h": 0,
+      "cacheRead": 7453337,
+      "output": 59433
+    },
+    "byModel": {
+      "gpt-5.5": {
+        "input": 175431,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 1061504,
+        "output": 6557
+      },
+      "claude-sonnet-4-5": {
+        "input": 2000,
+        "cacheWrite": 1500,
+        "cacheWrite1h": 0,
+        "cacheRead": 10000,
+        "output": 300
+      },
+      "claude-opus-4-1": {
+        "input": 500,
+        "cacheWrite": 4000,
+        "cacheWrite1h": 0,
+        "cacheRead": 0,
+        "output": 120
+      },
+      "gemini-2.5-pro|long": {
+        "input": 150000,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 60000,
+        "output": 1000
+      },
+      "gemini-3-pro-preview": {
+        "input": 700,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 0,
+        "output": 80
+      },
+      "gpt-5.4": {
+        "input": 360,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 1000,
+        "output": 56
+      },
+      "qwen3.7-plus": {
+        "input": 266,
+        "cacheWrite": 155728,
+        "cacheWrite1h": 0,
+        "cacheRead": 1986753,
+        "output": 7744
+      },
+      "glm-5.2": {
+        "input": 919996,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 3216384,
+        "output": 28475
+      },
+      "kimi-k2.7-code": {
+        "input": 131482,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 1117696,
+        "output": 15101
+      }
+    },
+    "bySource": {
+      "opencode": {
+        "gpt-5.5": {
+          "input": 175431,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1061504,
+          "output": 6557
+        },
+        "claude-sonnet-4-5": {
+          "input": 2000,
+          "cacheWrite": 1500,
+          "cacheWrite1h": 0,
+          "cacheRead": 10000,
+          "output": 300
+        },
+        "claude-opus-4-1": {
+          "input": 500,
+          "cacheWrite": 4000,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 120
+        },
+        "gemini-2.5-pro|long": {
+          "input": 150000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 60000,
+          "output": 1000
+        },
+        "gemini-3-pro-preview": {
+          "input": 700,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 80
+        },
+        "gpt-5.4": {
+          "input": 360,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1000,
+          "output": 56
+        },
+        "qwen3.7-plus": {
+          "input": 266,
+          "cacheWrite": 155728,
+          "cacheWrite1h": 0,
+          "cacheRead": 1986753,
+          "output": 7744
+        },
+        "glm-5.2": {
+          "input": 919996,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 3216384,
+          "output": 28475
+        },
+        "kimi-k2.7-code": {
+          "input": 131482,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1117696,
+          "output": 15101
+        }
+      }
+    },
+    "calls": 147,
+    "sessions": 5,
+    "activeDays": 4,
+    "subagents": 4,
+    "prompts": 10,
+    "wordsTyped": 20,
+    "firstCall": "2026-07-08T22:16:57.001Z",
+    "lastCall": "2026-07-12T02:28:27.108Z",
+    "longestSession": {
+      "start": "2026-07-11T08:00:00.000Z",
+      "end": "2026-07-11T09:00:00.000Z"
+    }
+  },
+  "daily": [
+    {
+      "day": "2026-07-08",
+      "byModel": {
+        "gpt-5.5": {
+          "input": 174921,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1058304,
+          "output": 5372
+        }
+      },
+      "bySource": {
+        "opencode": {
+          "gpt-5.5": {
+            "input": 174921,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 1058304,
+            "output": 5372
+          }
+        }
+      },
+      "calls": 26,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 3,
+      "wordsTyped": 3,
+      "firstCall": "2026-07-08T22:16:57.001Z",
+      "lastCall": "2026-07-08T22:23:36.797Z"
+    },
+    {
+      "day": "2026-07-10",
+      "byModel": {
+        "gpt-5.5": {
+          "input": 510,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 3200,
+          "output": 1185
+        },
+        "claude-sonnet-4-5": {
+          "input": 2000,
+          "cacheWrite": 1500,
+          "cacheWrite1h": 0,
+          "cacheRead": 10000,
+          "output": 300
+        },
+        "claude-opus-4-1": {
+          "input": 500,
+          "cacheWrite": 4000,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 120
+        },
+        "gemini-2.5-pro|long": {
+          "input": 150000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 60000,
+          "output": 1000
+        },
+        "gemini-3-pro-preview": {
+          "input": 700,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 80
+        }
+      },
+      "bySource": {
+        "opencode": {
+          "gpt-5.5": {
+            "input": 510,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 3200,
+            "output": 1185
+          },
+          "claude-sonnet-4-5": {
+            "input": 2000,
+            "cacheWrite": 1500,
+            "cacheWrite1h": 0,
+            "cacheRead": 10000,
+            "output": 300
+          },
+          "claude-opus-4-1": {
+            "input": 500,
+            "cacheWrite": 4000,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 120
+          },
+          "gemini-2.5-pro|long": {
+            "input": 150000,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 60000,
+            "output": 1000
+          },
+          "gemini-3-pro-preview": {
+            "input": 700,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 80
+          }
+        }
+      },
+      "calls": 9,
+      "sessions": 2,
+      "subagents": 2,
+      "prompts": 1,
+      "wordsTyped": 7,
+      "firstCall": "2026-07-10T10:01:00.000Z",
+      "lastCall": "2026-07-10T11:00:00.000Z"
+    },
+    {
+      "day": "2026-07-11",
+      "byModel": {
+        "gpt-5.4": {
+          "input": 360,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1000,
+          "output": 56
+        }
+      },
+      "bySource": {
+        "opencode": {
+          "gpt-5.4": {
+            "input": 360,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 1000,
+            "output": 56
+          }
+        }
+      },
+      "calls": 2,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 0,
+      "wordsTyped": 0,
+      "firstCall": "2026-07-11T08:00:00.000Z",
+      "lastCall": "2026-07-11T09:00:00.000Z"
+    },
+    {
+      "day": "2026-07-12",
+      "byModel": {
+        "qwen3.7-plus": {
+          "input": 266,
+          "cacheWrite": 155728,
+          "cacheWrite1h": 0,
+          "cacheRead": 1986753,
+          "output": 7744
+        },
+        "glm-5.2": {
+          "input": 919996,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 3216384,
+          "output": 28475
+        },
+        "kimi-k2.7-code": {
+          "input": 131482,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1117696,
+          "output": 15101
+        }
+      },
+      "bySource": {
+        "opencode": {
+          "qwen3.7-plus": {
+            "input": 266,
+            "cacheWrite": 155728,
+            "cacheWrite1h": 0,
+            "cacheRead": 1986753,
+            "output": 7744
+          },
+          "glm-5.2": {
+            "input": 919996,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 3216384,
+            "output": 28475
+          },
+          "kimi-k2.7-code": {
+            "input": 131482,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 1117696,
+            "output": 15101
+          }
+        }
+      },
+      "calls": 110,
+      "sessions": 2,
+      "subagents": 2,
+      "prompts": 6,
+      "wordsTyped": 10,
+      "firstCall": "2026-07-12T01:56:01.799Z",
+      "lastCall": "2026-07-12T02:28:27.108Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "ses_0bc31c47fffe5l50ztA67N8gne",
+      "start": "2026-07-08T22:16:57.001Z",
+      "end": "2026-07-08T22:23:36.797Z",
+      "calls": 26,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-07-08T22:16:57.001Z",
+        "end": "2026-07-08T22:23:36.797Z"
+      }
+    },
+    {
+      "sessionId": "ses_trap_root",
+      "start": "2026-07-10T10:01:00.000Z",
+      "end": "2026-07-11T09:00:00.000Z",
+      "calls": 10,
+      "subagents": 2,
+      "longestStretch": {
+        "start": "2026-07-11T08:00:00.000Z",
+        "end": "2026-07-11T09:00:00.000Z"
+      }
+    },
+    {
+      "sessionId": "ses_legacy",
+      "start": "2026-07-10T11:00:00.000Z",
+      "end": "2026-07-10T11:00:00.000Z",
+      "calls": 1,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-07-10T11:00:00.000Z",
+        "end": "2026-07-10T11:00:00.000Z"
+      }
+    },
+    {
+      "sessionId": "ses_0abf61e23ffeCdOLH7ORev47kF",
+      "start": "2026-07-12T01:56:01.799Z",
+      "end": "2026-07-12T02:07:04.380Z",
+      "calls": 60,
+      "subagents": 1,
+      "longestStretch": {
+        "start": "2026-07-12T01:56:01.799Z",
+        "end": "2026-07-12T02:07:04.380Z"
+      }
+    },
+    {
+      "sessionId": "ses_0abe73dfcffeSaGDZIkG4EHGhk",
+      "start": "2026-07-12T02:12:16.685Z",
+      "end": "2026-07-12T02:28:27.108Z",
+      "calls": 50,
+      "subagents": 1,
+      "longestStretch": {
+        "start": "2026-07-12T02:12:16.685Z",
+        "end": "2026-07-12T02:28:27.108Z"
+      }
+    }
+  ]
+}

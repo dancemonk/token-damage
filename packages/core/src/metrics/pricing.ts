@@ -50,7 +50,15 @@ export function modelKey(e: UsageEvent): string {
   let key = e.model;
   if (e.priceAs) key += `|as=${e.priceAs}`;
   if (e.serviceTier === "fast") key += "|fast";
-  const threshold = LONG_CONTEXT_INPUT[e.source];
+  // OpenCode runs any provider's models: the threshold follows the model.
+  const threshold =
+    e.source === "opencode"
+      ? e.model.startsWith("gpt-")
+        ? LONG_CONTEXT_INPUT.codex
+        : e.model.startsWith("gemini-")
+          ? LONG_CONTEXT_INPUT.gemini
+          : undefined
+      : LONG_CONTEXT_INPUT[e.source];
   if (
     threshold !== undefined &&
     e.input + e.cacheRead + e.cacheWrite > threshold

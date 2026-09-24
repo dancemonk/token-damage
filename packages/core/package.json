@@ -14,6 +14,7 @@
     "test": "vitest run",
     "test:big": "TD_BIG_MB=512 vitest run test/claude/big-file.test.ts",
     "sanitize-fixture": "node --experimental-strip-types scripts/sanitize-fixture.ts",
+    "opencode-fixture": "node --experimental-strip-types scripts/opencode-fixture.ts",
     "sample-month": "node --experimental-strip-types scripts/sample-month.ts"
   },
   "files": [

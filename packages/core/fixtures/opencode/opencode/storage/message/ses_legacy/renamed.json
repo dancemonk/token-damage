@@ -1,0 +1,13 @@
+{
+  "id": "msg_trap_claude_dotted",
+  "sessionID": "ses_legacy",
+  "modelID": "gpt-5.5",
+  "providerID": "openai",
+  "time": {
+    "created": 1783681200000
+  },
+  "tokens": {
+    "input": 6000000,
+    "output": 6000000
+  }
+}

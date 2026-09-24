@@ -1,0 +1,13 @@
+{
+  "id": "msg_trap_total_only",
+  "sessionID": "ses_trap_root",
+  "modelID": "gpt-5.5",
+  "providerID": "openai",
+  "time": {
+    "created": 1783681200000
+  },
+  "tokens": {
+    "input": 5000000,
+    "output": 5000000
+  }
+}

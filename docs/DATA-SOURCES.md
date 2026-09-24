@@ -204,16 +204,65 @@ Older versions wrote one whole-file `session-*.json` per session. Only files und
 it differ) or else of `content`. A message with only `functionResponse` parts is no prompt. A subagent's messages
 were written by its parent: not prompts. Its usage counts toward the parent session, as one subagent.
 
+## OpenCode
+
+Rules below match ccusage 20.0.24 (`rust/adapters/opencode/src/`), checked with `pnpm oracle --agent opencode`.
+Code: `packages/core/src/adapters/opencode/`. Fixtures: `packages/core/fixtures/opencode/opencode/` (a data dir).
+
+### Where
+`$OPENCODE_DATA_DIR` (comma-separated; when set at all, nothing else is read), else `$XDG_DATA_HOME/opencode`
+(only an absolute XDG_DATA_HOME), else `~/.local/share/opencode`. One SQLite database per data dir:
+`opencode.db`, else the first `opencode-<channel>.db` by name. It is opened read-only with the built-in
+`node:sqlite` (Node 22.13+; older Node skips OpenCode with a note, no new dependency); rows still in
+`opencode.db-wal` are read too, since SQLite applies the WAL on open. Older installs wrote
+`storage/message/<session id>/<message id>.json`; those files are read after the database, skipping any file
+named after an id the database already had. The database also holds OpenCode's `account` and `credential`
+tables (tokens): never queried.
+
+### Structure
+- `message` (id, session_id, time_created, data): `data` is the message JSON. Assistant messages carry
+  `modelID`, `providerID`, `time.created` (Unix ms), `tokens {input, output, reasoning, cache {read, write},
+  total}` and `cost` (USD, 0 on subscriptions). User messages carry `role: "user"`; their text is in `part`.
+- `part` (message_id, data): `type` `text` (with `synthetic: true` when OpenCode wrote it), `file`, `agent`,
+  `tool`, `step-finish`, … Only user messages' parts are read, and only for word counts.
+- `session` (id, parent_id, version): `parent_id` is set for a subagent's session (the `task` tool); `version`
+  is the OpenCode version.
+- `session_message` (OpenCode v2; empty in 1.17): rows with `type` and `data`; an assistant row names its model
+  as `model: {id, providerID}`.
+- One assistant message is one model step in 1.17: its tokens equal its `step-finish` part and the session's
+  `tokens_*` columns add up to its messages (checked on real data).
+
+### Per-message usage
+- Any `message` row whose payload has a `tokens` object, a `modelID` and a `providerID` (ccusage does not check
+  the role); `session_message` rows of type `assistant`. Payloads that are not JSON objects are skipped.
+- Input = `input` (already without cached tokens); cache read = `cache.read`; cache write = `cache.write`;
+  output = `output` + `reasoning` + whatever `total` has beyond the other fields (ccusage bills both as output
+  and counts them in its total). Numbers are non-negative integers only: strings, fractions and negatives count
+  0. All-zero usage (failed calls) is skipped.
+- Timestamp: `time.created`, else the row's `time_created` (legacy file: its mtime).
+- Dedupe by message id: the first copy counts (`message`, then `session_message`, then legacy files, data dir by
+  data dir). OpenCode's stored `cost` is not used: prices come from our table like every other agent.
+- Model names for prices and rows: a gateway's vendor prefix is dropped (`anthropic/claude-opus-4.1`), Claude's
+  dotted versions become Anthropic's (`claude-sonnet-4.5` → `claude-sonnet-4-5`), and ccusage's two aliases
+  apply (`gemini-3-pro-high` → `gemini-3-pro-preview`, `k2p6` → `kimi-k2.6`). OpenCode can run any provider's
+  models; long-context prices follow the model (`gpt-*` over 272K, `gemini-*` over 200K). The receipt's BY
+  AGENT row for OpenCode can hold Claude models: the agent comes from where the log was, never from the model.
+
+### Words typed and sessions
+User messages in main sessions: their `text` parts that are not `synthetic` or `ignored`. A subagent's session
+(`parent_id`, followed to the top) was prompted by its parent: no prompts; its usage counts toward the top
+session, one subagent per session. Legacy files and `session_message` rows add usage only, no words.
+
 ## Tested versions
 | Tool | Versions | Fixtures |
 | --- | --- | --- |
 | Claude Code | 2.1.237, 2.1.281 (real logs 2.1.205–2.1.281 scanned) | `packages/core/fixtures/claude/` |
 | Codex | 0.130.0, 0.143.0, 0.144.0-alpha.4, 0.147.0-alpha.6.5, 0.153.4, 0.155.1 (real logs 0.130.0–0.155.1, 275 rollouts) | `packages/core/fixtures/codex/` |
 | Gemini CLI | 0.42.0 (13 real chats; chats carry no version, so no check) | `packages/core/fixtures/gemini/` |
+| OpenCode | 1.17.15, 1.17.18 (one real database, 6 sessions, 152 messages) | `packages/core/fixtures/opencode/` |
 
 ## Later sources
-OpenCode (SQLite via `node:sqlite`, read `-wal` too), Copilot CLI (ccusage parses it), Cursor/OpenCode (SQLite; Cursor needs a cloud token → opt-in
-only), ChatGPT/Claude.ai exports (no token counts; tokenize locally and label `≈`).
+Copilot CLI (ccusage parses it), Cursor (SQLite; needs a cloud token → opt-in only), ChatGPT/Claude.ai exports (no token counts; tokenize locally and label `≈`).
 
 ## Known divergences from ccusage
 Keep this list current. Check with `pnpm oracle` (local logs) and `pnpm oracle:fixtures` (CI).
@@ -235,6 +284,14 @@ oracle adds ccusage's `totalTokens − input − cache − output` to its output
 on both sides. Differences by design, none present in real logs: we open only files under `chats/` (ccusage
 reads every `.json`/`.jsonl` under the data dir); we skip `stats` summaries (`gemini -p --output-format json`
 output, never written to chats); a response id repeated in another file counts once for us, twice for ccusage.
+
+OpenCode (`ccusage opencode daily`, 2026-09-24): the fixture corpus matches exactly (9,054,733 tokens, 4 days), and
+so did 2 days of real logs (8,818,222 tokens) in every field, with reasoning counted as output on both sides (as
+for Gemini CLI). Differences by design: a payload without `time.created` is dated by its row (ccusage: 1970-01-01);
+we never use OpenCode's stored `cost` (ccusage prefers it when above 0), so models without a list price in our
+table (e.g. glm-5.2, kimi-k2.7-code, qwen3.7-plus on OpenCode Go) are "not priced" where ccusage shows OpenCode's
+figure; session aggregates (`session.tokens_*`), which ccusage uses only in session reports for sessions without
+message usage, are never read.
 
 Not compared, because ccusage does not report them: words typed and prompts. A day with prompts but no model
 call exists only on our side, with zero tokens; the oracle skips all-zero days.
