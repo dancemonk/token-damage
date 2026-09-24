@@ -20,6 +20,16 @@ A tired insurance adjuster who has seen everything and is still surprised by you
 5. Optional V1 "Ask the Adjuster": aggregates only → user's own `claude -p`; the roast's own tokens are
    billed on the receipt ("This roast cost 3,904 tokens. You're welcome.").
 
+Built (`packages/core/src/roasts/`): 13 families with 5 variants each, bands and weights in `families.ts`:
+uninsurable, few/zero commits, restraint, iceberg (incl. the tagline and Gatsby ratio), late night, long session,
+plan multiple, subagent swarm, output share, weekend, cache hit, quiet period, energy. Score = weight × (0.5 + 0.5 ×
+depth into band) × confidence (measured 1, priced 0.9, estimated 0.6) × 0.5 if used on either of the last two
+receipts. Variant 0 is the canonical line; later receipts rotate. Waiting for data: cache invalidation,
+compactions, session churn (needs per-project grouping), personal records and quiet week vs history (needs
+`history.json`), flagship tiny output and speedrun burn (need per-session tokens), revert, commit subjects,
+two agents (V1). Commits are an optional input until the V1 git reader exists. Callbacks (§Architecture 4) are not
+built yet.
+
 ## Adjuster's notes (starter set; each needs ≥5 variants)
 1. Huge tokens, few commits: "183 million tokens went in. Six commits came out. Claude isn't your assistant; you're its project manager."
 2. Iceberg: "You typed 9,400 words this week. Your agents read 412 million tokens. For every word you wrote, the machine re-read a novella."
@@ -53,7 +63,7 @@ A tired insurance adjuster who has seen everything and is still surprised by you
 | 10M | WATER DAMAGE | Please do not use the elevator. |
 | 100M | STRUCTURAL | Building inspector en route. |
 | 1B | ACT OF GOD | Your insurer has stopped returning calls. |
-| 10B+ | UNINSURABLE | You are now the reason the policy exists. |
+| 5B+ | UNINSURABLE | You are now the reason the policy exists. |
 
 ## Achievements (all true, trigger printed on the card; ~⅓ hidden)
 - ONE LAST FIX — last model call after 3:00 AM

@@ -1,0 +1,394 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`sample customers > 0041: output is frozen 1`] = `
+{
+  "achievements": [
+    {
+      "hidden": false,
+      "id": "one-last-fix",
+      "name": "ONE LAST FIX",
+      "trigger": "Last model call at 3:47 AM",
+    },
+    {
+      "hidden": false,
+      "id": "cache-lord",
+      "name": "CACHE LORD",
+      "trigger": "Over 95% of input from cache for a week",
+    },
+  ],
+  "candidates": [
+    {
+      "family": "iceberg",
+      "score": 0.6815172000231275,
+      "text": "You typed a paragraph. It read a library.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "late-night",
+      "score": 0.5448333333333333,
+      "text": "Last model call: 3:47 AM. The model doesn't sleep. That was never supposed to be a challenge.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "long-session",
+      "score": 0.45883058720091485,
+      "text": "One session ran 9 hours 14 minutes. It has been through more than most marriages.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "subagent-swarm",
+      "score": 0.43369029120368224,
+      "text": "You spawned 38 subagents in one day. Middle management has never been this scalable.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "cache-hit",
+      "score": 0.4227371368099555,
+      "text": "Cache hit rate 97%. At least someone in this relationship remembers things.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "output-share",
+      "score": 0.39247297333846815,
+      "text": "Of 1.18 billion tokens processed, 0.4% was output. The rest was the agent re-reading its notes.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "plan-multiple",
+      "score": 0.3565760105179915,
+      "text": "Your $200 plan extracted $809.65 of list-price compute. Somewhere, a pricing analyst is staring at a wall.",
+      "tier": "priced",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "energy",
+      "score": 0.2034912051507283,
+      "text": "Estimated electricity: 26–120 kWh, about 0.78–3.7 fridge-months. Your fridge, for the record, has never written a unit test.",
+      "tier": "estimated",
+      "tone": "absurd",
+      "variant": 0,
+    },
+  ],
+  "damageClass": {
+    "finePrint": "Your insurer has stopped returning calls.",
+    "name": "ACT OF GOD",
+  },
+  "jokes": [
+    "You saved $4,383.85 with your Cache Rewards card.",
+    "Suggested tip for Claude: 18% · 20% · 25% · No tip",
+  ],
+  "note": {
+    "family": "iceberg",
+    "score": 0.6815172000231275,
+    "text": "You typed a paragraph. It read a library.",
+    "tier": "measured",
+    "tone": "dry",
+    "variant": 0,
+  },
+  "verdicts": [
+    "CLAIM #0041 · "It was research" · DENIED | DENIED. 1.18 billion tokens. Research rarely happens at 3:47 AM.",
+    "CLAIM #0041 · "The agent did it by itself" · DENIED | DENIED. You typed 14,690 words of instructions. You're the manager.",
+    "CLAIM #0041 · "It was one last fix" · DENIED | DENIED. 6 sessions started after midnight. That's not one.",
+    "CLAIM #0041 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
+    "CLAIM #0041 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
+    "CLAIM #0041 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
+  ],
+}
+`;
+
+exports[`sample customers > 0042: output is frozen 1`] = `
+{
+  "achievements": [
+    {
+      "hidden": false,
+      "id": "one-last-fix",
+      "name": "ONE LAST FIX",
+      "trigger": "Last model call at 4:12 AM",
+    },
+  ],
+  "candidates": [
+    {
+      "family": "few-commits",
+      "score": 0.7427156753339286,
+      "text": "187 million tokens. Two commits. You're its night-shift supervisor.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "iceberg",
+      "score": 0.6971416570277802,
+      "text": "You typed a paragraph. It read a library.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "late-night",
+      "score": 0.574,
+      "text": "Last model call: 4:12 AM. The model doesn't sleep. That was never supposed to be a challenge.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "cache-hit",
+      "score": 0.4367840837542598,
+      "text": "Cache hit rate 97%. At least someone in this relationship remembers things.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "output-share",
+      "score": 0.4118670460645012,
+      "text": "Of 187 million tokens processed, 0.33% was output. The rest was the agent re-reading its notes.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "long-session",
+      "score": 0.3889186737338784,
+      "text": "One session ran 7 hours. It has been through more than most marriages.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "subagent-swarm",
+      "score": 0.3182581292464086,
+      "text": "You spawned 12 subagents in one day. Middle management has never been this scalable.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "energy",
+      "score": 0.16979699943151452,
+      "text": "Estimated electricity: 3.7–18 kWh, about 0.11–0.53 fridge-months. Your fridge, for the record, has never written a unit test.",
+      "tier": "estimated",
+      "tone": "absurd",
+      "variant": 0,
+    },
+  ],
+  "damageClass": {
+    "finePrint": "Building inspector en route.",
+    "name": "STRUCTURAL",
+  },
+  "jokes": [
+    "You saved $749.94 with your Cache Rewards card.",
+    "Suggested tip for Claude: 18% · 20% · 25% · No tip",
+  ],
+  "note": {
+    "family": "few-commits",
+    "score": 0.7427156753339286,
+    "text": "187 million tokens. Two commits. You're its night-shift supervisor.",
+    "tier": "measured",
+    "tone": "dry",
+    "variant": 0,
+  },
+  "verdicts": [
+    "CLAIM #0042 · "It was research" · DENIED | DENIED. 187 million tokens. 2 commits. Research rarely happens at 4:12 AM.",
+    "CLAIM #0042 · "The agent did it by itself" · DENIED | DENIED. You typed 1,960 words of instructions. You're the manager.",
+    "CLAIM #0042 · "It was one last fix" · DENIED | DENIED. 2 sessions started after midnight. That's not one.",
+    "CLAIM #0042 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
+    "CLAIM #0042 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
+    "CLAIM #0042 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
+  ],
+}
+`;
+
+exports[`sample customers > 0043: output is frozen 1`] = `
+{
+  "achievements": [],
+  "candidates": [
+    {
+      "family": "restraint",
+      "score": 0.95,
+      "text": "Two sessions, both done by lunch. Flagged for unusual restraint.",
+      "tier": "measured",
+      "tone": "bureaucratic",
+      "variant": 0,
+    },
+    {
+      "family": "quiet",
+      "score": 0.8,
+      "text": "2.96 million tokens this period. Barely a scratch. The adjuster drove out for nothing.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 1,
+    },
+    {
+      "family": "iceberg",
+      "score": 0.5197220935669445,
+      "text": "212 words in, 2.96 million tokens read. The ratio is 13,955 to one.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 3,
+    },
+    {
+      "family": "cache-hit",
+      "score": 0.27685284640171864,
+      "text": "Cache hit rate 91%. At least someone in this relationship remembers things.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+  ],
+  "damageClass": {
+    "finePrint": "Adjuster notified.",
+    "name": "FENDER BENDER",
+  },
+  "jokes": [
+    "You saved $7.04 with your Cache Rewards card.",
+    "Suggested tip for Claude: 18% · 20% · 25% · No tip",
+  ],
+  "note": {
+    "family": "restraint",
+    "score": 0.95,
+    "text": "Two sessions, both done by lunch. Flagged for unusual restraint.",
+    "tier": "measured",
+    "tone": "bureaucratic",
+    "variant": 0,
+  },
+  "verdicts": [
+    "CLAIM #0043 · "It was research" · DENIED | DENIED. 2.96 million tokens. Research at this scale usually comes with a bibliography.",
+    "CLAIM #0043 · "The agent did it by itself" · DENIED | DENIED. You typed 212 words of instructions. You're the manager.",
+    "CLAIM #0043 · "It was one last fix" · APPROVED | APPROVED. Nothing started after midnight. We believe you.",
+    "CLAIM #0043 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
+    "CLAIM #0043 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
+    "CLAIM #0043 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
+  ],
+}
+`;
+
+exports[`sample customers > 0044: output is frozen 1`] = `
+{
+  "achievements": [
+    {
+      "hidden": false,
+      "id": "cache-lord",
+      "name": "CACHE LORD",
+      "trigger": "Over 95% of input from cache for a week",
+    },
+    {
+      "hidden": false,
+      "id": "long-goodbye",
+      "name": "THE LONG GOODBYE",
+      "trigger": "One session spanned 3 calendar days",
+    },
+  ],
+  "candidates": [
+    {
+      "family": "uninsurable",
+      "score": 1,
+      "text": "You are now the reason the policy exists.",
+      "tier": "measured",
+      "tone": "bureaucratic",
+      "variant": 0,
+    },
+    {
+      "family": "iceberg",
+      "score": 0.7818334298198931,
+      "text": "You typed a paragraph. It read a library.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "subagent-swarm",
+      "score": 0.5642816936192108,
+      "text": "You spawned 140 subagents in one day. Middle management has never been this scalable.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "plan-multiple",
+      "score": 0.5488942334912825,
+      "text": "Your $200 plan extracted $6,721.10 of list-price compute. Somewhere, a pricing analyst is staring at a wall.",
+      "tier": "priced",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "long-session",
+      "score": 0.5178876527129644,
+      "text": "One session ran 11 hours 40 minutes. It has been through more than most marriages.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "late-night",
+      "score": 0.42583333333333334,
+      "text": "Last model call: 2:05 AM. The model doesn't sleep. That was never supposed to be a challenge.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "cache-hit",
+      "score": 0.4233248784612133,
+      "text": "Cache hit rate 97%. At least someone in this relationship remembers things.",
+      "tier": "measured",
+      "tone": "absurd",
+      "variant": 0,
+    },
+    {
+      "family": "output-share",
+      "score": 0.39175960815621674,
+      "text": "Of 9.84 billion tokens processed, 0.4% was output. The rest was the agent re-reading its notes.",
+      "tier": "measured",
+      "tone": "dry",
+      "variant": 0,
+    },
+    {
+      "family": "energy",
+      "score": 0.24,
+      "text": "Estimated electricity: 220–1,000 kWh, about 6.5–31 fridge-months. Your fridge, for the record, has never written a unit test.",
+      "tier": "estimated",
+      "tone": "absurd",
+      "variant": 0,
+    },
+  ],
+  "damageClass": {
+    "finePrint": "You are now the reason the policy exists.",
+    "name": "UNINSURABLE",
+  },
+  "jokes": [
+    "You saved $36,385.95 with your Cache Rewards card.",
+    "Suggested tip for Claude: 18% · 20% · 25% · No tip",
+  ],
+  "note": {
+    "family": "uninsurable",
+    "score": 1,
+    "text": "You are now the reason the policy exists.",
+    "tier": "measured",
+    "tone": "bureaucratic",
+    "variant": 0,
+  },
+  "verdicts": [
+    "CLAIM #0044 · "It was research" · DENIED | DENIED. 9.84 billion tokens. Research rarely happens at 2:05 AM.",
+    "CLAIM #0044 · "The agent did it by itself" · DENIED | DENIED. You typed 41,200 words of instructions. You're the manager.",
+    "CLAIM #0044 · "It was one last fix" · DENIED | DENIED. 40 sessions started after midnight. That's not one.",
+    "CLAIM #0044 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
+    "CLAIM #0044 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
+    "CLAIM #0044 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
+  ],
+}
+`;
