@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { SHARE_BASE, shareUrl } from "@token-damage/core/web";
 import { describe, expect, it } from "vitest";
-import type { Catalog } from "../src/i18n.js";
+import { translator, type Catalog } from "../src/i18n.js";
 import { shareNote } from "../src/notes.js";
 import { receiptPaper } from "../src/receipt.js";
 import { readShare, shareView } from "../src/share-view.js";
@@ -17,19 +17,32 @@ const catalog = (lang: string) =>
   ) as Catalog;
 const LANGS = ["en", "ru"];
 
+// What each language prints for the frozen link's class, verdict and achievements.
+const EXPECT: Record<string, { stamps: string[]; ach: string[] }> = {
+  en: { stamps: ["ACT OF GOD", "DENIED"], ach: ["ONE LAST FIX", "CACHE LORD"] },
+  ru: {
+    stamps: ["ФОРС-МАЖОР", "ОТКАЗАНО"],
+    ach: ["ПОСЛЕДНЯЯ ПРАВКА", "ВЛАСТЕЛИН КЭША"],
+  },
+};
+
 describe.each(LANGS)("share links on /%s", (lang) => {
-  const notes = catalog(lang).notes;
+  const c = catalog(lang);
+  const notes = c.notes;
+  const t = translator(c);
+  const view = (p: Parameters<typeof shareView>[0]) =>
+    shareView(p, lang, notes, t, c.meta.locale);
 
   it("decodes the frozen v1 link", () => {
     const p = readShare(hashOf(FROZEN_V1));
     expect(p).not.toBeNull();
-    const view = shareView(p!, lang, notes);
-    expect(view.tokens).toBe(1_183_456_000);
-    expect(view.stamps).toEqual(["ACT OF GOD", "DENIED"]);
-    expect(view.achievements).toEqual(["ONE LAST FIX", "CACHE LORD"]);
-    expect(view.note?.lang).toBe(lang);
-    expect(view.note?.text).toMatch(/Gatsby|Гэтсби/);
-    expect(view.days).toBe(30);
+    const v = view(p!);
+    expect(v.tokens).toBe(1_183_456_000);
+    expect(v.stamps).toEqual(EXPECT[lang]!.stamps);
+    expect(v.achievements).toEqual(EXPECT[lang]!.ach);
+    expect(v.note?.lang).toBe(lang);
+    expect(v.note?.text).toMatch(/Gatsby|Гэтсби/);
+    expect(v.days).toBe(30);
   });
 
   it("round-trips what the CLI encodes", () => {
@@ -54,11 +67,11 @@ describe.each(LANGS)("share links on /%s", (lang) => {
     };
     const url =
       SHARE_BASE + Buffer.from(JSON.stringify(p)).toString("base64url");
-    const view = shareView(readShare(hashOf(url))!, lang, notes);
-    const html = receiptPaper(view);
+    const v = view(readShare(hashOf(url))!);
+    const html = receiptPaper(v, t);
     expect(html).not.toMatch(/<img|<script|<svg\/|pwned|onerror/);
-    expect(view.stamps).toEqual(["ACT OF GOD"]);
-    expect(view.note).toBeUndefined();
+    expect(v.stamps).toEqual([EXPECT[lang]!.stamps[0]]);
+    expect(v.note).toBeUndefined();
   });
 
   it("falls back to the sample for missing or broken fragments", () => {
@@ -75,8 +88,12 @@ describe.each(LANGS)("share links on /%s", (lang) => {
 describe("share notes", () => {
   const p = readShare(hashOf(FROZEN_V1))!;
 
-  it("fall back to English when the language has no note for the id", () => {
-    expect(shareNote(p, "ru", {})).toEqual({
+  it("stay out of other languages: no English note on a Russian page", () => {
+    expect(shareNote(p, "ru", {})).toBeUndefined();
+  });
+
+  it("come from core's English templates on English pages", () => {
+    expect(shareNote(p, "en", {})).toEqual({
       text: "For every word you typed, the machine read 80,562 tokens. That's The Great Gatsby, and a third of it again. Per word.",
       lang: "en",
     });

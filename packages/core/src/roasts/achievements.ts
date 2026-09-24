@@ -11,7 +11,7 @@ export interface Achievement {
 /** Names are printed as-is in every language, like stamps; the site looks them up by id. */
 export const ACHIEVEMENT_NAMES = {
   "one-last-fix": "ONE LAST FIX",
-  "touch-grass": "TOUCH GRASS",
+  "touch-grass": "GONE OUTSIDE",
   "cache-lord": "CACHE LORD",
   "long-goodbye": "THE LONG GOODBYE",
 } as const;

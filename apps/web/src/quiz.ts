@@ -25,7 +25,7 @@ const h = <K extends keyof HTMLElementTagNameMap>(
 function satire(n: number): string | undefined {
   const key = (fixed.quiz.satire as Record<string, string>)[String(n)];
   if (!key) return undefined;
-  return catalog.notes[key] ?? catalog.notesEn?.[key];
+  return catalog.notes[key];
 }
 
 function question() {
@@ -76,7 +76,7 @@ function question() {
         "p",
         { className: "q-source" },
         `${t("quiz.source.label")}: `,
-        h("span", { lang: "en" }, t(`quiz.q${n}.source`)),
+        h("span", {}, t(`quiz.q${n}.source`)),
       ),
     );
     const next = h(
@@ -144,7 +144,7 @@ function end() {
         { className: "big", tabIndex: -1 },
         t("quiz.score.value", { score, total: TOTAL }),
       ),
-      h("div", { className: "stamp", lang: "en" }, fixed.quiz.stamps[level]),
+      h("div", { className: "stamp" }, t(`quiz.stamp.${level}`)),
       h("p", {}, t(`quiz.score.${level}`)),
       h("div", { className: "rule" }),
       h("p", {}, t("quiz.cta.lead")),

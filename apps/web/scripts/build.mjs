@@ -118,14 +118,22 @@ const PAGES = [
     slug: "",
     template: "home.html",
     script: "home.js",
-    keys: ["home.", "nav."],
+    keys: ["home.", "nav.", "receipt.", "class."],
     notes: /^sample\./,
   },
   {
     slug: "r",
     template: "r.html",
     script: "r.js",
-    keys: ["r.", "home.stub.", "nav."],
+    keys: [
+      "r.",
+      "home.stub.",
+      "nav.",
+      "receipt.",
+      "class.",
+      "verdict.",
+      "ach.",
+    ],
     notes: /./,
     core: true,
   },
@@ -205,7 +213,6 @@ function pageData(catalog, page) {
       page.keys.some((p) => k.startsWith(p)),
     ),
     notes: pickKeys(catalog.notes, (k) => page.notes.test(k)),
-    notesEn: pickKeys(en.notes, (k) => page.notes.test(k)),
     // Saint Petersburg asides ride only on the home page's sample receipts, never on /r or real receipts.
     ...(page.slug === "" && {
       asides: pickKeys(catalog.asides, (k) => catalog.asides[k].trim() !== ""),
@@ -214,9 +221,9 @@ function pageData(catalog, page) {
 }
 
 function noteOf(catalog, key) {
+  // One language per page: no note rather than one in another language.
   const own = catalog.notes[key];
-  if (own) return { text: own, lang: catalog.meta.lang };
-  return en.notes[key] ? { text: en.notes[key], lang: "en" } : undefined;
+  return own ? { text: own, lang: catalog.meta.lang } : undefined;
 }
 
 /** Question 1 exactly as quiz.ts renders it, so the script takes over without a layout shift. */
@@ -236,7 +243,7 @@ function staticQuiz(catalog, t) {
     const n = i + 1;
     const satireKey = fixed.quiz.satire[String(n)];
     const satire = satireKey && noteOf(catalog, satireKey);
-    return `<li><p class="q-text">${esc(t(`quiz.q${n}.question`))}</p><ul>${opts.map((o) => `<li>${esc(t(`quiz.q${n}.${o}`))}</li>`).join("")}</ul><details><summary>${esc(t("quiz.reveal"))}</summary><p><b>${esc(t("quiz.answer.label"))} ${esc(t(`quiz.q${n}.${opts[answer]}`))}</b></p><p class="explain">${esc(t(`quiz.q${n}.explanation`))}</p>${satire ? `<p class="q-satire" lang="${satire.lang}">✶ ${esc(satire.text)}</p>` : ""}<p class="q-source">${esc(t("quiz.source.label"))}: <span lang="en">${esc(t(`quiz.q${n}.source`))}</span></p></details></li>`;
+    return `<li><p class="q-text">${esc(t(`quiz.q${n}.question`))}</p><ul>${opts.map((o) => `<li>${esc(t(`quiz.q${n}.${o}`))}</li>`).join("")}</ul><details><summary>${esc(t("quiz.reveal"))}</summary><p><b>${esc(t("quiz.answer.label"))} ${esc(t(`quiz.q${n}.${opts[answer]}`))}</b></p><p class="explain">${esc(t(`quiz.q${n}.explanation`))}</p>${satire ? `<p class="q-satire" lang="${satire.lang}">✶ ${esc(satire.text)}</p>` : ""}<p class="q-source">${esc(t("quiz.source.label"))}: ${esc(t(`quiz.q${n}.source`))}</p></details></li>`;
   });
   return `<ol>${items.join("")}</ol>`;
 }
@@ -272,16 +279,13 @@ function energyTable(locale, t) {
   return `<table><thead><tr><th scope="col">${esc(t("method.energy.col.type"))}</th><th scope="col">${esc(t("method.energy.col.wh"))}</th></tr></thead><tbody>${rows.map(([k, v]) => `<tr><td>${esc(t(k))}</td><td>${esc(number(v, locale, { maximumFractionDigits: 3 }))}</td></tr>`).join("")}</tbody></table>`;
 }
 
-/** Energy and RAM citations from docs/SOURCES.md; citations stay in English. */
-function sources() {
-  const md = readFileSync(join(REPO, "docs/SOURCES.md"), "utf8");
-  const items = [];
-  for (const section of ["Energy, water, CO₂", "RAM / market"]) {
-    const body = md.split(`## ${section}`)[1]?.split("\n## ")[0] ?? "";
-    for (const m of body.matchAll(/^- (.+?): (https:\/\/\S+)$/gm))
-      items.push(`<li lang="en"><a href="${esc(m[2])}">${esc(m[1])}</a></li>`);
-  }
-  if (!items.length) throw new Error("no sources parsed from docs/SOURCES.md");
+/** Energy and RAM sources: links from fixed.json, descriptions in the page language (method.source.N). */
+function sources(t) {
+  const items = fixed.sources.map(
+    (url, i) =>
+      `<li><a href="${esc(url)}">${esc(t(`method.source.${i + 1}`))}</a></li>`,
+  );
+  if (!items.length) throw new Error("no sources in fixed.json");
   return `<ul class="sources">${items.join("")}</ul>`;
 }
 
@@ -310,7 +314,8 @@ function moduleGraph(entry) {
   return [...found];
 }
 
-const BUILD_CLOCK = "09/24/26 · 11:58 PM";
+// The static receipt's clock; the page script replaces it with the visitor's own time.
+const BUILD_DATE = new Date(2026, 8, 24, 23, 58);
 
 for (const lang of LANGS) {
   const catalog = catalogs[lang];
@@ -344,13 +349,13 @@ for (const lang of LANGS) {
     };
     if (slug === "") {
       html.receipt = receiptPaper(
-        sampleView(0, BUILD_CLOCK, noteOf(catalog, "sample.0041")),
+        sampleView(0, t, locale, BUILD_DATE, noteOf(catalog, "sample.0041")),
+        t,
         { slam: true },
       );
-      html.stub = stub(t("home.stub.copy"), t("home.stub.copy.label"));
+      html.stub = stub(t);
     }
-    if (slug === "r")
-      html.stub = stub(t("home.stub.copy"), t("home.stub.copy.label"));
+    if (slug === "r") html.stub = stub(t);
     if (slug === "quiz") {
       html.staticQuiz = staticQuiz(catalog, t);
       html.quizFirst = quizFirst(t);
@@ -358,7 +363,7 @@ for (const lang of LANGS) {
     if (slug === "method") {
       html.prices = pricesTable(locale, t);
       html.energy = energyTable(locale, t);
-      html.sources = sources();
+      html.sources = sources(t);
     }
     html.scripts = page.script
       ? [

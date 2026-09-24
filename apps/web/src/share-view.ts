@@ -3,14 +3,11 @@ import {
   SHARE_BASE,
   damageClass,
   decodeShare,
-  formatRange,
-  formatSatireUsd,
-  formatUsd,
   ramX,
   type SharePayload,
 } from "@token-damage/core/web";
-import fixed from "./fixed.json" with { type: "json" };
-import { clock12, periodDays } from "./format.js";
+import { periodDays, receiptFormat } from "./format.js";
+import type { T } from "./i18n.js";
 import { shareNote } from "./notes.js";
 import type { ReceiptView } from "./receipt.js";
 
@@ -53,15 +50,6 @@ export function readShare(hash: string): SharePayload | null {
 export const totalTokens = (p: SharePayload) =>
   p.tokens.reduce((a, b) => a + b, 0);
 
-/** "09/24/26 · 03:40 AM", the receipt header, from the period end and the rounded latest call. */
-function headerDate(end: string, last?: string): string {
-  const [y, m, d] = end.split("-");
-  const day = `${m}/${d}/${y!.slice(2)}`;
-  if (!last) return day;
-  const [time = "", ampm = ""] = clock12(last).split(" ");
-  return `${day} · ${time.padStart(5, "0")} ${ampm}`;
-}
-
 /**
  * A friend's receipt. Nothing the link carries is printed as text: class and RAM-X are recomputed
  * from the tokens, achievements and verdicts are looked up, the note is a template id.
@@ -70,43 +58,43 @@ export function shareView(
   p: SharePayload,
   lang: string,
   notes: Record<string, string>,
+  t: T,
+  locale: string,
 ): ReceiptView {
-  const R = fixed.receipt;
+  const f = receiptFormat(locale);
   const total = totalTokens(p);
-  const priced = (value: number) => formatUsd({ value, tier: "priced" });
   const verdict = p.dispute?.[1];
   const rows: { label: string; value: string }[] = [];
   if (p.plan !== undefined)
-    rows.push({ label: R.plan, value: `${p.plan.toFixed(1)}×` });
-  if (p.last) rows.push({ label: R.latestCall, value: clock12(p.last) });
+    rows.push({ label: t("receipt.plan"), value: f.multiple(p.plan) });
+  if (p.last)
+    rows.push({ label: t("receipt.latestCall"), value: f.time(p.last) });
+  // The period's last day at the latest call, read as wall time (the link carries no time zone).
+  const when = new Date(`${p.end}T${p.last ?? "00:00"}:00Z`);
+  const slug = (name: string) => name.toLowerCase().replace(/ /g, "-");
   return {
     trans: String(total % 10_000).padStart(4, "0"),
-    date: headerDate(p.end, p.last),
+    date: f.clock(when, "UTC"),
     words: p.words,
+    wordsText: f.int(p.words),
     tokens: total,
+    tokensText: f.int(total),
     days: periodDays(p.start, p.end),
-    price: priced(p.list),
-    saved: priced(p.saved),
+    price: f.usd(p.list),
+    saved: f.usd(p.saved),
     rows,
-    kwh: formatRange(
-      {
-        value: (p.kwh[0] + p.kwh[1]) / 2,
-        low: p.kwh[0],
-        high: p.kwh[1],
-        tier: "estimated",
-      },
-      "kWh",
-    ),
-    ram: formatSatireUsd(ramX(total)),
+    kwh: f.range(p.kwh[0], p.kwh[1], t("receipt.kwh")),
+    ram: f.satire(ramX(total).value),
     note: shareNote(p, lang, notes),
     stamps: [
-      damageClass(total).name,
-      ...(verdict && VERDICTS.has(verdict) ? [verdict] : []),
+      t(`class.${slug(damageClass(total).name)}`),
+      ...(verdict && VERDICTS.has(verdict)
+        ? [t(`verdict.${verdict.toLowerCase()}`)]
+        : []),
     ],
-    achievements: p.ach.flatMap((id) => {
-      const name = (ACHIEVEMENT_NAMES as Record<string, string>)[id];
-      return name ? [name] : [];
-    }),
-    who: R.shared,
+    achievements: p.ach.flatMap((id) =>
+      id in ACHIEVEMENT_NAMES ? [t(`ach.${id}`)] : [],
+    ),
+    who: t("receipt.shared"),
   };
 }

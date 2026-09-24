@@ -44,6 +44,25 @@
   --receipt-scale: 0.94;
 }
 
+/* Russian stamps: Special Elite has no Cyrillic. Rubik Mono One is a heavy rubber-stamp face; the browser only
+   downloads it where a Russian stamp is shown. Russian stamp words are long, so they may wrap. */
+:root:lang(ru) {
+  --stamp-face: "Rubik Mono One", "IBM Plex Mono", monospace;
+}
+:root:lang(ru) .r-verdict .stamp {
+  font-size: calc(var(--stamp-size) * 0.64);
+  white-space: normal;
+  max-width: 11em;
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: 0;
+  padding: 7px 9px 6px;
+}
+:root:lang(ru) .score .stamp {
+  font-size: 17px;
+  line-height: 1.25;
+}
+
 html {
   overscroll-behavior: none;
 }
@@ -1125,9 +1144,11 @@ a:hover {
   }
   .wordmark {
     font-size: 12px;
+    letter-spacing: 0.16em;
+    white-space: nowrap;
   }
   .top nav a {
-    padding: 0 12px;
+    padding: 0 8px;
   }
   .printer {
     left: 6px;

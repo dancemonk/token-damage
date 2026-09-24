@@ -1,7 +1,7 @@
 // Home hero: print, count up, stamp, pull to tear, next customer, copy the stub.
 // Physics and timings are the tuned ones from design/prototype/hero-tear.html (docs/DESIGN.md §Motion).
 import fixed from "./fixed.json" with { type: "json" };
-import { receiptClock } from "./format.js";
+import { receiptFormat } from "./format.js";
 import { pageCatalog, translator } from "./i18n.js";
 import { pickAside } from "./asides.js";
 import { countUp as countUpIn, restart } from "./motion.js";
@@ -66,17 +66,16 @@ function noteFor(i: number): ReceiptView["note"] {
 function note(i: number): ReceiptView["note"] {
   const key = `sample.${fixed.samples[i % fixed.samples.length]!.trans}`;
   const own = catalog.notes[key];
-  if (own) return { text: own, lang: catalog.meta.lang };
-  const en = catalog.notesEn?.[key];
-  return en ? { text: en, lang: "en" } : undefined;
+  return own ? { text: own, lang: catalog.meta.lang } : undefined;
 }
 
+const fmt = receiptFormat(catalog.meta.locale);
 const countUp = (target: number) =>
-  countUpIn(receipt.querySelector(".r-n") as HTMLElement, target);
+  countUpIn(receipt.querySelector(".r-n") as HTMLElement, target, fmt.int);
 
 function print(i: number, withSound: boolean) {
-  const view = sampleView(i, receiptClock(new Date()), noteFor(i));
-  receipt.innerHTML = receiptPaper(view, { count: "0", slam: true });
+  const view = sampleView(i, t, catalog.meta.locale, new Date(), noteFor(i));
+  receipt.innerHTML = receiptPaper(view, t, { count: "0", slam: true });
   feed.style.visibility = "";
   restart(feed, "feed");
   led.className = "led";
@@ -267,7 +266,7 @@ el("replay").addEventListener("click", () => {
 wireSoundToggle();
 
 // First paint came from the build; bring the clock and the meter to life.
-(receipt.querySelector(".r-date") as HTMLElement).textContent = receiptClock(
+(receipt.querySelector(".r-date") as HTMLElement).textContent = fmt.clock(
   new Date(),
 );
 countUp(fixed.samples[0]!.tokens);

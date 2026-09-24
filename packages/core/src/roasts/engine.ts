@@ -67,7 +67,7 @@ const JOKES: { text: string; band?: Band }[] = [
   { text: "Suggested tip for Claude: 18% · 20% · 25% · No tip" },
   { text: "Paid by: You {plan} · Venture capital {venture}" },
   {
-    text: "Last call {lastCall}. Even bars close at 2.",
+    text: "Last call {lastCall}. In most states even the bars close at 2.",
     band: { lastCallMinutes: [1560, 1800] },
   },
   { text: "No refunds. Tokens cannot be un-read." },

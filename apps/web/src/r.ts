@@ -1,6 +1,6 @@
 // /r: a friend's receipt from the link fragment. The fragment never reaches a server.
 import fixed from "./fixed.json" with { type: "json" };
-import { compact, number, periodDays, receiptClock } from "./format.js";
+import { compact, number, periodDays, receiptFormat } from "./format.js";
 import { pageCatalog, translator } from "./i18n.js";
 import { countUp, restart } from "./motion.js";
 import { receiptPaper, sampleView, type ReceiptView } from "./receipt.js";
@@ -35,10 +35,14 @@ if (location.hash)
     .forEach((a) => (a.hash = location.hash));
 
 function printReceipt(view: ReceiptView, withSound: boolean) {
-  receipt.innerHTML = receiptPaper(view, { count: "0", slam: true });
+  receipt.innerHTML = receiptPaper(view, t, { count: "0", slam: true });
   stage.hidden = false;
   restart(feed, "feed");
-  countUp(receipt.querySelector(".r-n") as HTMLElement, view.tokens);
+  countUp(
+    receipt.querySelector(".r-n") as HTMLElement,
+    view.tokens,
+    receiptFormat(locale).int,
+  );
   if (withSound) sound("print");
 }
 
@@ -49,16 +53,13 @@ if (!payload) {
   el("notice").hidden = false;
   const key = `sample.${fixed.samples[0]!.trans}`;
   const own = catalog.notes[key];
-  const en = catalog.notesEn?.[key];
   printReceipt(
     sampleView(
       0,
-      receiptClock(new Date()),
-      own
-        ? { text: own, lang: catalog.meta.lang }
-        : en
-          ? { text: en, lang: "en" }
-          : undefined,
+      t,
+      locale,
+      new Date(),
+      own ? { text: own, lang: catalog.meta.lang } : undefined,
     ),
     false,
   );
@@ -78,7 +79,10 @@ if (!payload) {
     const g = guessed();
     const real = totalTokens(payload);
     guess.hidden = true;
-    printReceipt(shareView(payload, catalog.meta.lang, catalog.notes), true);
+    printReceipt(
+      shareView(payload, catalog.meta.lang, catalog.notes, t, locale),
+      true,
+    );
     const factor = Math.max(g, real) / Math.max(1, Math.min(g, real));
     result.textContent = t("r.result", {
       guess: compact(g, locale),

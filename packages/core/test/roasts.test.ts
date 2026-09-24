@@ -269,7 +269,7 @@ describe("buildFacts", () => {
     });
     expect(facts.weekendShare).toBeCloseTo(27_130 / 348_051);
     expect(observe(facts).achievements.map((a) => a.name)).toEqual([
-      "TOUCH GRASS",
+      "GONE OUTSIDE",
     ]);
   });
 

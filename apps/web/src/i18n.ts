@@ -6,8 +6,6 @@ export interface Catalog {
   strings: Record<string, Message>;
   /** Adjuster's notes and satire lines; a language falls back to English key by key. */
   notes: Record<string, string>;
-  /** English site notes a page needs, for keys this language hasn't written; pages only. */
-  notesEn?: Record<string, string>;
   /** Saint Petersburg asides for the home page's sample receipts; optional per language (docs/I18N.md). */
   asides?: Record<string, string>;
 }

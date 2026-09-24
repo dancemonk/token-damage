@@ -8,7 +8,13 @@ import {
   tokenWords,
   type SharePayload,
 } from "@token-damage/core/web";
-import { clock12, enUS } from "./format.js";
+
+// English slot values match core's slotsOf (en-US digits, "3:40 AM"); they only ever appear on English pages.
+const enUS = (n: number) => n.toLocaleString("en-US");
+const clock12 = (hhmm: string) => {
+  const [h = 0, m = 0] = hhmm.split(":").map(Number);
+  return `${h % 12 === 0 ? 12 : h % 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+};
 
 /** English template of a core note id "family.variant" (the id a share link carries). */
 export function englishTemplate(id: string): string | undefined {
@@ -166,8 +172,8 @@ const SLOTS: Record<string, (p: SharePayload) => Record<string, string>> = {
 };
 
 /**
- * The adjuster's note for a share link, in the page language when that language has written one,
- * else in English. Undefined when the link has no note or the note needs a fact the link lacks.
+ * The adjuster's note for a share link in the page language: its own template, or on English pages the
+ * core one. Undefined when the link has no note or the note needs a fact the link lacks.
  */
 export function shareNote(
   p: SharePayload,
@@ -182,6 +188,8 @@ export function shareNote(
     const text = render(own, slots(p));
     if (text) return { text, lang };
   }
+  // One language per page: a page that isn't English shows no note rather than an English one.
+  if (lang !== "en") return undefined;
   const english = englishTemplate(p.note);
   const text = english && render(english, slotsEn(p));
   return text ? { text, lang: "en" } : undefined;

@@ -145,16 +145,6 @@ describe("never-translated data", () => {
       })),
     ).toEqual(canon);
   });
-
-  it("stays out of the translation files", () => {
-    const labels = Object.values(fixed.receipt);
-    for (const { catalog } of [{ catalog: en }, ...others])
-      for (const m of Object.values(catalog.strings))
-        for (const l of labels)
-          expect(typeof m === "string" ? m : JSON.stringify(m)).not.toContain(
-            l,
-          );
-  });
 });
 
 describe.each([{ file: "en.json", catalog: en }, ...others])(

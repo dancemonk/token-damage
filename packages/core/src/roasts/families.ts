@@ -70,7 +70,7 @@ export const FAMILIES: Family[] = [
         band: { commits: [1, 10], lastCallMinutes: [1500, 1800] },
       },
       {
-        text: "{tokens} tokens went in. {Commits} commits came out. Claude isn't your assistant; you're its project manager.",
+        text: "{tokens} tokens went in. {Commits} commits came out. The mountain labored and brought forth a mouse.",
         tone: "dry",
         band: { commits: [1, 10] },
       },
@@ -144,7 +144,7 @@ export const FAMILIES: Family[] = [
         band: { tokensPerWord: [2e4, ANY] },
       },
       {
-        text: "You typed {words} words. Your agents read {tokens} tokens. For every word you wrote, the machine re-read a novella.",
+        text: "You typed {words} words. Your agents read {tokens} tokens. Brevity is the soul of wit. The machine skipped that line.",
         tone: "dry",
         band: { tokensPerWord: [3e4, ANY] },
       },
@@ -170,7 +170,7 @@ export const FAMILIES: Family[] = [
         tone: "dry",
       },
       {
-        text: "Last call {lastCall}. Even bars close at 2.",
+        text: "Last call {lastCall}. In most states even the bars close at 2.",
         tone: "dry",
         band: { lastCallMinutes: [1560, 1800] },
       },
@@ -233,7 +233,7 @@ export const FAMILIES: Family[] = [
         tone: "dry",
       },
       {
-        text: "{listPrice} of API-equivalent compute on a {plan} plan. The model isn't broken. It's bent.",
+        text: "{listPrice} of API-equivalent compute on a {plan} plan. All you can eat, and then some.",
         tone: "dry",
       },
       {
@@ -295,7 +295,7 @@ export const FAMILIES: Family[] = [
         tone: "dry",
       },
       {
-        text: "For every token it wrote, it read {readPerOutput}. Diligent, or lost. The logs can't tell.",
+        text: "Measure twice, cut once. It read {readPerOutput} times for every token it wrote.",
         tone: "absurd",
       },
       {

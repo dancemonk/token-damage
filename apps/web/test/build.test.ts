@@ -44,9 +44,6 @@ function resources(html: string): string[] {
   return out;
 }
 
-const receiptOf = (html: string) =>
-  /<section\s+class="receipt"[^>]*>([\s\S]*?)<\/section>/.exec(html)![1]!;
-
 describe.each(LANGS)("built /%s", (lang) => {
   it.each(SLUGS)(
     "page %s declares its language and all its alternates",
@@ -82,7 +79,6 @@ describe.each(LANGS)("built /%s", (lang) => {
         "meta",
         "strings",
         "notes",
-        "notesEn",
         ...(slug === "" ? ["asides"] : []),
       ]);
   });
@@ -122,17 +118,44 @@ describe.each(LANGS)("built /%s", (lang) => {
   });
 });
 
-describe("the receipt is the same in every language", () => {
-  const stripNote = (s: string) =>
-    s.replace(/<div class="note"[^>]*>.*?<\/div>/s, "");
+describe("one language per page", () => {
+  // Names stay as they are in every language: the brand, the command, products, models, orgs, units.
+  const NAMES = new Set(
+    (
+      "TOKEN DAMAGE Token Damage npx token-damage GitHub Claude Code Codex Gemini CLI OpenCode Anthropic " +
+      "OpenAI Google Meta Berkeley Lab JavaScript DRAM RAM-X API LBNL TrendForce The Climate Brink Epoch AI " +
+      "ChatGPT Mistral DOE EcoLogits ISO dev to Samsung Micron Crucial CO USD cookie I II III IV"
+    ).split(" "),
+  );
+  /** Visible text and attributes, without scripts, style, code, paths or model ids. */
+  const visible = (html: string) =>
+    html
+      // The language switcher names each language in itself («Русский», English): standard practice.
+      .replace(/<a [^>]*hreflang="[^"]+"[^>]*>[^<]*<\/a>/g, " ")
+      .replace(/<(script|style)[\s\S]*?<\/\1>/g, " ")
+      .replace(/<code>[\s\S]*?<\/code>/g, " ")
+      .replace(/<td>[a-z0-9.-]+<\/td>/g, " ")
+      .replace(/<(?:meta|link)[^>]*>/g, " ")
+      .replace(
+        /(?:href|src|class|id|for|type|rel|hreflang|lang|role|style|viewBox|d|fill|stroke[\w-]*|width|height|data-[\w-]+|aria-(?:hidden|pressed|current))="[^"]*"/g,
+        " ",
+      )
+      .replace(/<[^>]+>/g, " ")
+      .replace(/~?\/[\w./-]+|https?:\/\/\S+|\b[\w-]+\.(?:json|md)\b/g, " ")
+      .replace(/&[a-z]+;|&#\d+;/g, " ");
 
-  it("home receipts differ only in the adjuster's note", () => {
-    const en = receiptOf(page("en", ""));
-    for (const lang of LANGS) {
-      const other = receiptOf(page(lang, ""));
-      expect(stripNote(other)).toBe(stripNote(en));
-    }
+  it.each(SLUGS)("/ru/%s shows no Latin words but names", (slug) => {
+    const words = visible(page("ru", slug)).match(/[A-Za-z][A-Za-z-]*/g) ?? [];
+    expect([...new Set(words.filter((w) => !NAMES.has(w)))]).toEqual([]);
   });
+
+  it.each(SLUGS)(
+    "/%s shows no Cyrillic but the switcher's «Русский»",
+    (slug) => {
+      const text = visible(page("en", slug));
+      expect(text.match(/[А-Яа-яЁё]+/g) ?? []).toEqual([]);
+    },
+  );
 
   it("the stylesheet has no external urls", () => {
     const css = readFileSync(join(DIST, "assets/site.css"), "utf8");
@@ -214,6 +237,7 @@ describe("Saint Petersburg asides stay on the home page's samples", () => {
     );
     const { readShare, shareView } = await import("../src/share-view.js");
     const { receiptPaper } = await import("../src/receipt.js");
+    const { translator } = await import("../src/i18n.js");
     const hash =
       "#v1.eyJzdGFydCI6IjIwMjYtMDgtMjYiLCJlbmQiOiIyMDI2LTA5LTI0IiwidG9rZW5zIjpbMjEwMDAsNDQxMDAwMDAsMTEzODQwMDAwMCw5MzUwMDBdLCJjYWxscyI6NzQ4MCwic2Vzc2lvbnMiOjk0LCJkYXlzIjoyNiwic3ViYWdlbnRzIjoyMTIsIndvcmRzIjoxNDY5MCwibGlzdCI6ODA5LjY1LCJzYXZlZCI6NDM4My44NSwicGxhbiI6NCwia3doIjpbMjYsMTIwXSwiY2xhc3MiOiJBQ1QgT0YgR09EIiwiYWNoIjpbIm9uZS1sYXN0LWZpeCIsImNhY2hlLWxvcmQiXSwiZGlzcHV0ZSI6WyJyZXNlYXJjaCIsIkRFTklFRCJdLCJub3RlIjoiaWNlYmVyZy4wIiwibGFzdCI6IjAzOjQwIn0";
     for (const lang of LANGS) {
@@ -223,8 +247,16 @@ describe("Saint Petersburg asides stay on the home page's samples", () => {
       // Even a link naming an aside id as its note gets nothing: asides are not note ids.
       for (const note of ["iceberg.0", "spb.1"]) {
         const p = { ...readShare(hash)!, note };
+        const t = translator(catalog);
         const html = receiptPaper(
-          shareView(p, lang, { ...catalog.notes, ...catalog.asides }),
+          shareView(
+            p,
+            lang,
+            { ...catalog.notes, ...catalog.asides },
+            t,
+            catalog.meta.locale,
+          ),
+          t,
         );
         for (const line of asideTexts) expect(html).not.toContain(line);
       }

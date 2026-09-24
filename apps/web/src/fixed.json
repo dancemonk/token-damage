@@ -1,86 +1,72 @@
 {
-  "$comment": "Never translated. Receipts, stamps, the command and names look the same in every language. Site copy lives in i18n/<lang>.json.",
+  "$comment": "Names, numbers and ids only. Every word a visitor reads lives in i18n/<lang>.json.",
   "origin": "https://tokendamage.com",
   "github": "https://github.com/dancemonk/token-damage",
   "brand": "TOKEN DAMAGE",
   "command": "npx token-damage",
-  "receipt": {
-    "store": "STORE 0001 · REG 01 · CASHIER: THE ADJUSTER",
-    "trans": "TRANS #",
-    "typed": "YOU TYPED ·",
-    "words": "WORDS",
-    "tokensRead": "TOKENS IT READ",
-    "days": "DAYS",
-    "price": "≡ PRICE WITHOUT YOUR PLAN",
-    "saved": "≡ YOU SAVED (CACHE CARD)",
-    "electricity": "≈ ELECTRICITY",
-    "ram": "✶ RAM SURCHARGE (GAMERS)",
-    "plan": "≡ TIMES YOUR PLAN",
-    "latestCall": "LATEST CALL",
-    "achievements": "ACHIEVEMENTS",
-    "legendPriced": "≡ LIST PRICE",
-    "legendEstimate": "≈ ESTIMATE, ALWAYS A RANGE",
-    "legendSatire": "✶ SATIRE",
-    "sample": "SAMPLE",
-    "shared": "SHARED RECEIPT",
-    "notYours": "NOT YOUR NUMBERS (YET)",
-    "tear": "✂ TEAR HERE",
-    "yourCopy": "YOUR COPY · PASTE IN TERMINAL"
-  },
   "samples": [
     {
       "trans": "0041",
-      "who": "CUSTOMER 0041",
       "words": 14690,
       "tokens": 1183400000,
-      "price": "$809.65",
-      "saved": "$4,383.85",
-      "kwh": "26–120 kWh",
-      "ram": "+$0.0000079",
-      "stamp": "ACT OF GOD"
+      "price": 809.65,
+      "saved": 4383.85,
+      "kwh": [26, 120],
+      "ram": 7.9e-6,
+      "class": "act-of-god"
     },
     {
       "trans": "0042",
-      "who": "THE NIGHT SHIFT",
       "words": 1960,
       "tokens": 187022000,
-      "price": "$129.20",
-      "saved": "$749.94",
-      "kwh": "3.7–18 kWh",
-      "ram": "+$0.0000012",
-      "stamp": "STRUCTURAL"
+      "price": 129.2,
+      "saved": 749.94,
+      "kwh": [3.7, 18],
+      "ram": 1.2e-6,
+      "class": "structural"
     },
     {
       "trans": "0043",
-      "who": "THE RESTRAINT AWARD",
       "words": 212,
       "tokens": 2958400,
-      "price": "$2.06",
-      "saved": "$7.04",
-      "kwh": "0.094–0.44 kWh",
-      "ram": "+$0.00000002",
-      "stamp": "FENDER BENDER"
+      "price": 2.06,
+      "saved": 7.04,
+      "kwh": [0.094, 0.44],
+      "ram": 2e-8,
+      "class": "fender-bender"
     },
     {
       "trans": "0044",
-      "who": "THE UNINSURABLE",
       "words": 41200,
       "tokens": 9842000000,
-      "price": "$6,721.10",
-      "saved": "$36,385.95",
-      "kwh": "220–1,000 kWh",
-      "ram": "+$0.000065",
-      "stamp": "UNINSURABLE"
+      "price": 6721.1,
+      "saved": 36385.95,
+      "kwh": [220, 1000],
+      "ram": 6.5e-5,
+      "class": "uninsurable"
     }
   ],
   "quiz": {
     "asOf": "2026-09-01",
     "answers": [0, 2, 2, 2, 1],
-    "satire": { "3": "quiz.q3" },
-    "stamps": {
-      "low": "BLISSFULLY UNAWARE",
-      "mid": "MILDLY INFORMED",
-      "high": "KNOWS TOO MUCH"
+    "satire": {
+      "3": "quiz.q3"
     }
-  }
+  },
+  "sources": [
+    "https://www.theclimatebrink.com/p/the-real-energy-use-of-agentic-ai",
+    "https://simonpcouch.com/blog/2026-01-20-cc-impact/",
+    "https://cloud.google.com/blog/products/infrastructure/measuring-the-environmental-impact-of-ai-inference",
+    "https://blog.samaltman.com/the-gentle-singularity",
+    "https://epoch.ai/gradient-updates/how-much-energy-does-chatgpt-use",
+    "https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai",
+    "https://eta.lbl.gov/publications/united-states-data-center-energy-2025",
+    "https://www.energy.gov/articles/doe-releases-new-report-evaluating-increase-electricity-demand-data-centers",
+    "https://ecologits.ai/latest/methodology/",
+    "https://dev.to/gwittebolle/how-much-co2-does-a-claude-code-session-actually-emit-1gna",
+    "https://www.techtarget.com/it-infrastructure/news/366650693/A-shadow-water-problem-AIs-power-demand-shifts-consumption-upstream",
+    "https://www.trendforce.com/presscenter/news/20260601-13070.html",
+    "https://www.trendforce.com/presscenter/news/20260202-12911.html",
+    "https://www.globenewswire.com/news-release/2025/12/03/3199169/"
+  ]
 }

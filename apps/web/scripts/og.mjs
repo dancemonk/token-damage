@@ -93,9 +93,46 @@ function mono(
   return out.join("");
 }
 
-function card({ headline, note, hidden }) {
+/** Receipt labels and figures for one language, as the site prints them (receipt.*, page locale). */
+function receiptFor(own) {
+  const s = (k) => own.strings[k] ?? en.strings[k];
+  const plural = (k, n) => {
+    const m = s(k);
+    return typeof m === "string"
+      ? m
+      : (m[new Intl.PluralRules(own.meta.locale).select(n)] ?? m.other);
+  };
   const c = fixed.samples[0];
-  const R = fixed.receipt;
+  const nf = (o = {}) => new Intl.NumberFormat(own.meta.locale, o);
+  const usd = (x) =>
+    nf({ style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(
+      x,
+    );
+  const R = Object.fromEntries(
+    Object.keys(en.strings)
+      .filter((k) => k.startsWith("receipt."))
+      .map((k) => [k.slice(8), s(k)]),
+  );
+  R.words = plural("receipt.words", c.words);
+  R.days = plural("receipt.days", 30);
+  return {
+    R,
+    c: {
+      words: nf().format(c.words),
+      tokens: nf().format(c.tokens),
+      price: usd(c.price),
+      saved: usd(c.saved),
+      kwh: `${nf().format(c.kwh[0])}–${nf().format(c.kwh[1])} ${s("receipt.kwh")}`,
+      ram: `+${nf({ style: "currency", currency: "USD", maximumSignificantDigits: 2 }).format(c.ram)}`,
+      stamp: s(`class.${c.class}`),
+    },
+    // Special Elite has no Cyrillic, and the renderer only knows the CLI's fonts.
+    stampFace: own.meta.lang === "en" ? "Special Elite" : "IBM Plex Mono",
+  };
+}
+
+function card({ headline, note, hidden, receipt }) {
+  const { R, c, stampFace } = receipt;
   const INK = "#17160f";
   const MUTED = "#6d685e";
   const x0 = 680;
@@ -146,7 +183,7 @@ ${
         mid,
         198,
         12,
-        `${R.typed} ${c.words.toLocaleString("en-US")} ${R.words}`,
+        `${R.typed} ${c.words} ${R.words}`,
         `fill="${MUTED}" letter-spacing="1.4" text-anchor="middle"`,
       )
 }
@@ -157,7 +194,7 @@ ${
         mid,
         256,
         44,
-        c.tokens.toLocaleString("en-US"),
+        c.tokens,
         `font-weight="700" letter-spacing="-1" text-anchor="middle"`,
       )
 }
@@ -174,7 +211,7 @@ ${
     ? ""
     : `<g transform="translate(${x1 - 112} 530) rotate(-7)" fill="none" stroke="#e0331b" opacity="0.92">
 <rect x="-86" y="-24" width="172" height="44" stroke-width="1.6"/><rect x="-81" y="-19" width="162" height="34" stroke-width="1.6"/>
-<text x="0" y="8" font-family="Special Elite" font-size="23" fill="#e0331b" stroke="none" text-anchor="middle">${esc(c.stamp)}</text>
+<text x="0" y="8" font-family="${stampFace}" font-weight="700" font-size="${stampFace === "Special Elite" ? 23 : 17}" fill="#e0331b" stroke="none" text-anchor="middle">${esc(c.stamp)}</text>
 </g>`
 }
 ${dash(572)}
@@ -194,12 +231,13 @@ mkdirSync(out, { recursive: true });
 for (const lang of LANGS) {
   const own = load(lang);
   const s = (k) => own.strings[k] ?? en.strings[k];
-  const note = own.notes["sample.0041"] ?? en.notes["sample.0041"];
+  const note = own.notes["sample.0041"] ?? "";
+  const receipt = receiptFor(own);
   for (const [name, headline, hidden] of [
     [lang, s("og.home"), false],
     [`${lang}-r`, s("r.meta.description"), true],
   ]) {
-    const png = new Resvg(card({ headline, note, hidden }), {
+    const png = new Resvg(card({ headline, note, hidden, receipt }), {
       font: {
         fontFiles: FONTS,
         loadSystemFonts: false,
