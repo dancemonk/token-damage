@@ -1,6 +1,6 @@
 import { formatRange, formatUsd, sig2 } from "../metrics/format.js";
 import type { Value } from "../types.js";
-import type { Receipt } from "./model.js";
+import { AGENT_NAMES, type PriceRow, type Receipt } from "./model.js";
 
 export const WIDTH = 48;
 
@@ -65,13 +65,28 @@ function period(p: Receipt["period"]): string {
     : `${monthDay(p.start)}, ${sy} – ${monthDay(p.end)}, ${ey}`;
 }
 
-function kept(p: Receipt["period"]): string {
+// The only retention setting we read is Claude Code's, so the note is about Claude Code alone.
+function kept(r: Receipt): string {
+  const p = r.period;
+  if (!r.byAgent.some((a) => a.agent === "claude-code"))
+    return `(${p.days} days)`;
   return p.days <= p.retentionDays
     ? `(${p.days} days — all claude code kept)`
     : `(${p.days} days — claude code kept the last ${p.retentionDays})`;
 }
 
 const priced = (v: Value) => `≡ ${formatUsd(v)}`;
+
+function table(heading: string, rows: [string, PriceRow][]): Line[] {
+  return [
+    {
+      text: `${heading.padEnd(24)}${"TOKENS".padStart(6)}${"LIST PRICE".padStart(18)}`,
+    },
+    ...rows.map(([name, row]) => ({
+      text: `${`  ${name}${row.estModel ? "*" : ""}`.padEnd(24)}${compactTokens(row.tokens.value).padStart(6)}${(row.notPriced ? "not priced" : priced(row.listPrice)).padStart(18)}`,
+    })),
+  ];
+}
 
 /** The 48-column customer copy (docs/CLI.md §The receipt). */
 export function receiptLines(r: Receipt): Line[] {
@@ -85,7 +100,7 @@ export function receiptLines(r: Receipt): Line[] {
     { text: center("T O K E N   D A M A G E") },
     { text: center("customer copy") },
     { text: center(`statement · ${period(r.period)}`) },
-    { text: center(kept(r.period)), style: "muted" },
+    { text: center(kept(r)), style: "muted" },
     rule("="),
     { text: leader("WORDS YOU TYPED", n(m.words.value)) },
     { text: leader("MODEL CALLS", n(m.calls.value)) },
@@ -98,12 +113,31 @@ export function receiptLines(r: Receipt): Line[] {
     },
     { text: leader("TOKENS WRITTEN BY AGENTS", n(m.tokensWritten.value)) },
     rule("-"),
-    {
-      text: `${"BY MODEL".padEnd(24)}${"TOKENS".padStart(6)}${"LIST PRICE".padStart(18)}`,
-    },
-    ...r.byModel.map((row) => ({
-      text: `${`  ${row.name}`.padEnd(24)}${compactTokens(row.tokens.value).padStart(6)}${priced(row.listPrice).padStart(18)}`,
-    })),
+    // One agent needs no split: its totals are the lines above.
+    ...(r.byAgent.length > 1
+      ? [
+          ...table(
+            "BY AGENT",
+            r.byAgent.map((a): [string, PriceRow] => [
+              AGENT_NAMES[a.agent].toLowerCase(),
+              a,
+            ]),
+          ),
+          rule("-"),
+        ]
+      : []),
+    ...table(
+      "BY MODEL",
+      r.byModel.map((m): [string, PriceRow] => [m.name, m]),
+    ),
+    ...(r.byModel.some((m) => m.estModel)
+      ? [
+          {
+            text: "  * est. model: priced as the closest listed one",
+            style: "muted" as const,
+          },
+        ]
+      : []),
     rule("-"),
     {
       text: leader("LIST-PRICE VALUE (API-EQUIV.)", priced(r.priced.listPrice)),

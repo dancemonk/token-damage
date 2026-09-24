@@ -136,8 +136,9 @@ export function aggregate(
     const agentKey = e.agentId && `${sessionId}/${e.agentId}`;
     const d = dayState(e.ts);
     // Keyed by price variant (fast, long context, alias) so list price stays exact per call.
-    add(d.byModel, modelKey(e), e);
-    add<Source>(d.bySource, e.source, e);
+    const key = modelKey(e);
+    add(d.byModel, key, e);
+    add((d.bySource[e.source] ??= {}), key, e);
     d.calls++;
     d.firstCall = Math.min(d.firstCall ?? e.ts, e.ts);
     d.lastCall = Math.max(d.lastCall ?? e.ts, e.ts);
@@ -205,11 +206,12 @@ export function aggregate(
       add(totals.byModel, model, t);
       plus(totals.tokens, t);
     }
-    for (const [source, t] of Object.entries(d.bySource) as [
+    for (const [source, byModel] of Object.entries(d.bySource) as [
       Source,
-      TokenSums,
+      Record<string, TokenSums>,
     ][])
-      add(totals.bySource, source, t);
+      for (const [model, t] of Object.entries(byModel))
+        add((totals.bySource[source] ??= {}), model, t);
   }
   for (const { longestStretch: span } of summaries) {
     const best = totals.longestSession;

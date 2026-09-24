@@ -10,6 +10,7 @@
     "trans",
     "period",
     "measured",
+    "byAgent",
     "byModel",
     "priced",
     "estimated",
@@ -173,6 +174,31 @@
         }
       }
     },
+    "byAgent": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["agent", "tokens", "listPrice"],
+        "properties": {
+          "agent": {
+            "enum": ["claude-code", "codex"]
+          },
+          "tokens": {
+            "$ref": "#/$defs/measured"
+          },
+          "listPrice": {
+            "$ref": "#/$defs/priced"
+          },
+          "estModel": {
+            "const": true
+          },
+          "notPriced": {
+            "const": true
+          }
+        }
+      }
+    },
     "byModel": {
       "type": "array",
       "items": {
@@ -188,6 +214,12 @@
           },
           "listPrice": {
             "$ref": "#/$defs/priced"
+          },
+          "estModel": {
+            "const": true
+          },
+          "notPriced": {
+            "const": true
           }
         }
       }

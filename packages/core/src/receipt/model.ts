@@ -6,6 +6,7 @@ import {
   listPrice,
   modelName,
   planMultiple,
+  priceFor,
   PRICES,
   withoutCache,
   type PriceTable,
@@ -14,7 +15,23 @@ import { ramX } from "../metrics/satire.js";
 import type { Achievement } from "../roasts/achievements.js";
 import type { Facts } from "../roasts/facts.js";
 import type { Observations } from "../roasts/engine.js";
-import type { TokenSums, Value } from "../types.js";
+import type { Source, TokenSums, Value } from "../types.js";
+
+/** Agent names as the card prints them; the 48-column receipt prints them in lower case. */
+export const AGENT_NAMES: Record<Source, string> = {
+  "claude-code": "Claude Code",
+  codex: "Codex",
+};
+
+/** Tokens and list price of some `byModel` keys. */
+export interface PriceRow {
+  tokens: Value;
+  listPrice: Value;
+  /** Some of it priced as a guess (`PriceMatch.isFallback`): the receipt marks the row with "*". */
+  estModel?: true;
+  /** None of it has a list price: the receipt says "not priced" rather than $0. */
+  notPriced?: true;
+}
 
 /** Everything any output shows. Renderers format; they never compute. */
 export interface Receipt {
@@ -54,7 +71,9 @@ export interface Receipt {
     latestCallDay: string | null;
     longestSessionMinutes: Value | null;
   };
-  byModel: { name: string; tokens: Value; listPrice: Value }[];
+  /** Every agent with usage in the period, most tokens first. */
+  byAgent: ({ agent: Source } & PriceRow)[];
+  byModel: ({ name: string } & PriceRow)[];
   priced: {
     listPrice: Value;
     plan: { usd: number; multiple: Value } | null;
@@ -93,7 +112,27 @@ const measured = (value: number): Value => ({ value, tier: "measured" });
 const FAMILIES = ["fable", "mythos", "opus", "sonnet", "haiku"];
 const total = (t: TokenSums) => t.input + t.cacheWrite + t.cacheRead + t.output;
 
-// Receipt rows group model versions by family: "opus" covers claude-opus-5 and claude-opus-5-5.
+function priceRow(
+  models: Record<string, TokenSums>,
+  prices: PriceTable,
+): PriceRow {
+  const matches = Object.keys(models).map((key) => priceFor(key, prices));
+  return {
+    tokens: measured(Object.values(models).reduce((s, t) => s + total(t), 0)),
+    listPrice: listPrice(models, prices),
+    ...(matches.some((m) => m?.isFallback) && { estModel: true as const }),
+    ...(matches.every((m) => !m) && { notPriced: true as const }),
+  };
+}
+
+/** Most tokens first, ties by name. */
+const mostTokens =
+  <T extends PriceRow>(name: (row: T) => string) =>
+  (a: T, b: T) =>
+    b.tokens.value - a.tokens.value || (name(a) < name(b) ? -1 : 1);
+
+// Rows follow the name people pick: Claude Code's /model takes a family ("opus" covers claude-opus-5 and
+// claude-opus-5-5), Codex takes the full model name (gpt-5.6-sol and gpt-5.6-luna stay apart).
 function byFamily(
   byModel: Record<string, TokenSums>,
   prices: PriceTable,
@@ -104,14 +143,17 @@ function byFamily(
     groups.set(name, { ...groups.get(name), [model]: t });
   }
   return [...groups]
-    .map(([name, models]) => ({
-      name,
-      tokens: measured(Object.values(models).reduce((s, t) => s + total(t), 0)),
-      listPrice: listPrice(models, prices),
-    }))
-    .sort(
-      (a, b) => b.tokens.value - a.tokens.value || (a.name < b.name ? -1 : 1),
-    );
+    .map(([name, models]) => ({ name, ...priceRow(models, prices) }))
+    .sort(mostTokens((row) => row.name));
+}
+
+function byAgent(
+  bySource: Partial<Record<Source, Record<string, TokenSums>>>,
+  prices: PriceTable,
+): Receipt["byAgent"] {
+  return (Object.entries(bySource) as [Source, Record<string, TokenSums>][])
+    .map(([agent, models]) => ({ agent, ...priceRow(models, prices) }))
+    .sort(mostTokens((row) => row.agent));
 }
 
 export function buildReceipt({
@@ -192,6 +234,7 @@ export function buildReceipt({
           ? null
           : measured(facts.longestSessionMin),
     },
+    byAgent: byAgent(totals.bySource, prices),
     byModel: byFamily(totals.byModel, prices),
     priced: {
       listPrice: list,

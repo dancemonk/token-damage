@@ -99,7 +99,12 @@ ADJUSTER'S NOTE
    ≡ list-price equiv · ≈ estimate · ✶ satire
       method v1 · prices as of 2026-09-24
 ```
-The "YOUR PLAN" block appears only with `--plan` or a configured plan. This is sample customer 0041:
+The "YOUR PLAN" block appears only with `--plan` or a configured plan. With more than one agent in the period, a
+BY AGENT block (same columns, most tokens first) sits above BY MODEL. Model rows follow the name people pick:
+Claude Code models by family (`opus`), Codex models by full name (`gpt-5.6-sol`). A row priced as a guess ends in
+`*`, with the footnote `  * est. model: priced as the closest listed one` under BY MODEL; a row with no list price
+says `not priced`. The retention line is about Claude Code only; without Claude Code in the period it reads
+`(30 days)`. The share card names the agents instead (`30 days — Codex + Claude Code · all Claude Code kept`). This is sample customer 0041:
 `pnpm -F core sample-month` writes a synthetic config dir that adds up to it, and a CLI test compares
 `token-damage --fixtures <it> --no-anim --plan 200` (UTC) with this block character for character.
 The footer date is `asOf` in `packages/core/src/metrics/prices.json`.

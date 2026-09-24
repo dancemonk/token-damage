@@ -1,6 +1,6 @@
 import { formatRange, formatUsd } from "../metrics/format.js";
 import type { Excuse, Verdict } from "../roasts/dispute.js";
-import type { Receipt } from "./model.js";
+import { AGENT_NAMES, type Receipt } from "./model.js";
 
 export const SHARE_BASE = "https://tokendamage.com/r#v1.";
 
@@ -185,7 +185,7 @@ export function sharePreview(p: SharePayload): string[] {
 export function imagePreview(r: Receipt): string[] {
   const m = r.measured;
   return [
-    `  statement ${r.period.start} – ${r.period.end}, ${m.tokensRead.value + m.tokensWritten.value} tokens, ${m.words.value} words typed`,
+    `  statement ${r.period.start} – ${r.period.end} (${r.byAgent.map((a) => AGENT_NAMES[a.agent]).join(" + ")}), ${m.tokensRead.value + m.tokensWritten.value} tokens, ${m.words.value} words typed`,
     "  who did the reading: cache reads, fresh context, output, your typing (shares)",
     `  list price ${formatUsd(r.priced.listPrice)}, cache saved ${formatUsd(r.priced.cacheSaved)}${r.priced.plan ? `, plan $${r.priced.plan.usd}` : ""}`,
     `  electricity ${formatRange(r.estimated.electricityKwh, "kWh")}, latest call ${m.latestCall?.value ?? "—"}, ${m.subagents.value} subagents`,

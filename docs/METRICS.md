@@ -22,8 +22,9 @@ Every receipt is stamped `method v1 · prices as of <date>`.
 `prices.json` (in `core`), with an `asOf` date. Per model: `input`, `cacheWrite`, `cacheRead`, `output`
 in USD per 1M tokens. **Verify against the providers' price pages before every release**; the values in
 the mockups are illustrative: Opus 5 / 6.25 / 0.50 / 25, Sonnet 3 / 3.75 / 0.30 / 15, Haiku 1 / 1.25 / 0.10 / 5.
-Unknown model → nearest version in the same family by name, flag `isFallback`, show "≡ (est. model)"; no family
-→ not priced, and the receipt says so. `packages/core/src/metrics/prices.json` holds the real per-model prices
+Unknown model → nearest version in the same family by name, flag `isFallback`; its receipt row is marked `*`
+(`estModel` in JSON) over the footnote "* est. model: priced as the closest listed one". No family → not priced:
+the row says "not priced" (`notPriced`), never $0. `packages/core/src/metrics/prices.json` holds the real per-model prices
 (`asOf` 2026-09-24); the mockup values above are Opus 4.x/5, Sonnet 4.6 and Haiku 4.5 prices (Sonnet 5 is 2 / 2.5 / 0.20 / 10).
 
 OpenAI rows come from the provider's page too, with three per-call variants `byModel` keeps apart

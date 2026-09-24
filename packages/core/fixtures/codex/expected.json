@@ -54,11 +54,48 @@
     },
     "bySource": {
       "codex": {
-        "input": 90341,
-        "cacheWrite": 0,
-        "cacheWrite1h": 0,
-        "cacheRead": 989344,
-        "output": 20369
+        "gpt-5|est": {
+          "input": 8000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 2000,
+          "output": 500
+        },
+        "gpt-5-codex": {
+          "input": 5000,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 10000,
+          "output": 400
+        },
+        "gpt-5.5": {
+          "input": 7144,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 51712,
+          "output": 296
+        },
+        "codex-auto-review|as=gpt-5.4": {
+          "input": 3025,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 3072,
+          "output": 124
+        },
+        "gpt-5.6-sol": {
+          "input": 61130,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 721344,
+          "output": 17294
+        },
+        "gpt-5.6-terra": {
+          "input": 6042,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 201216,
+          "output": 1755
+        }
       }
     },
     "calls": 24,
@@ -95,11 +132,20 @@
       },
       "bySource": {
         "codex": {
-          "input": 13000,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 12000,
-          "output": 900
+          "gpt-5|est": {
+            "input": 8000,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 2000,
+            "output": 500
+          },
+          "gpt-5-codex": {
+            "input": 5000,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 10000,
+            "output": 400
+          }
         }
       },
       "calls": 2,
@@ -123,11 +169,13 @@
       },
       "bySource": {
         "codex": {
-          "input": 7144,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 51712,
-          "output": 296
+          "gpt-5.5": {
+            "input": 7144,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 51712,
+            "output": 296
+          }
         }
       },
       "calls": 4,
@@ -151,11 +199,13 @@
       },
       "bySource": {
         "codex": {
-          "input": 3025,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 3072,
-          "output": 124
+          "codex-auto-review|as=gpt-5.4": {
+            "input": 3025,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 3072,
+            "output": 124
+          }
         }
       },
       "calls": 1,
@@ -179,11 +229,13 @@
       },
       "bySource": {
         "codex": {
-          "input": 9483,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 28160,
-          "output": 216
+          "gpt-5.6-sol": {
+            "input": 9483,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 28160,
+            "output": 216
+          }
         }
       },
       "calls": 2,
@@ -207,11 +259,13 @@
       },
       "bySource": {
         "codex": {
-          "input": 6042,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 201216,
-          "output": 1755
+          "gpt-5.6-terra": {
+            "input": 6042,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 201216,
+            "output": 1755
+          }
         }
       },
       "calls": 6,
@@ -235,11 +289,13 @@
       },
       "bySource": {
         "codex": {
-          "input": 7570,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 592640,
-          "output": 14565
+          "gpt-5.6-sol": {
+            "input": 7570,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 592640,
+            "output": 14565
+          }
         }
       },
       "calls": 3,
@@ -263,11 +319,13 @@
       },
       "bySource": {
         "codex": {
-          "input": 15077,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 76544,
-          "output": 1613
+          "gpt-5.6-sol": {
+            "input": 15077,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 76544,
+            "output": 1613
+          }
         }
       },
       "calls": 3,
@@ -291,11 +349,13 @@
       },
       "bySource": {
         "codex": {
-          "input": 17000,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 24000,
-          "output": 700
+          "gpt-5.6-sol": {
+            "input": 17000,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 24000,
+            "output": 700
+          }
         }
       },
       "calls": 2,
@@ -319,11 +379,13 @@
       },
       "bySource": {
         "codex": {
-          "input": 12000,
-          "cacheWrite": 0,
-          "cacheWrite1h": 0,
-          "cacheRead": 0,
-          "output": 200
+          "gpt-5.6-sol": {
+            "input": 12000,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 200
+          }
         }
       },
       "calls": 1,

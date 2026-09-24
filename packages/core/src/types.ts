@@ -70,7 +70,8 @@ export interface DailyTotals {
   /** Local calendar day, YYYY-MM-DD. */
   day: string;
   byModel: Record<string, TokenSums>;
-  bySource: Partial<Record<Source, TokenSums>>;
+  /** Per agent, tokens by `byModel` key: what each agent used, priceable like `byModel`. */
+  bySource: Partial<Record<Source, Record<string, TokenSums>>>;
   calls: number;
   sessions: number;
   subagents: number;
@@ -94,7 +95,8 @@ export interface SessionSummary {
 export interface Totals {
   tokens: TokenSums;
   byModel: Record<string, TokenSums>;
-  bySource: Partial<Record<Source, TokenSums>>;
+  /** Per agent, tokens by `byModel` key: what each agent used, priceable like `byModel`. */
+  bySource: Partial<Record<Source, Record<string, TokenSums>>>;
   calls: number;
   sessions: number;
   activeDays: number;
