@@ -5,6 +5,7 @@
     <span class="led" id="led"></span>
   </div>
   <div class="strip" aria-hidden="true"></div>
+  <div class="hint" id="hint" aria-hidden="true"></div>
   <main class="stage" id="stage">
     <h1 class="visually-hidden">{{v:title}}</h1>
     <div class="specks" id="specks" aria-hidden="true"></div>
@@ -31,11 +32,7 @@
   </main>
   <footer class="home-foot fade" style="animation-delay: 1.8s">
     <div class="pullrow">
-      <span class="hint" id="hint"></span>
-      <button type="button" class="nx" id="next">
-        <span class="pointer">{{t:home.next.pointer}}</span
-        ><span class="touch">{{t:home.next.touch}}</span>
-      </button>
+      <button type="button" class="nx" id="next">{{t:home.next}}</button>
     </div>
     <div>{{t:footer.local}}</div>
     <div class="faint">{{t:footer.affiliation}}</div>

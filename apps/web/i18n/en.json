@@ -24,8 +24,7 @@
     "home.stub.noTerminal": "No terminal? The quiz is up top.",
     "home.hint.pull": "Keep pulling…",
     "home.hint.release": "Let go.",
-    "home.next.pointer": "Pull the receipt down, or click here, for the next customer ↓",
-    "home.next.touch": "Pull the receipt down for the next customer ↓",
+    "home.next": "Next customer ↓",
     "r.meta.title": "Guess my AI damage · Token Damage",
     "r.meta.description": "Guess my AI damage.",
     "r.prompt": {

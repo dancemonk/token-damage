@@ -278,7 +278,8 @@ a:hover {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 24px 16px 26px;
+  /* Clear air under the stub, so the button reads as the page's, not as a line on the receipt. */
+  padding: 36px 16px 26px;
   font-size: 12px;
   color: var(--desk-muted);
   text-align: center;
@@ -286,25 +287,37 @@ a:hover {
     0 1px 6px var(--desk),
     0 0 14px var(--desk);
 }
-/* One screen, as in the mockups: the footer sits over the stub's lower edge, legible by its shadow. */
-@media (min-height: 900px) and (min-width: 521px) {
-  .home-foot {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding-top: 0;
-  }
-}
 .pullrow {
   min-height: 44px;
   display: flex;
   align-items: center;
   gap: 14px;
 }
+/* Beside the paper, where the eye is while pulling (design/prototype/hero-tear.html), not in the footer,
+   which sits below the fold on laptop-height windows. */
 .hint {
-  color: var(--bright);
+  position: absolute;
+  left: calc(50% + var(--receipt-w) / 2 + 60px);
+  top: 104px;
+  z-index: 9;
+  font-size: 12px;
   font-weight: 600;
+  color: var(--bright);
+  pointer-events: none;
+}
+@media (max-width: 900px) {
+  .hint {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 18px;
+    text-align: center;
+    font-size: 14px;
+    text-shadow:
+      0 1px 6px var(--desk),
+      0 0 14px var(--desk);
+  }
 }
 .nx {
   min-height: 44px;
@@ -320,17 +333,6 @@ a:hover {
 }
 .nx:hover {
   color: var(--bright);
-}
-.nx .touch {
-  display: none;
-}
-@media (pointer: coarse) {
-  .nx .pointer {
-    display: none;
-  }
-  .nx .touch {
-    display: inline;
-  }
 }
 .faint {
   font-size: 11px;
@@ -1129,6 +1131,7 @@ a:hover {
   .home-foot {
     gap: 4px;
     font-size: 11px;
+    padding-top: 28px;
     padding-bottom: 14px;
   }
   .pullrow {
