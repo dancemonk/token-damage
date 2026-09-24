@@ -49,5 +49,6 @@ jobs:
               npm publish "$1" --provenance --access public
             fi
           }
-          publish out/token-damage-core-*.tgz
-          publish out/token-damage-[0-9]*.tgz
+          # The ./ matters: npm reads "out/name.tgz" as a GitHub owner/repo shorthand.
+          publish ./out/token-damage-core-*.tgz
+          publish ./out/token-damage-[0-9]*.tgz
