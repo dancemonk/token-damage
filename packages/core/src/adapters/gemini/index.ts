@@ -15,8 +15,12 @@ export { emptyGeminiStats, type GeminiStats } from "./parse.js";
 export async function* scanGemini(
   dirs: string[],
   stats: GeminiStats,
+  /** Only these chat files (live polling). */
+  files?: string[],
 ): AsyncGenerator<UsageEvent | PromptEvent> {
+  const only = files && new Set(files);
   for (const file of await findChats(dirs)) {
+    if (only && !only.has(file.path)) continue;
     stats.files++;
     // Only for records without a timestamp of their own.
     const mtime = (await stat(file.path)).mtimeMs;
