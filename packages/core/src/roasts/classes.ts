@@ -37,3 +37,9 @@ export function nextDamageClass(
   const above = [...CLASSES].reverse().find(([min]) => tokens < min);
   return above ? { name: above[1].name, at: above[0] } : null;
 }
+
+/** The token count where the current class starts. */
+export function damageFloor(tokens: number): number {
+  return (CLASSES.find(([min]) => tokens >= min) ??
+    (CLASSES.at(-1) as [number, DamageClass]))[0];
+}

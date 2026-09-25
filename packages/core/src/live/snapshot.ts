@@ -1,6 +1,10 @@
 import { aggregate } from "../aggregate/index.js";
 import { listPrice, priceFor } from "../metrics/pricing.js";
-import { damageClass, nextDamageClass } from "../roasts/classes.js";
+import {
+  damageClass,
+  damageFloor,
+  nextDamageClass,
+} from "../roasts/classes.js";
 import type { PromptEvent, TokenSums, UsageEvent, Value } from "../types.js";
 import { localDay } from "./day.js";
 import { buildTurns, type Turn } from "./turns.js";
@@ -81,7 +85,7 @@ export function buildSnapshot({
 
   const next = nextDamageClass(total);
   const current = damageClass(total);
-  const floor = next ? nextFloor(next.at) : 0;
+  const floor = damageFloor(total);
   const pct = next
     ? Math.min(100, Math.max(0, ((total - floor) / (next.at - floor)) * 100))
     : 100;
@@ -91,7 +95,7 @@ export function buildSnapshot({
   const width = RATE_WINDOW_MS / RATE_BUCKETS;
   let lastCall: number | null = null;
   for (const e of usage) {
-    if (lastCall === null || e.ts > lastCall) lastCall = e.ts;
+    if (e.ts <= now && (lastCall === null || e.ts > lastCall)) lastCall = e.ts;
     if (e.ts > windowStart && e.ts <= now)
       buckets[
         Math.min(RATE_BUCKETS - 1, Math.floor((e.ts - windowStart) / width))
@@ -137,10 +141,4 @@ export function buildSnapshot({
     printing: lastCall !== null && now - lastCall <= PRINTING_MS,
     limits,
   };
-}
-
-/** The current class's own threshold: the one just below `nextAt` in ROASTS.md's table. */
-function nextFloor(nextAt: number): number {
-  const steps = [0, 1e6, 1e7, 1e8, 1e9, 5e9];
-  return steps[Math.max(0, steps.indexOf(nextAt) - 1)] ?? 0;
 }

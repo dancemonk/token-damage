@@ -102,6 +102,22 @@ describe("buildSnapshot", () => {
     expect(empty.damage.name).toBe("PAPER CUT");
   });
 
+  it("ignores future-dated events for idle state but includes them in totals", () => {
+    const withFuture = buildSnapshot({
+      usage: [
+        usage({ ts: T0 - min(5), input: 1000, output: 100 }),
+        usage({ ts: T0 + min(10), input: 2000, output: 200 }),
+      ],
+      prompts: [],
+      now: T0,
+      timeZone: "UTC",
+    });
+    expect(withFuture.lastCall).toBe(T0 - min(5));
+    expect(withFuture.idleMs).toBe(min(5));
+    expect(withFuture.printing).toBe(false);
+    expect(withFuture.total).toBe(3300);
+  });
+
   it("passes limits through untouched", () => {
     const limits = {
       fiveHour: { usedPct: 58, resetsAt: T0 + min(120) },
