@@ -71,14 +71,20 @@ export async function runLive(o: LiveOptions): Promise<number> {
       noLogs = false;
   };
 
-  if (cache) apply(await sources.poll());
-  else {
-    engine.replace(await sources.scanAll());
-    // scanAll remembers every file it found (tails for Claude, mtimes for the rest): none at all → no logs yet.
-    const found = sources.state();
-    noLogs =
-      Object.keys(found.tails).length === 0 &&
-      Object.keys(found.seen).length === 0;
+  try {
+    if (cache) apply(await sources.poll());
+    else {
+      engine.replace(await sources.scanAll());
+      // scanAll remembers every file it found (tails for Claude, mtimes for the rest): none at all → no logs yet.
+      const found = sources.state();
+      noLogs =
+        Object.keys(found.tails).length === 0 &&
+        Object.keys(found.seen).length === 0;
+    }
+  } catch (error) {
+    // Nothing has entered the alt screen yet; still, never let the raw error (it may hold a path) out.
+    process.stderr.write(`${describeReadError(error)}\n`);
+    return 1;
   }
   if (sources.noSqlite)
     process.stderr.write(
@@ -218,31 +224,44 @@ export async function runLive(o: LiveOptions): Promise<number> {
   process.on("SIGTERM", () => void quit());
 
   if (tty && !o.json) {
-    process.stdout.write(ENTER);
-    process.stdout.on("resize", () => draw(engine.snapshot(), true));
-    if (process.stdin.isTTY) {
-      process.stdin.setRawMode(true);
-      process.stdin.resume();
-      process.stdin.on("data", (key: Buffer) => {
-        const k = key.toString();
-        if (k === "q" || k === "Q" || k === "\u0003") void quit();
-      });
-    }
-    const first = engine.snapshot();
-    if (o.anim) {
-      for (let i = 1; i <= COUNT_UP_FRAMES; i++) {
-        const f = i / COUNT_UP_FRAMES;
-        draw({
-          ...first,
-          read: Math.round(first.read * f),
-          words: Math.round(first.words * f),
-          price: { ...first.price, value: first.price.value * f },
+    try {
+      process.stdout.write(ENTER);
+      process.stdout.on("resize", () => draw(engine.snapshot(), true));
+      if (process.stdin.isTTY) {
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+        process.stdin.on("data", (key: Buffer) => {
+          const k = key.toString();
+          if (k === "q" || k === "Q" || k === "\u0003") void quit();
         });
-        await new Promise((r) => setTimeout(r, COUNT_UP_MS / COUNT_UP_FRAMES));
       }
+      const first = engine.snapshot();
+      if (o.anim) {
+        for (let i = 1; i <= COUNT_UP_FRAMES; i++) {
+          const f = i / COUNT_UP_FRAMES;
+          draw({
+            ...first,
+            read: Math.round(first.read * f),
+            words: Math.round(first.words * f),
+            price: { ...first.price, value: first.price.value * f },
+          });
+          await new Promise((r) =>
+            setTimeout(r, COUNT_UP_MS / COUNT_UP_FRAMES),
+          );
+        }
+      }
+      draw(first, true);
+      prev = first;
+    } catch (error) {
+      // Leave the alt screen and restore the tty *before* saying anything: never report a raw error
+      // (it may hold a path) while the terminal could still show it or a redirected stderr keeps it.
+      clearInterval(interval);
+      stopWatch();
+      restore();
+      process.off("exit", restore);
+      process.stderr.write(`${describeReadError(error)}\n`);
+      return 1;
     }
-    draw(first, true);
-    prev = first;
   } else draw(engine.snapshot());
 
   const code = await exited;

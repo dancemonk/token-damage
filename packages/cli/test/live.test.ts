@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -62,6 +62,24 @@ describe("token-damage live", () => {
     expect(snap.words).toBe(measured.words.value);
     expect(existsSync(join(dir, "home", ".token-damage", "today.json"))).toBe(
       false,
+    );
+  });
+
+  it("exits 1 with a path-free message when the corpus can't be read (F5)", async () => {
+    // `<config-dir>/projects` is a file, not a directory: findTranscripts's realpath() succeeds on it,
+    // but readdir() then throws ENOTDIR — a non-ENOENT read failure, before the alt screen ever opens.
+    const cfgDir = join(dir, "unreadable-cfg");
+    await mkdir(cfgDir, { recursive: true });
+    const projectsPath = join(cfgDir, "projects");
+    await writeFile(projectsPath, "");
+    const r = run(["live", "--once", "--config-dir", cfgDir]);
+    expect(r.status).toBe(1);
+    expect(r.stdout).not.toContain(dir);
+    expect(r.stderr).not.toContain(dir);
+    expect(r.stdout).not.toContain(projectsPath);
+    expect(r.stderr).not.toContain(projectsPath);
+    expect(r.stderr).toBe(
+      "token-damage live: could not read the agent logs (ENOTDIR)\n",
     );
   });
 
