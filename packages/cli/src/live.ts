@@ -24,6 +24,22 @@ const RECONCILE_MS = 5 * 60_000;
 const SAVE_MS = 5_000;
 const COUNT_UP_MS = 600;
 const COUNT_UP_FRAMES = 12;
+export const READ_FAILURE_LIMIT = 3;
+
+/**
+ * The one line we're allowed to print when a tick can't read the logs: never the error's own message
+ * or stack, since either can contain an absolute path (a failed `open`/`realpath` embeds the path it
+ * tried). Only the error code, e.g. EACCES or EMFILE, survives.
+ */
+export function describeReadError(error: unknown): string {
+  const code = (error as NodeJS.ErrnoException)?.code ?? "unknown error";
+  return `token-damage live: could not read the agent logs (${code})`;
+}
+
+/** 0 after a successful tick; climbs by one on each consecutive failure. */
+export function nextFailureCount(count: number, failed: boolean): number {
+  return failed ? count + 1 : 0;
+}
 
 export async function runLive(o: LiveOptions): Promise<number> {
   const started = Date.now();
@@ -82,6 +98,8 @@ export async function runLive(o: LiveOptions): Promise<number> {
   let screen: string[] = [];
   let running = false;
   let again = false;
+  let failures = 0;
+  let stopped = false;
 
   const save = async (force = false) => {
     if (o.fixtures || (!force && now() - lastSave < SAVE_MS)) return;
@@ -113,6 +131,7 @@ export async function runLive(o: LiveOptions): Promise<number> {
   };
 
   const tick = async () => {
+    if (stopped) return;
     if (running) {
       again = true;
       return;
@@ -153,9 +172,22 @@ export async function runLive(o: LiveOptions): Promise<number> {
       prev = next;
       draw(said.note ? engine.snapshot() : next);
       await save();
+      failures = nextFailureCount(failures, false);
+    } catch (error) {
+      // Keep the last good frame on screen — do not draw from a snapshot we could not finish building.
+      failures = nextFailureCount(failures, true);
+      if (failures >= READ_FAILURE_LIMIT) {
+        stopped = true;
+        clearInterval(interval);
+        stopWatch();
+        restore();
+        process.off("exit", restore);
+        process.stderr.write(`${describeReadError(error)}\n`);
+        resolveExit(1);
+      }
     } finally {
       running = false;
-      if (again) {
+      if (again && !stopped) {
         again = false;
         void tick();
       }
