@@ -306,12 +306,14 @@ function pricesTable(locale, t) {
       maximumFractionDigits: 3,
     });
   const cols = ["input", "cacheWrite", "cacheRead", "output"];
-  const head = `<tr><th scope="col">${esc(t("method.prices.col.model"))}</th>${cols.map((c) => `<th scope="col">${esc(t(`method.prices.col.${c}`))}</th>`).join("")}</tr>`;
+  // Each price header stacks on its narrowest width ("Cache / write", «Запись / в кэш»), so four
+  // columns of prices get the room and stay apart.
+  const head = `<tr><th scope="col">${esc(t("method.prices.col.model"))}</th>${cols.map((c) => `<th scope="col"><span class="stack">${esc(t(`method.prices.col.${c}`))}</span></th>`).join("")}</tr>`;
   const rows = Object.entries(pricesJson.models).map(
     ([model, p]) =>
       `<tr><td>${esc(model)}</td>${cols.map((c) => `<td>${esc(usd(p[c]))}</td>`).join("")}</tr>`,
   );
-  return `<table><thead>${head}</thead><tbody>${rows.join("")}</tbody></table>`;
+  return `<table class="prices"><thead>${head}</thead><tbody>${rows.join("")}</tbody></table>`;
 }
 
 function energyTable(locale, t) {

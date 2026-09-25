@@ -923,6 +923,18 @@ a:hover {
   letter-spacing: 0.08em;
   color: var(--muted);
   font-weight: 600;
+  vertical-align: bottom;
+}
+/* Price columns: headers wrap to their narrowest width and each figure keeps clear air on its left. */
+.sheet .prices th .stack {
+  display: inline-block;
+  width: min-content;
+  white-space: normal;
+  line-height: 1.35;
+}
+.sheet .prices th + th,
+.sheet .prices td + td {
+  padding-left: 18px;
 }
 .sources li {
   margin: 0 0 8px;
