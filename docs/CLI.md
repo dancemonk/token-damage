@@ -138,11 +138,11 @@ The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 `schema/receipt.schema.json`; tiers included on every value), `--fixtures <dir>` (a Claude Code config dir, a
 Codex home, a Gemini CLI home and an OpenCode data dir in one: `projects/`, `sessions/`, `tmp/`, `opencode/`),
 `--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>` (same as `CODEX_HOME`), `--gemini-dir
-<path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as `OPENCODE_DATA_DIR`), `--keep-history 3650`
-(offers to set `cleanupPeriodDays`; asks first).
+<path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as `OPENCODE_DATA_DIR`).
 
-Not built yet: `--audit` (would print every file read and every field stored) and `--forget` (would delete
-`~/.token-damage`). `--daily` was never built either; `token-damage live --once` covers it.
+Not built yet: `--keep-history 3650` (would offer to set `cleanupPeriodDays`; would ask first), `--audit`
+(would print every file read and every field stored) and `--forget` (would delete `~/.token-damage`).
+`--daily` was never built either; `token-damage live --once` covers it.
 
 ## `token-damage live`
 

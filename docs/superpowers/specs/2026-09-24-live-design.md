@@ -27,7 +27,7 @@ wears its tier, red means joke or fire, no engagement bait. Zero new dependencie
 | One row per **turn** (`4 words → 9.8M`), not per model call | Calls arrive dozens a minute with subagents; turns are readable and the ratio is the tagline as data. |
 | Plan limits shown as MEASURED (Claude's own numbers), never forecast | Forecasting stays on the Never list. |
 | Adjuster speaks only on real events, rate-limited | A heckler that talks constantly gets muted; one that never talks is ccusage. |
-| Truth = the receipt's `aggregate()`; incremental reading only fills the seconds between | A wrong number is worse than a boring one. Live totals must equal `--daily`, which equals ccusage. |
+| Truth = the receipt's `aggregate()`; incremental reading only fills the seconds between | A wrong number is worse than a boring one. Live totals must equal the receipt's own totals for today, which equal ccusage. |
 | Red only on `✶` lines and on the "stamped" event line at the moment it lands | A red class name on screen all day is a permanent alarm; red means joke or fire. |
 
 ## Surface 1: the pane (`token-damage live`)
@@ -142,7 +142,7 @@ Claude's field. It is a useful sanity check in tests only.
 ### Truth model
 
 - **Snapshot (authoritative):** the receipt's `aggregate()` over today's files. Identical numbers to
-  `token-damage --daily`, hence identical to ccusage.
+  `token-damage --json --since <today>`, hence identical to ccusage.
 - **Delta (fast):** since the last snapshot, read only new bytes and push them through the existing per-agent
   `parseLine` and the shared deduper (`createDeduper()` keeps state across calls).
 - **Reconcile:** re-snapshot every 5 minutes and whenever a new file appears (Codex forks copy their parent's
@@ -183,7 +183,7 @@ CPU is negligible.
 
 ### Time
 
-Today = local midnight → now, the same window as `--daily`. At midnight the tape prints the tear row, the
+Today = local midnight → now, the same window `token-damage --since <today>` covers. At midnight the tape prints the tear row, the
 snapshot resets, the cache is re-keyed. Class thresholds from `ROASTS.md` apply to today's tokens. Rate =
 tokens per minute over 30 minutes in ten buckets. Idle time and the "printing" state consider only calls at or
 before `now` (so a `--clock` demo never sees the future); the totals themselves cover the whole day regardless,
@@ -259,7 +259,8 @@ rejects any digit in a satire line.
 6. **Status line.** Stdin fixtures (with and without limits, malformed, empty) → rows; error → fallback row
    and exit 0; warm-cache run under 500 ms in CI.
 7. **Voice.** Injected clock and seeded picker; cooldown; the no-digits rule.
-8. **Oracle.** `pnpm oracle --live` compares the live snapshot with `--daily` on real logs.
+8. **Oracle.** `pnpm oracle:live` compares the live snapshot's tokens with our own daily totals for today,
+   summed across the four agents (the same aggregation the receipt uses), on real logs.
 
 ## Docs to update when built
 
