@@ -1,6 +1,12 @@
 import { formatUsd } from "../metrics/format.js";
 import { listPrice, priceFor } from "../metrics/pricing.js";
-import { compactTokens, type Line } from "../receipt/text.js";
+import {
+  compactTokens,
+  monthDay,
+  n,
+  wrap,
+  type Line,
+} from "../receipt/text.js";
 import type { Source, TokenSums } from "../types.js";
 import type { TapeEvent } from "./engine.js";
 import type { LiveSnapshot } from "./snapshot.js";
@@ -27,7 +33,6 @@ export const AGENT_SHORT: Record<Source, string> = {
   opencode: "opencode",
 };
 
-const n = (x: number) => Math.round(x).toLocaleString("en-US");
 const clip = (t: string, w: number) =>
   t.length <= w ? t : `${t.slice(0, Math.max(0, w - 1))}…`;
 
@@ -98,17 +103,6 @@ function resetLabel(ts: number, now: number, timeZone?: string): string {
     ...(timeZone && { timeZone }),
   })
     .format(ts)
-    .toLowerCase();
-}
-
-function monthDay(day: string): string {
-  const [y, m, d] = day.split("-").map(Number) as [number, number, number];
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  })
-    .format(Date.UTC(y, m - 1, d))
     .toLowerCase();
 }
 
@@ -208,18 +202,10 @@ interface Item {
   lines: Line[];
 }
 
-function wrap(text: string, width: number): string[] {
-  const out: string[] = [];
-  let line = "";
-  for (const word of text.split(" ")) {
-    const next = line ? `${line} ${word}` : word;
-    if (next.length > width && line) {
-      out.push(line);
-      line = `  ${word}`;
-    } else line = next;
-  }
-  if (line) out.push(line);
-  return out.map((l) => clip(l, width));
+// Wrapped at width - 2 so a continuation line's 2-space hang still fits within width; the receipt's own
+// `hang` does the same thing at its fixed WIDTH (docs/superpowers/specs/2026-09-24-live-design.md §Tape).
+function hang(text: string, width: number): string[] {
+  return wrap(text, width - 2).map((line, i) => (i ? `  ${line}` : line));
 }
 
 function tape(
@@ -254,8 +240,8 @@ function tape(
       items.push({
         ts: e.ts,
         end: e.ts,
-        lines: wrap(`✶ ${e.text}`, w).map((text) => ({
-          text,
+        lines: hang(`✶ ${e.text}`, w).map((text) => ({
+          text: clip(text, w),
           style: "red" as const,
         })),
       });

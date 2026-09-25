@@ -24,9 +24,9 @@ const MONTHS = [
   "nov",
   "dec",
 ];
-const monthDay = (day: string) =>
+export const monthDay = (day: string) =>
   `${MONTHS[Number(day.slice(5, 7)) - 1]} ${Number(day.slice(8, 10))}`;
-const n = (x: number) => Math.round(x).toLocaleString("en-US");
+export const n = (x: number) => Math.round(x).toLocaleString("en-US");
 
 const center = (text: string): string =>
   " ".repeat(Math.max(0, Math.floor((WIDTH - text.length) / 2))) + text;
@@ -45,7 +45,7 @@ export function compactTokens(x: number): string {
   return n(x);
 }
 
-function wrap(text: string, width: number): string[] {
+export function wrap(text: string, width: number): string[] {
   const lines: string[] = [];
   let line = "";
   for (const word of text.split(/\s+/)) {
