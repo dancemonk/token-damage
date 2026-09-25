@@ -5,10 +5,12 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   hashPath,
   loadCache,
+  publicSnapshot,
   sanitizeIds,
   saveCache,
   type TodayCache,
 } from "../../src/live/cache.js";
+import { buildSnapshot } from "../../src/live/snapshot.js";
 import { T0, prompt, usage } from "./support.js";
 
 let dir = "";
@@ -106,5 +108,18 @@ describe("today cache", () => {
     expect(loaded?.engine.usage[0]?.sessionId).toBe(
       hashPath("C:\\Users\\someone\\.codex\\sessions\\rollout.jsonl"),
     );
+  });
+
+  it("strips path-like session ids from public snapshots", () => {
+    const leaky = "/Users/someone/.codex/sessions/rollout-x.jsonl";
+    const s = buildSnapshot({
+      usage: [usage({ ts: T0, sessionId: leaky })],
+      prompts: [],
+      now: T0,
+      timeZone: "UTC",
+    });
+    const text = JSON.stringify(publicSnapshot(s));
+    expect(text).not.toContain("/Users/");
+    expect(text).toContain(hashPath(leaky));
   });
 });

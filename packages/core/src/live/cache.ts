@@ -4,7 +4,9 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import type { PromptEvent, UsageEvent } from "../types.js";
 import type { EngineState } from "./engine.js";
+import type { LiveSnapshot } from "./snapshot.js";
 import type { SourcesState } from "./sources.js";
+import type { Turn } from "./turns.js";
 import type { VoiceState } from "./voice.js";
 
 export interface TodayCache {
@@ -56,6 +58,23 @@ export async function loadCache(
   } catch {
     return null;
   }
+}
+
+const cleanTurn = (t: Turn): Turn => ({
+  ...t,
+  sessionId: cleanId(t.sessionId),
+});
+
+/** The snapshot as printed by `--json`/`--once`: no id that could be a file path. */
+export function publicSnapshot(s: LiveSnapshot): LiveSnapshot {
+  return {
+    ...s,
+    turns: s.turns.map(cleanTurn),
+    open: s.open && cleanTurn(s.open),
+    badges: Object.fromEntries(
+      Object.entries(s.badges).map(([id, n]) => [cleanId(id), n]),
+    ),
+  };
 }
 
 /** Atomic: written next to the target, then renamed over it. */
