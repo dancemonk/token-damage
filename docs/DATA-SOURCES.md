@@ -89,6 +89,13 @@ User prompts are `type: "user"` lines. Count words only when:
 - Session = `sessionId`. Longest session = first→last event span; split the span on idle gaps > 1h, so breaks and overnight pauses end a stretch.
 - Model calls = number of deduped assistant events. Subagents = distinct `agentId` (or subagent files).
 
+### Live reading
+`token-damage live` and `statusline` read each file by byte offset, up to the last complete newline, and
+accumulate what they read: Claude Code lines never get replaced, only appended to. Rewrite detection is by
+size only; a same-size rewrite is caught by the periodic reconcile, not by the tail read itself. Cold start and
+every reconcile scan only files modified since local midnight; older files are marked and not stat'ed again
+until the next reconcile.
+
 ### Other channels (V1)
 - **OpenTelemetry** (`CLAUDE_CODE_ENABLE_TELEMETRY=1`): metrics `claude_code.session.count`, `.token.usage`
   (attribute `type` ∈ input/output/cacheRead/cacheCreation), `.cost.usage`, `.lines_of_code.count`,
@@ -161,6 +168,11 @@ output = `output`. Never add reasoning again.
 A subagent's usage counts toward its root session (`session_id`, or the spawning thread's root when `session_id`
 repeats the thread's own id), as one subagent. 202 of 275 real rollouts are subagents.
 
+### Live reading
+Every rollout modified in the last 48 hours is rescanned when any of them changed — fork rules need the
+parent rollout, which can be older than today. The rescan replaces Codex's whole pool in the live engine;
+nothing accumulates between polls. Cold start and every reconcile use the same 48-hour window.
+
 ### Not comparable across providers
 Tokenizers and cache semantics differ. Show raw tokens per provider; compare in `≡` dollars and `≈` Wh.
 
@@ -203,6 +215,11 @@ Older versions wrote one whole-file `session-*.json` per session. Only files und
 `user` messages in main sessions: text parts of `displayContent` (what the user typed, when `@file` expansion made
 it differ) or else of `content`. A message with only `functionResponse` parts is no prompt. A subagent's messages
 were written by its parent: not prompts. Its usage counts toward the parent session, as one subagent.
+
+### Live reading
+Every chat file modified today is rescanned when any of them changed — a response is written twice, and only a
+rescan sees the final copy with tokens. The rescan replaces Gemini's whole pool in the live engine. Cold start
+and every reconcile read only chats modified today.
 
 ## OpenCode
 
@@ -252,6 +269,11 @@ tables (tokens): never queried.
 User messages in main sessions: their `text` parts that are not `synthetic` or `ignored`. A subagent's session
 (`parent_id`, followed to the top) was prompted by its parent: no prompts; its usage counts toward the top
 session, one subagent per session. Legacy files and `session_message` rows add usage only, no words.
+
+### Live reading
+The whole database (and its WAL) is rescanned whenever either file's modification time moves; there is no
+per-row delta for SQLite here. The rescan replaces OpenCode's whole pool in the live engine, checked on the
+same tick that drives the rest of the pane (every 2 seconds), since WAL writes can slip past a file watcher.
 
 ## Tested versions
 | Tool | Versions | Fixtures |

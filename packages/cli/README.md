@@ -23,6 +23,9 @@ Token Damage reads the logs Claude Code, Codex, Gemini CLI and OpenCode keep on 
 --no-anim      print it all at once
 ```
 
+`npx token-damage live` shows today's damage as it happens, in a pane.
+`token-damage statusline --install` puts two rows in Claude Code's own status line (needs a global install).
+
 `npx token-damage --help` lists the rest. Needs Node 22 or newer (22.13 or newer to read OpenCode).
 
 ## Privacy

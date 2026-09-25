@@ -13,12 +13,19 @@ There is no account and no telemetry.
 The only thing that ever leaves your machine is a receipt you choose to share: an image, or a link whose
 numbers live in the link itself (after the `#`), which browsers never send to any server.
 
-It writes one file of its own, `~/.token-damage/state.json`, and you can delete it any time.
+It writes files of its own — `~/.token-damage/state.json`, and, if you use `live` or `statusline`,
+`~/.token-damage/today.json` — and you can delete either any time.
 
 ## What is stored locally
 - `~/.token-damage/state.json`: a run counter, which adjuster's notes were used recently, and which pool lines
   (jokes, satire, news) you have seen, so the next receipt doesn't repeat them. Numbers and line ids only, never
   your text. Nothing else is kept between runs; every receipt is computed from the agents' own logs.
+- `~/.token-damage/today.json`: written only by `live` and `statusline`, so the pane and the status line don't
+  re-read every file on every tick. Holds today's deduped usage and prompt events (numbers, model names,
+  message ids), per file a hash of its path with a byte offset or a last-seen modification time, the day's tape
+  events, the adjuster's live remarks and which it has already used today, and the last plan-limit numbers.
+  Any id that looks like a file path is hashed before it is written. Never a prompt, a path, a project name or
+  a branch name. Deleted and rebuilt from scratch every day; a torn or unreadable copy is treated as missing.
 - `~/token-damage/receipt-<date>.png`: only when you ask for the image, and only after it shows you exactly what
   the image will contain.
 - On tokendamage.com, three `localStorage` keys in your own browser, nothing sent anywhere: `td.sound` (sound

@@ -55,7 +55,8 @@ footer. Short panes (< 12 rows) show the glance rows only. One design, not two m
 Rows:
 
 1. **Class** — today's damage class (`ROASTS.md` thresholds on today's tokens), bold ink, never red. Then the
-   distance to the next class as a dotted leader and a linear percentage of the next threshold.
+   distance to the next class as a dotted leader and a linear percentage of the next threshold, measured from
+   the current class's floor (`roasts/classes.ts`'s one threshold table, shared with the receipt).
 2. **Today** — words typed, tokens read (input + cache write + cache read), list price. Written tokens are left
    off the glance (small, not the story; they are on the receipt).
 3. **Now** — bold. The open turn: agent, `+N` interns, words → read, static `▸`, list price so far. Counts in
@@ -116,7 +117,8 @@ WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
 all of today once (1–2 s); every run after reads only new bytes. A reconcile run (see Engine) may take 1–2 s
 once every 5 minutes; Claude runs the command asynchronously, so that only delays one refresh.
 
-**Install:** `token-damage statusline --install` prints the exact `settings.json` change and writes it only
+**Install:** `token-damage statusline --install` prints the exact `settings.json` change — including the
+existing `statusLine` value it would replace, when one is already set to something else — and writes it only
 after confirmation:
 
 ```json
@@ -124,7 +126,8 @@ after confirmation:
 ```
 
 It refuses to write an `npx …` command (slow, may touch the network on every refresh) and requires a global
-install or an absolute path to the binary, which it detects and offers.
+install or an absolute path to the binary, which it detects and offers. Before writing, it keeps a one-time
+backup of the settings file as `settings.json.token-damage.bak` (only if that backup does not already exist).
 
 **Failure mode:** on any error print one row, `token damage · (reading)`, and exit 0. Never a stack trace in
 the status bar. A hard 2-second guard prints what is known so far.
@@ -151,15 +154,22 @@ Claude's field. It is a useful sanity check in tests only.
 | Agent | Log shape | Live strategy |
 |---|---|---|
 | Claude Code | append-only JSONL | per-file byte offset up to the last newline; re-read from there |
-| Codex | append-only JSONL, cumulative `last_token_usage` | byte offset plus the per-file cumulative counters (deltas need them) |
-| Gemini CLI | small JSONL chat files; a response is written twice, the second time with tokens | re-parse the whole file on change; no offsets |
-| OpenCode | SQLite (WAL), read-only via `node:sqlite` | poll every 2 s for rows newer than the last seen; WAL writes can slip past `fs.watch` |
+| Codex | append-only JSONL, cumulative `last_token_usage` | rescan every rollout modified in the last 48 h when any changed (fork rules need the parents) |
+| Gemini CLI | small JSONL chat files; a response is written twice, the second time with tokens | rescan every chat file modified today when any changed |
+| OpenCode | SQLite (WAL), read-only via `node:sqlite` | rescan the database when it or its WAL changed |
 
-If a file shrinks below its offset or its first bytes change, it was rewritten: re-read from zero and drop
-that file's prior delta state (the reconcile fixes any residue).
+A rescan replaces that agent's pool in the engine; only Claude Code lines accumulate.
+
+If a file shrinks below its offset, it was rewritten: re-read from zero and drop that file's prior delta state
+(size only; the reconcile corrects a same-size rewrite).
+
+`scanAll()` (cold start, rollover, reconcile) reads only files that can hold today's records: Claude files
+modified since midnight, Codex rollouts modified in the last 48 h (fork parents), Gemini chats modified today;
+files older than today are marked and not stat'ed again until the next reconcile. Real-logs cold start ≈ 1 s.
 
 Watching: `fs.watch` recursive on the four roots, debounced 250 ms, plus a 10-second stat-only poll as a
-safety net (watchers miss events). Idle CPU is negligible.
+safety net (watchers miss events). The pane's own 2-second interval tick doubles as that safety poll. Idle
+CPU is negligible.
 
 ### Turns
 
@@ -175,7 +185,9 @@ safety net (watchers miss events). Idle CPU is negligible.
 
 Today = local midnight → now, the same window as `--daily`. At midnight the tape prints the tear row, the
 snapshot resets, the cache is re-keyed. Class thresholds from `ROASTS.md` apply to today's tokens. Rate =
-tokens per minute over 30 minutes in ten buckets.
+tokens per minute over 30 minutes in ten buckets. Idle time and the "printing" state consider only calls at or
+before `now` (so a `--clock` demo never sees the future); the totals themselves cover the whole day regardless,
+the same as the receipt.
 
 ### Plan limits
 
@@ -185,19 +197,21 @@ they are older than a minute. No status line → no limits row. Never an API cal
 
 ### Cache
 
-`~/.token-damage/today.json`, next to the existing `state.json`. Contents: the date key; per log file the
-SHA-256 of its path (never the path) with bytes consumed up to the last complete newline (never a partial
-line, which could hold prompt text) and Codex counters; today's message ids for dedupe; turn aggregates;
-the last plan-limit numbers. Written atomically (temp file + rename). Yesterday's cache is discarded, never
-merged. A torn or unparsable cache is treated as missing. Both commands share it; both compute the same
-deterministic state, so last-writer-wins is safe. `--audit` lists it; `docs/PRIVACY.md` names it as the one
-file we write besides `state.json`.
+`~/.token-damage/today.json`, next to the existing `state.json`. Contents: the date key; today's deduped usage
+and prompt events (numbers, model names, message ids; any id that looks like a path is replaced by its hash);
+per file its path hash with byte offset or last-seen mtime; tape events; voice state; plan limits;
+`reconciledAt`. Written atomically (temp file + rename). Yesterday's cache is discarded, never merged. A torn
+or unparsable cache is treated as missing. Both commands share it; both compute the same deterministic state,
+so last-writer-wins is safe. `docs/PRIVACY.md` names it as the one file we write besides `state.json`.
+
+Any id that looks like a path (contains `/` or `\`) is hashed before anything reaches the file, including the
+keys the adjuster uses to remember which lines it has already said today.
 
 ### Voice
 
-Pure detectors on (previous snapshot, new snapshot), reusing the roast engine and `state.json` rotation so no
-line repeats in a day. Each fires on measured facts only, severity matched to the data. Starter set, each
-with at least five variants:
+Pure detectors on (previous snapshot, new snapshot), with its own per-day rotation in `today.json` so no line
+repeats in a day. Each fires on measured facts only, severity matched to the data. Starter set, each with at
+least five variants:
 
 | Event | Trigger |
 |---|---|
@@ -210,6 +224,9 @@ with at least five variants:
 | window | 5-hour limit ≥ 90%, from Claude's own number; stated, never forecast |
 | quiet | no calls for 3 hours between 9:00 and 18:00 local |
 
+The `back` and `quiet` lines were each reworded once during implementation to claim only what the trigger
+measured ("a long break…" for `back`, "quiet day. suspicious." for `quiet`), not what it might imply.
+
 Cooldown: one `✶` line per 10 minutes. Numbers inside `✶` lines only as words (`numberWord`); a test
 rejects any digit in a satire line.
 
@@ -218,9 +235,12 @@ rejects any digit in a satire line.
 - `live`: alt screen, watchers and timers, resize handling, redraw of changed lines only, `q`/Ctrl-C.
   Refuses to start when stdout is not a TTY: "live needs a terminal; pipe `--json` instead." Opens with
   "no agent logs yet. start one." when nothing is found. Alt screen and cursor are restored on exit, Ctrl-C
-  and crash (`process.on("exit")`).
+  and crash (`process.on("exit")`). A tick that fails to read the logs keeps the last good frame on screen;
+  three consecutive failures restore the terminal and exit 1 with "token-damage live: could not read the
+  agent logs (<errno code>)" — never the error's own message, which can hold a path.
 - Flags for `live`: `--no-anim`, `--json` (NDJSON, one snapshot per change; the answer for tmux bars and
-  other agents without writing integrations), `--fixtures <dir>` with `--clock <iso>` for demos and
+  other agents without writing integrations), `--once` (print one JSON snapshot and exit; what
+  `pnpm oracle:live` compares against the receipt), `--fixtures <dir>` with `--clock <iso>` for demos and
   screenshots, plus the existing `--config-dir`, `--codex-home`, `--gemini-dir`, `--opencode-dir`.
 - Flags for `statusline`: `--rows 1|2|3`, `--width N`, `--install`.
 - Node < 22.13 skips OpenCode with the existing note.

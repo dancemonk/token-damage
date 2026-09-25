@@ -12,6 +12,7 @@ token-damage/
     src/metrics/           prices.json, pricing, energy, satire
     src/roasts/            facts, note families, scoring, achievements, disputes
     src/receipt/           receipt model → 48-column text, share card SVG, share link
+    src/live/              live engine: watching, tailing, turns, cache, voice; pane and status line share it
     src/web.ts             browser-safe entry (@token-damage/core/web): share codec, formats, note templates
     fixtures/              sanitized transcript lines + expected totals
     scripts/               fixture sanitizer, sample-month generator
@@ -69,6 +70,53 @@ The receipt model is the single source for all outputs; renderers never compute.
 ## Storage
 `~/.token-damage/history.json` (daily aggregates, merged on every run, never text), `state.json` (cooldowns,
 achievements, last guess). SQLite is not needed for MVP. Migrate to SQLite only if history exceeds ~10 MB.
+
+## Live
+
+`packages/core/src/live/` (pure, zero dependencies) feeds two thin CLI shells: `token-damage live` (a pane)
+and `token-damage statusline` (rows in Claude Code's own status line). One engine, one truth model, shared.
+
+- `day.ts` — local midnight, day string, day math; correct across DST.
+- `sources.ts` — `LiveSources`: finds today's files per agent, reads them whole (`scanAll`) or polls for
+  changes (`poll`).
+- `tail.ts` — byte-offset reads of an appended file; rewrite detection is by size only.
+- `engine.ts` — `LiveEngine`: holds today's usage and prompts, stamps class-upgrade tape events, rolls the
+  day over at local midnight.
+- `turns.ts` — `buildTurns`: prompt-to-prompt attribution per session, the open turn, intern counts.
+- `snapshot.ts` — `buildSnapshot`: today's records → `LiveSnapshot` (tokens, price, rate, turns, limits)
+  through the receipt's own `aggregate()`; the damage class and its progress-to-next share `roasts/classes.ts`'s
+  one threshold table with the receipt.
+- `cache.ts` — `~/.token-damage/today.json`: atomic read/write, hashes any id that looks like a path.
+- `voice.ts` — the adjuster's live remarks: detectors on (previous snapshot, next snapshot), cooldown, a
+  per-day rotation of its own.
+- `view.ts` — `LiveSnapshot` → the pane's ANSI lines at any width and height.
+- `statusline.ts` — `LiveSnapshot` → Claude Code status line rows; stdin parsing; the fallback row.
+
+**Truth model.** The snapshot is authoritative: `buildSnapshot` runs the same `aggregate()` the receipt uses,
+over today's usage and prompts. Between snapshots, the delta path only fills the seconds in between: Claude
+Code lines are read by byte offset and accumulate; Codex, Gemini CLI and OpenCode have no cheap per-line delta,
+so a rescan replaces that agent's whole pool in the engine whenever any of its files changed. A full reconcile
+(`scanAll`) runs every 5 minutes, whenever a new file appears, and at cold start; each run reads only files
+that can hold today's records — Claude files modified since local midnight, Codex rollouts modified in the
+last 48 hours (fork parents can be older than today), Gemini chats modified today, and OpenCode's whole
+database — marking everything older so it is not stat'ed again until the next reconcile. Cold start on real
+logs takes about a second. Idle time and the "printing" state only look at calls at or before the snapshot's
+clock; the totals themselves cover the whole day, the same as the receipt. Tests assert the delta equals a
+fresh snapshot at every reconcile; `pnpm oracle:live` checks that same equality against the receipt's own
+daily totals on real logs.
+
+**Cache.** `~/.token-damage/today.json`, next to `state.json`: today's deduped usage and prompt events
+(numbers, model names, message ids), per file its path hash with a byte offset or a last-seen mtime, tape
+events, the adjuster's voice rotation, and the last plan-limit numbers. Any id that looks like a path
+(contains `/` or `\`) is hashed before it is written, including the keys the adjuster uses to remember what it
+already said. Written atomically (temp file, then rename). Discarded and rebuilt every day.
+
+**Failure handling.** A tick that can't read the logs keeps the pane's last good frame on screen. Three
+consecutive failures restore the terminal and exit 1 with `token-damage live: could not read the agent logs
+(<errno code>)` — never the error's own message, which can hold a path.
+
+`live` and `statusline` are thin shells over this engine: they parse flags, watch the filesystem, print, and
+own the cache's read/write cadence. All computation is in `core`.
 
 ## Testing rules
 - Every parser behaviour has a fixture built from **sanitized real lines** (text → "x", cwd → "/p/a", keep ids,
