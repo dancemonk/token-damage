@@ -229,7 +229,7 @@ describe("LiveSources", () => {
     expect(sources.state().tails[hash(newFile)]).toBeDefined();
   });
 
-  it("reports new files and skips files older than the window", async () => {
+  it("skips files older than the window, and a new Claude transcript does not report newFiles (F4)", async () => {
     const root = join(dir, "new");
     await mkdir(join(root, "projects", "p"), { recursive: true });
     const sources = new LiveSources(dirsOf(root), {
@@ -251,8 +251,36 @@ describe("LiveSources", () => {
     });
     await writeFile(join(root, "projects", "p", "s1.jsonl"), line + "\n");
     const first = await sources.poll();
-    expect(first.newFiles).toBe(true);
+    // A new Claude transcript already tails from byte 0; it must not force a full reconcile.
+    expect(first.newFiles).toBe(false);
     expect(first.records.map((r) => r.kind)).toEqual(["usage"]);
     expect((await sources.poll()).newFiles).toBe(false);
+  });
+
+  it("reports newFiles for a newly seen Codex rollout, not a new Gemini chat (F4)", async () => {
+    const codexRoot = join(dir, "new-codex");
+    await mkdir(join(codexRoot, "sessions"), { recursive: true });
+    const from = Date.UTC(2026, 8, 24);
+    const codexSources = new LiveSources(dirsOf(codexRoot), { from, hash });
+    expect(await codexSources.scanAll()).toEqual([]);
+    await writeFile(
+      join(codexRoot, "sessions", "rollout-test.jsonl"),
+      JSON.stringify({
+        timestamp: "2026-09-24T10:00:00.000Z",
+        type: "session_meta",
+        payload: { session_id: "codex-test-1" },
+      }) + "\n",
+    );
+    expect((await codexSources.poll()).newFiles).toBe(true);
+
+    const geminiRoot = join(dir, "new-gemini");
+    await mkdir(join(geminiRoot, "tmp", "chats"), { recursive: true });
+    const geminiSources = new LiveSources(dirsOf(geminiRoot), { from, hash });
+    expect(await geminiSources.scanAll()).toEqual([]);
+    await writeFile(
+      join(geminiRoot, "tmp", "chats", "chat.json"),
+      JSON.stringify({ messages: [] }),
+    );
+    expect((await geminiSources.poll()).newFiles).toBe(false);
   });
 });

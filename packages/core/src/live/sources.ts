@@ -142,7 +142,13 @@ export class LiveSources {
     return out;
   }
 
-  /** The delta path: Claude tails accumulate; an agent whose files changed is rescanned whole for today. */
+  /**
+   * The delta path: Claude tails accumulate; an agent whose files changed is rescanned whole for today.
+   * `newFiles` is true only for a newly seen Codex rollout — a fork parent can already hold today's
+   * usage, which is why the engine forces a full reconcile on it. A new Claude transcript already
+   * starts its own tail from byte 0, and a new Gemini chat is folded into its pool's rescan regardless,
+   * so neither needs to force one too (a subagent swarm would otherwise cost a full rescan per file).
+   */
   async poll(): Promise<{
     records: LiveRecord[];
     pools: Partial<Record<Source, LiveRecord[]>>;
@@ -163,7 +169,6 @@ export class LiveSources {
           this.#old.add(key);
           continue;
         }
-        newFiles = true;
       }
       const { lines, state } = await readAppended(file.path, prev);
       this.#state.tails[key] = state;
@@ -194,7 +199,6 @@ export class LiveSources {
     const chats = (await findChats(this.#dirs.geminiDirs)).map((c) => c.path);
     const gemini = await this.#changed(chats, this.#from);
     if (gemini.changed.length) {
-      newFiles ||= gemini.fresh;
       // Every chat file modified today, not only the changed one: the pool must be complete.
       const pool: LiveRecord[] = [];
       for await (const r of scanGemini(
