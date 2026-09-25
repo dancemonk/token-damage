@@ -131,7 +131,7 @@ async function retention(
   return { days: 30, isDefault: true };
 }
 
-async function ask(question: string): Promise<string> {
+export async function ask(question: string): Promise<string> {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   try {
     return await rl.question(question);

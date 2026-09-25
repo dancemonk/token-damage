@@ -16,6 +16,7 @@ export interface TodayCache {
   engine: EngineState;
   sources: SourcesState;
   voice?: VoiceState;
+  reconciledAt?: number;
 }
 
 export const CACHE_PATH = join(homedir(), ".token-damage", "today.json");
