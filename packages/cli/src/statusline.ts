@@ -57,9 +57,13 @@ async function rows(o: StatuslineOptions): Promise<string> {
     hash: hashPath,
     ...(cache && { state: cache.sources }),
   });
-  let reconciledAt = cache?.reconciledAt ?? 0;
+  // `reconciledAt` stays absent (not just zero) when the cache never carried one, so a warm run here
+  // writes the cache back unchanged instead of fabricating a reconcile that never happened. The pane
+  // reconciles itself every 5 minutes, so `savedAt` is a safe bound on staleness for the comparison.
+  let reconciledAt = cache?.reconciledAt;
+  const reconcileBound = reconciledAt ?? cache?.savedAt ?? 0;
   const polled = cache ? await sources.poll() : null;
-  if (!polled || polled.newFiles || at - reconciledAt >= RECONCILE_MS) {
+  if (!polled || polled.newFiles || at - reconcileBound >= RECONCILE_MS) {
     sources = new LiveSources(dirs, { from: engine.from, hash: hashPath });
     engine.replace(await sources.scanAll());
     reconciledAt = at;

@@ -108,6 +108,7 @@ export async function runLive(o: LiveOptions): Promise<number> {
       version: 1,
       day: engine.day,
       savedAt: lastSave,
+      reconciledAt: lastReconcile,
       engine: engine.state(),
       sources: sources.state(),
       voice,

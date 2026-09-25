@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, realpathSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -108,6 +108,23 @@ describe("token-damage statusline", () => {
     const r = status(["--clock", CLOCK], input);
     expect(r.status).toBe(0);
     expect(r.stdout.split("\n")[0]).toMatch(/^▸ nothing yet in this session$/);
+  });
+
+  it("falls back to savedAt for staleness when the cache has no reconciledAt (F1)", () => {
+    const home = join(dir, "home-f1");
+    const first = status(["--clock", CLOCK], stdin, { HOME: home });
+    expect(first.status).toBe(0);
+    const cachePath = join(home, ".token-damage", "today.json");
+    const cache = JSON.parse(readFileSync(cachePath, "utf8"));
+    expect(cache.reconciledAt).toBeDefined();
+    delete cache.reconciledAt;
+    writeFileSync(cachePath, JSON.stringify(cache));
+
+    const second = status(["--clock", CLOCK], stdin, { HOME: home });
+    expect(second.status).toBe(0);
+    const after = JSON.parse(readFileSync(cachePath, "utf8"));
+    // A reconcile would have set reconciledAt to `at`; its absence proves the warm (poll) path ran.
+    expect(after.reconciledAt).toBeUndefined();
   });
 
   it("prints the fallback row on a bad flag and still exits 0", () => {
