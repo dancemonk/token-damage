@@ -1568,14 +1568,22 @@ a:hover {
 
 /* ---------- the home page fits one screen ----------
    Wide screens: the wire to the left of the paper, Next to the right, the footer centered at the bottom, so
-   nothing but the footer sits under the receipt. The paper and its stub end 849px down at zoom 1 (paper from 110px, 739px
-   tall); the footer takes 99px, plus 2px of rounding. Each step below is the largest zoom that fits its lowest
-   height: z = (height - 211) / 739, down to 0.58 at 640px; shorter screens scroll. Pure CSS, so the page never
-   shifts once drawn. */
+   nothing but the footer sits under the receipt. The printer sits 24px higher than on narrow screens and the
+   footer keeps those 24px as air above its text, so even at the bottom of a zoom step the stub never touches it.
+   The paper and its stub end 825px down at zoom 1 (paper from 86px, 739px tall); the footer takes 123px, plus
+   2px of rounding. Each step below is the largest zoom that fits its lowest height: z = (height - 211) / 739,
+   down to 0.58 at 640px; shorter screens scroll. Pure CSS, so the page never shifts once drawn. */
 @media (min-width: 1000px) {
+  .printer,
+  .strip-well {
+    top: 36px;
+  }
+  .stage {
+    margin-top: calc(86px / var(--zoom));
+  }
   .wire {
     position: absolute;
-    top: 140px;
+    top: 116px;
     right: calc(50% + var(--receipt-w) * var(--zoom) / 2 + 44px);
     width: min(250px, calc(50% - var(--receipt-w) * var(--zoom) / 2 - 64px));
     padding: 0;
@@ -1593,15 +1601,16 @@ a:hover {
   }
   .pullrow {
     position: absolute;
-    top: 140px;
+    top: 116px;
     left: calc(50% + var(--receipt-w) * var(--zoom) / 2 + 44px);
     padding: 0;
   }
-  /* The footer as everywhere else: the two lines on top, the links centered under them, closer together. */
+  /* The footer as everywhere else: the two lines on top, the links centered under them, closer together. The
+     30px on top are the air the raised printer gave back. */
   .pullrow + .home-foot,
   .home-foot {
     gap: 4px;
-    padding: 6px 24px 12px;
+    padding: 30px 24px 12px;
   }
 }
 @media (min-width: 1000px) and (max-height: 949px) {
@@ -1817,7 +1826,7 @@ a:hover {
 @media (min-width: 1000px) {
   .r-side {
     position: absolute;
-    top: 140px;
+    top: 116px;
     left: calc(50% + var(--receipt-w) * var(--zoom) / 2 + 44px);
     width: min(260px, calc(50% - var(--receipt-w) * var(--zoom) / 2 - 64px));
     margin: 0;
