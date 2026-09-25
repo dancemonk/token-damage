@@ -544,8 +544,9 @@ for (const lang of LANGS) {
           .join("\n    ")
       : "";
     const inner = fillTemplate(template(page.template), t, vars, html);
+    // Home and /r lay out their own page around the printer; the rest sit on a sheet.
     html.body =
-      slug === ""
+      slug === "" || slug === "r"
         ? inner
         : fillTemplate(template("page.html"), t, vars, {
             ...html,

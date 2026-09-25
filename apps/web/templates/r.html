@@ -1,39 +1,55 @@
-<main class="sheet-wrap narrow r-live">
-  <h1 class="visually-hidden">{{t:r.meta.description}}</h1>
-  <noscript><p class="notice">{{t:r.nojs}}</p></noscript>
-  <p class="fine lede-fine">{{t:r.privacy}}</p>
-  <p class="notice" id="notice" hidden>{{t:r.fallback}}</p>
-  <div id="guess" hidden>
-    <div class="sheet-edge top"></div>
-    <section class="sheet guess">
-      <p class="prompt" id="prompt"></p>
-      <label for="guess-range">{{t:r.guess.label}}</label>
-      <input
-        type="range"
-        id="guess-range"
-        min="5"
-        max="11.5"
-        step="0.01"
-        value="7"
-      />
-      <output id="guess-out" for="guess-range" aria-live="polite"></output>
-      <button type="button" class="btn" id="guess-go">
-        {{t:r.guess.submit}}
-      </button>
-    </section>
-    <div class="sheet-edge"></div>
+<div class="home r-page">
+  {{h:header}}
+  <div class="printer" aria-hidden="true">
+    <div class="slot"></div>
+    <span class="led wait" id="led"></span>
   </div>
-  <div class="r-stage" id="stage" hidden>
-    <div class="feed" id="feed">
-      <section class="receipt" id="receipt"></section>
+  <div class="strip-well" aria-hidden="true"><div class="strip"></div></div>
+  <main class="stage" id="stage">
+    <h1 class="visually-hidden">{{t:r.meta.description}}</h1>
+    <noscript>
+      <section class="sheet r-slip"><p>{{t:r.nojs}}</p></section>
+    </noscript>
+    <div class="r-guess" id="guess" hidden>
+      <section class="sheet guess">
+        <p class="prompt" id="prompt"></p>
+        <label for="guess-range">{{t:r.guess.label}}</label>
+        <input
+          type="range"
+          id="guess-range"
+          min="5"
+          max="11.5"
+          step="0.01"
+          value="7"
+        />
+        <output id="guess-out" for="guess-range" aria-live="polite"></output>
+        <button type="button" class="btn" id="guess-go">
+          {{t:r.guess.submit}}
+        </button>
+      </section>
     </div>
-  </div>
-  <p class="result" id="result" tabindex="-1" hidden></p>
-  <p class="news" id="news" hidden></p>
-  <section class="cta" id="cta" hidden>
-    <p class="cta-title">{{t:r.cta.own}}</p>
-    <div class="stub-wrap">{{h:stub}}</div>
-    <p class="visually-hidden" id="copy-status" role="status"></p>
-    <a class="btn ghost" href="{{v:quizHref}}">{{t:r.cta.quiz}}</a>
-  </section>
-</main>
+    <div class="hang">
+      <div class="feed" id="feed" hidden>
+        <div id="group">
+          <section class="receipt" id="receipt"></section>
+          <div class="stub-wrap">{{h:stub}}</div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <aside class="wire"><p class="news" id="news"></p></aside>
+  <aside class="r-side">
+    <p class="result" id="result" tabindex="-1" hidden></p>
+    <p class="notice" id="notice" hidden>{{t:r.fallback}}</p>
+    <a class="r-quiz" id="quiz" href="{{v:quizHref}}" hidden
+      >{{t:r.cta.quiz}}</a
+    >
+    <p class="fine">{{t:r.privacy}}</p>
+    <p class="r-copied" id="copy-status" role="status"></p>
+  </aside>
+  <footer class="home-foot">
+    <div>{{t:footer.local}}</div>
+    <div class="faint">{{t:footer.affiliation}}</div>
+    {{h:langs}}
+  </footer>
+</div>

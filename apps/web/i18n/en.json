@@ -34,7 +34,6 @@
     "r.guess.label": "Your guess, in tokens",
     "r.guess.submit": "That's my guess",
     "r.result": "You guessed {guess}. Real: {real}. Off by {factor}×.",
-    "r.cta.own": "Print your own",
     "r.cta.quiz": "Not a developer? Take the quiz",
     "r.fallback": "This link is broken or incomplete. Here is a sample receipt instead.",
     "r.nojs": "This page reads the numbers from the link itself, which needs JavaScript. They never reach our server.",

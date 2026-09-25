@@ -34,6 +34,8 @@
   --gap: 14px;
   /* Home page receipt zoom, set by screen height so the whole page fits without scrolling (end of file). */
   --z: 1;
+  /* What the paper, printer and side columns actually use: --z, except where a page needs more room (/r). */
+  --zoom: var(--z);
 }
 :root:lang(ja) {
   --mono:
@@ -199,9 +201,9 @@ a:hover {
 .printer {
   position: absolute;
   left: 50%;
-  margin-left: calc(-280px * var(--z));
+  margin-left: calc(-280px * var(--zoom));
   top: 60px;
-  width: calc(560px * var(--z));
+  width: calc(560px * var(--zoom));
   height: 36px;
   border-radius: 18px;
   background: linear-gradient(#1c1b19, #131311);
@@ -254,9 +256,9 @@ a:hover {
 .strip {
   position: absolute;
   left: 50%;
-  margin-left: calc(var(--receipt-w) * var(--z) / -2);
+  margin-left: calc(var(--receipt-w) * var(--zoom) / -2);
   top: 2px;
-  width: calc(var(--receipt-w) * var(--z));
+  width: calc(var(--receipt-w) * var(--zoom));
   height: 48px;
   background: var(--paper);
   z-index: 5;
@@ -286,8 +288,8 @@ a:hover {
   position: relative;
   width: var(--receipt-w);
   /* zoom scales margins too: divide, so the paper still leaves the printer at 110px. */
-  margin: calc(110px / var(--z)) auto 0;
-  zoom: var(--z);
+  margin: calc(110px / var(--zoom)) auto 0;
+  zoom: var(--zoom);
   z-index: 2;
   perspective: 1200px;
   flex-grow: 1;
@@ -374,7 +376,7 @@ a:hover {
    which sits below the fold on laptop-height windows. */
 .hint {
   position: absolute;
-  left: calc(50% + var(--receipt-w) * var(--z) / 2 + 60px);
+  left: calc(50% + var(--receipt-w) * var(--zoom) / 2 + 60px);
   top: 104px;
   z-index: 9;
   font-size: 12px;
@@ -471,11 +473,6 @@ a:hover {
 }
 .news.swap {
   animation: tdFade 0.6s ease-out;
-}
-.result + .news {
-  margin: 10px auto 0;
-  color: var(--desk-muted);
-  text-align: center;
 }
 
 /* ---------- the receipt ---------- */
@@ -1033,54 +1030,60 @@ a:hover {
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
-.r-stage {
-  width: 100%;
-  margin: 28px 0 0;
-  perspective: 1200px;
+/* The home page's printer and paper, with the guess slip waiting where the receipt comes out. The right
+   column (under the stage when stacked) holds the result, the quiz link and the privacy line. */
+.r-guess .sheet,
+.r-slip {
+  margin: 0;
 }
-.result {
-  margin: 18px 0 0;
+.r-side {
+  position: relative;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 34em;
+  margin: 0 auto;
+  padding: 18px 16px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--desk-muted);
+  text-align: center;
+  text-shadow:
+    0 1px 6px var(--desk),
+    0 0 14px var(--desk);
+}
+.r-side p {
+  margin: 0;
+}
+.r-side .result {
   font-size: 16px;
   font-weight: 700;
   color: var(--bright);
-  text-align: center;
+  text-wrap: balance;
 }
-.cta-title {
-  margin: 0 0 -4px;
+.r-side .notice {
   font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
   color: var(--bright);
-  text-align: center;
 }
-.cta {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 20px 0 0;
-}
-.cta .btn.ghost {
-  color: var(--bright);
-  border-color: var(--desk-muted);
-}
-/* The receipt or the guess appears once the fragment is read; reserve the screen so nothing jumps. */
-.r-live {
-  min-height: calc(100svh - 60px);
-}
-.fine.lede-fine {
-  margin: 0 0 16px;
-}
-.fine {
-  margin: 20px 0 0;
+.r-side .fine {
   font-size: 12px;
-  color: var(--desk-muted);
-  text-align: center;
 }
-.notice {
-  margin: 0 0 16px;
-  font-size: 14px;
+.r-quiz {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+}
+.r-copied {
   color: var(--bright);
-  text-align: center;
+}
+.r-copied:empty {
+  display: none;
+}
+.r-side + .home-foot {
+  padding-top: 16px;
 }
 
 /* ---------- /quiz ---------- */
@@ -1285,7 +1288,7 @@ a:hover {
   }
   :root {
     /* Zoomed, the paper still spans the screen: wider in its own units, so it wraps less and fits more. */
-    --receipt-w: calc((100vw - 32px) / var(--z));
+    --receipt-w: calc((100vw - 32px) / var(--zoom));
     --n-size: 36px;
     --line-size: 12px;
     --note-size: 13px;
@@ -1326,7 +1329,7 @@ a:hover {
     margin-left: 0;
   }
   .stage {
-    margin-top: calc(104px / var(--z));
+    margin-top: calc(104px / var(--zoom));
     perspective: 1000px;
   }
   .stub-wrap {
@@ -1564,8 +1567,8 @@ a:hover {
   .wire {
     position: absolute;
     top: 140px;
-    right: calc(50% + var(--receipt-w) * var(--z) / 2 + 44px);
-    width: min(250px, calc(50% - var(--receipt-w) * var(--z) / 2 - 64px));
+    right: calc(50% + var(--receipt-w) * var(--zoom) / 2 + 44px);
+    width: min(250px, calc(50% - var(--receipt-w) * var(--zoom) / 2 - 64px));
     padding: 0;
     justify-content: flex-start;
     text-align: left;
@@ -1582,7 +1585,7 @@ a:hover {
   .pullrow {
     position: absolute;
     top: 140px;
-    left: calc(50% + var(--receipt-w) * var(--z) / 2 + 44px);
+    left: calc(50% + var(--receipt-w) * var(--zoom) / 2 + 44px);
     padding: 0;
   }
   /* The footer as everywhere else: the two lines on top, the links centered under them, closer together. */
@@ -1798,5 +1801,32 @@ a:hover {
 @media (max-width: 359px) {
   .wire .news {
     min-height: calc(21px + 4lh);
+  }
+}
+
+/* /r on wide screens: the result and its links in the right column, level with the wire. */
+@media (min-width: 1000px) {
+  .r-side {
+    position: absolute;
+    top: 140px;
+    left: calc(50% + var(--receipt-w) * var(--zoom) / 2 + 44px);
+    width: min(260px, calc(50% - var(--receipt-w) * var(--zoom) / 2 - 64px));
+    margin: 0;
+    padding: 0;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .r-side + .home-foot {
+    padding-top: 6px;
+  }
+}
+
+/* A friend's receipt carries more rows than the home sample (plan multiple, latest call, a longer note): about
+   871px of paper at full size against 739px, so /r zooms 0.84 of --z to keep a laptop page on one screen. On
+   tablets the result stacks under the receipt and the page may scroll a little; phones keep --z, where the
+   receipt and its stub still fit the first screen. */
+@media (min-width: 521px) {
+  .r-page {
+    --zoom: calc(var(--z) * 0.84);
   }
 }

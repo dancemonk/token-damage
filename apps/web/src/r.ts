@@ -22,11 +22,11 @@ const el = (id: string) => document.getElementById(id) as HTMLElement;
 const guess = el("guess");
 const range = el("guess-range") as HTMLInputElement;
 const out = el("guess-out") as HTMLOutputElement;
-const stage = el("stage");
 const feed = el("feed");
 const receipt = el("receipt");
+const led = el("led");
 const result = el("result");
-const cta = el("cta");
+const quiz = el("quiz");
 const status = el("copy-status");
 
 wireSoundToggle();
@@ -40,14 +40,17 @@ if (location.hash)
     .querySelectorAll<HTMLAnchorElement>(".langs a[hreflang]")
     .forEach((a) => (a.hash = location.hash));
 
+/** The receipt feeds out of the printer, as on the home page, with its stub and the command attached. */
 function printReceipt(view: ReceiptView, withSound: boolean) {
   const lines = poolLines(catalog.pool, view.tokens, receiptFormat(locale));
   receipt.innerHTML = receiptPaper({ ...view, ...lines }, t, {
     count: "0",
     slam: true,
   });
-  stage.hidden = false;
+  feed.hidden = false;
   restart(feed, "feed");
+  led.className = "led";
+  restart(led, "boot");
   countUp(
     receipt.querySelector(".r-n") as HTMLElement,
     view.tokens,
@@ -56,18 +59,16 @@ function printReceipt(view: ReceiptView, withSound: boolean) {
   if (withSound) sound("print");
 }
 
-/** One dated AI fact under the result, with its source. */
+/** One dated AI fact in the wire, from the start, as on the home page. */
 function showNews() {
   const line = next(catalog.pool, "news");
-  if (!line) return;
-  const news = el("news");
-  news.innerHTML = newsLine(line, t);
-  news.hidden = false;
+  if (line) el("news").innerHTML = newsLine(line, t);
 }
 
 const guessed = () => Number((10 ** Number(range.value)).toPrecision(2));
 
 const payload = readShare(location.hash);
+showNews();
 if (!payload) {
   el("notice").hidden = false;
   const key = `sample.${fixed.samples[0]!.trans}`;
@@ -82,8 +83,7 @@ if (!payload) {
     ),
     false,
   );
-  showNews();
-  cta.hidden = false;
+  quiz.hidden = false;
 } else {
   const days = periodDays(payload.start, payload.end);
   el("prompt").textContent = t(
@@ -110,13 +110,12 @@ if (!payload) {
       factor: number(factor, locale, { maximumSignificantDigits: 3 }),
     });
     result.hidden = false;
-    showNews();
-    cta.hidden = false;
+    quiz.hidden = false;
     result.focus();
   });
 }
 
-cta.addEventListener("click", (e) => {
+el("group").addEventListener("click", (e) => {
   if (!(e.target as Element).closest("[data-copy]")) return;
   navigator.clipboard?.writeText(fixed.command).catch(() => undefined);
   sound("rip");
