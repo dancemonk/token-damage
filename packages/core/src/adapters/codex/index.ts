@@ -105,8 +105,10 @@ const ROLLOUT_ID =
 export async function* scanCodex(
   homes: string[],
   stats: CodexStats,
+  /** Only these rollouts (live polling); fork parents must be included by the caller. */
+  files?: string[],
 ): AsyncGenerator<UsageEvent | PromptEvent> {
-  const paths = await findRollouts(homes);
+  const paths = files ?? (await findRollouts(homes));
   const metas: RolloutMeta[] = [];
   for (const path of paths) metas.push(metaOf(await firstLine(path)));
   const metaById = new Map<string, RolloutMeta>();

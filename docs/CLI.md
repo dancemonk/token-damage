@@ -138,17 +138,83 @@ The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 `schema/receipt.schema.json`; tiers included on every value), `--fixtures <dir>` (a Claude Code config dir, a
 Codex home, a Gemini CLI home and an OpenCode data dir in one: `projects/`, `sessions/`, `tmp/`, `opencode/`),
 `--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>` (same as `CODEX_HOME`), `--gemini-dir
-<path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as `OPENCODE_DATA_DIR`), `--daily` (today's slip), `--keep-history 3650` (offers to set `cleanupPeriodDays`; asks first), `--audit` (prints every file read and every field stored), `--forget` (deletes `~/.token-damage`).
+<path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as `OPENCODE_DATA_DIR`).
+
+Not built yet: `--keep-history 3650` (would offer to set `cleanupPeriodDays`; would ask first), `--audit`
+(would print every file read and every field stored) and `--forget` (would delete `~/.token-damage`).
+`--daily` was never built either; `token-damage live --once` covers it.
+
+## `token-damage live`
+
+A pane in your terminal: the day's damage as it happens.
+```
+npx token-damage live
+```
+Needs a real terminal (pipe `--json` instead in a script or a tmux bar).
+```
+ WATER DAMAGE   next STRUCTURAL at 100M ······ 38%
+ today   1,212 words → 38.2M read          ≡ $41.20
+ now     claude+3 · 4 words → 9.8M ▸        ≡ $7.10
+ rate    1.4M/min ▁▂▃▅█▇▅▃▂▁   ● printing
+ limits  5h 58% resets 16:00 · 7d 21% resets mon
+ ─────────────────────────────────────────────────
+ time   agent       you typed → it read       list
+ 13:05  ━━━━━━━━━ stamped WATER DAMAGE ━━━━━━━━━━━
+ 13:41  claude      12 words →   3.1M      ≡ $2.40
+ 13:52  codex       31 words → 410.0K      ≡ $0.31
+        · · · · · · · idle 14 min · · · · · · ·
+ 14:09  claude·2    88 words →   1.2M      ≡ $0.90
+ ✶ four words in. a library out. the usual.
+                  ≡ list price · ✶ satire · q quit
+```
+Five glance rows on top — the damage class and progress to the next; today's words, tokens read, list price;
+the open turn; a rate sparkline with a printing/idle state; plan limits, once Claude Code's status line has
+reported them — then the tape, closed turns oldest to newest. A class upgrade prints in red the moment it
+lands; gaps over 10 minutes show as `· · · idle N min · · ·`; the adjuster's lines are marked `✶` and never
+hold a digit. Panes under 12 rows show the glance rows only; below 50 columns the price column drops, then
+the sparkline. `q` quits; Ctrl-C works.
+
+Flags: `--no-anim` (no opening count-up), `--json` (one NDJSON snapshot per change, for tmux bars and other
+tools), `--once` (print one JSON snapshot and exit — what `pnpm oracle:live` compares against the receipt),
+`--fixtures <dir>` (nothing is cached), `--clock <iso>` (pretend it is this time, for demos and screenshots),
+plus the usual `--config-dir`, `--codex-home`, `--gemini-dir`, `--opencode-dir`.
+
+## `token-damage statusline`
+
+Rows for Claude Code's own status line. Set it up once:
+```
+token-damage statusline --install
+```
+It prints the exact `settings.json` change — including the line it would replace, if `statusLine` is already
+set to something else — and writes it only after you confirm. The file as it stood is kept once, as
+`settings.json.token-damage.bak` next to it. It refuses to install an `npx …` command (too slow for a
+per-refresh call, and it may touch the network) and asks for a global install instead.
+
+Claude Code then runs the command after each event and on a timer, with session JSON on stdin. Default two
+rows, capped at 80 columns:
+```
+▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx 41%
+WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
+```
+Row 1 is this session: its open turn and the context-window percent Claude reports. Row 2 is today, all
+agents: the damage class, tokens, list price, and Claude's own plan-limit numbers when it reports them.
+`--rows 1` prints one combined line; `--rows 3` adds the adjuster's last remark, held until the next event.
+`--width N` overrides the 80-column cap.
+
+On any error, or past a 2-second guard, it prints one row — `token damage · (reading)` — and exits 0. Never a
+stack trace in the status bar.
 
 ## Files it writes
 - `~/.token-damage/history.json` — daily aggregates only (tokens by type/model, calls, sessions, words, first/last
   call, subagents). This is how history survives the 30-day deletion. No text, no paths.
 - `~/.token-damage/state.json` — run counter, note cooldowns, and the pool deck (seed and line ids, never text).
+- `~/.token-damage/today.json` — written by `live` and `statusline` only: today's numbers, path hashes and byte
+  offsets, not text. Discarded and rebuilt every day. See `docs/PRIVACY.md`.
 - `~/token-damage/receipt-<date>.png` — on request.
 
 ## Security posture
 No network. No child processes except `git` (V1, opt-in) and `claude -p` (V1, opt-in, aggregates only).
-Zero runtime dependencies except `@resvg/resvg-js`. Published with npm provenance. `--audit` shows everything read.
+Zero runtime dependencies except `@resvg/resvg-js`. Published with npm provenance.
 Never follows symlinks outside the config roots. Streams files; never loads a transcript whole
 (ccusage once hit 4 GB RSS on a 12.7 GB history).
 

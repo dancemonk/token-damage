@@ -3,6 +3,8 @@
 // Usage: pnpm oracle [--agent claude|codex|gemini|opencode] [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
 // --config-dir sets CLAUDE_CONFIG_DIR for claude, CODEX_HOME for codex, GEMINI_DATA_DIR for gemini and
 // OPENCODE_DATA_DIR for opencode.
+// --live compares `token-damage live --once` against our own daily totals for today, all four agents, on
+// real logs only: exact equality, no tolerance.
 // Exits 1 when any day's field differs by more than 1%, 2 when ccusage cannot run.
 // Dev tool only: it fetches ccusage through npx. The CLI itself never touches the network.
 import { execFileSync } from "node:child_process";
@@ -57,12 +59,14 @@ function parseArgs(argv) {
     fixtures: false,
     configDir: undefined,
     timeZone: undefined,
+    live: false,
   };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--agent") args.agent = argv[++i];
     else if (argv[i] === "--fixtures") args.fixtures = true;
     else if (argv[i] === "--config-dir") args.configDir = argv[++i];
     else if (argv[i] === "--timezone") args.timeZone = argv[++i];
+    else if (argv[i] === "--live") args.live = true;
     else throw new Error(`unknown argument: ${argv[i]}`);
   }
   if (!AGENTS[args.agent]) throw new Error(`unknown agent: ${args.agent}`);
@@ -185,6 +189,44 @@ const pct = (off) => (off === Infinity ? "∞" : `${(off * 100).toFixed(2)}%`);
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.live) {
+    // Live snapshot vs our own daily totals for today, all four agents: exact equality, no tolerance.
+    const timeZone =
+      args.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone }).format(
+      Date.now(),
+    );
+    const cli = fileURLToPath(
+      new URL("../packages/cli/dist/index.js", import.meta.url),
+    );
+    const snap = JSON.parse(
+      execFileSync(process.execPath, [cli, "live", "--once"], {
+        encoding: "utf8",
+        env: { ...process.env, TZ: timeZone },
+      }),
+    );
+    const sum = { ...ZERO };
+    for (const agent of Object.keys(AGENTS)) {
+      const day =
+        (await ourDaily(agent, process.env, timeZone)).get(today) ?? ZERO;
+      for (const f of FIELDS) sum[f] += day[f];
+    }
+    const live = {
+      input: snap.tokens.input,
+      cacheWrite: snap.tokens.cacheWrite,
+      cacheRead: snap.tokens.cacheRead,
+      output: snap.tokens.output,
+    };
+    const bad = FIELDS.filter((f) => live[f] !== sum[f]);
+    console.log(
+      `live vs daily, ${today}: ${bad.length ? `differs in ${bad.join(", ")}` : "exact"}`,
+    );
+    for (const f of FIELDS)
+      console.log(
+        `  ${f.padEnd(11)}${String(live[f]).padStart(16)}${String(sum[f]).padStart(16)}`,
+      );
+    process.exit(bad.length ? 1 : 0);
+  }
   const agent = AGENTS[args.agent];
   // Only the Claude fixtures are copied into a temporary config dir; that copy is removed at the end.
   const tempDir =

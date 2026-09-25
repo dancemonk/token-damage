@@ -7,6 +7,7 @@ import {
   aggregate,
   buildFacts,
   damageClass,
+  damageFloor,
   dedupe,
   dedupePrompts,
   dispute,
@@ -17,6 +18,7 @@ import {
   inBand,
   loadState,
   metricsOf,
+  nextDamageClass,
   nextState,
   observe,
   render,
@@ -147,6 +149,21 @@ describe("severity bands", () => {
     expect(damageClass(4.99e9).name).toBe("ACT OF GOD");
     expect(damageClass(5e9).name).toBe("UNINSURABLE");
     expect(damageClass(0).name).toBe("PAPER CUT");
+  });
+
+  it("knows the next damage class", () => {
+    expect(nextDamageClass(0)).toEqual({ name: "FENDER BENDER", at: 1e6 });
+    expect(nextDamageClass(38_200_000)).toEqual({
+      name: "STRUCTURAL",
+      at: 1e8,
+    });
+    expect(nextDamageClass(6e9)).toBeNull();
+  });
+
+  it("knows the floor of the current damage class", () => {
+    expect(damageFloor(0)).toBe(0);
+    expect(damageFloor(38_200_000)).toBe(1e7);
+    expect(damageFloor(6e9)).toBe(5e9);
   });
 
   it("inBand needs every metric known and inside [min, max]", () => {

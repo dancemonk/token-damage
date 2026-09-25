@@ -29,3 +29,23 @@ export function damageClass(tokens: number): DamageClass {
   return (CLASSES.find(([min]) => tokens >= min) ??
     (CLASSES.at(-1) as [number, DamageClass]))[1];
 }
+
+/** The class above the current one and the token count where it starts; null at the top. */
+export function nextDamageClass(
+  tokens: number,
+): { name: string; at: number } | null {
+  const above = [...CLASSES].reverse().find(([min]) => tokens < min);
+  return above ? { name: above[1].name, at: above[0] } : null;
+}
+
+/** The token count where the current class starts. */
+export function damageFloor(tokens: number): number {
+  return (CLASSES.find(([min]) => tokens >= min) ??
+    (CLASSES.at(-1) as [number, DamageClass]))[0];
+}
+
+/** The token count where the named class starts; 0 (PAPER CUT's floor) for a name not in the table. */
+export function floorOf(name: string): number {
+  return (CLASSES.find(([, c]) => c.name === name) ??
+    (CLASSES.at(-1) as [number, DamageClass]))[0];
+}
