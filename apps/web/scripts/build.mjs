@@ -209,10 +209,11 @@ const MARK = `<svg width="20" height="20" viewBox="0 0 32 32" fill="none" aria-h
 const SPEAKER = `<svg class="on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg><svg class="off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>`;
 
 function header(lang, t, home, withSound) {
-  const word = `${MARK}<span>${esc(fixed.brand)}</span>`;
+  // The home page's receipt carries the name and the mark a few pixels below, so its header has none; every
+  // other page keeps the wordmark as its way home.
   const wordmark = home
-    ? `<button type="button" class="wordmark" id="replay" aria-label="${esc(t("nav.wordmark.replay"))}">${word}</button>`
-    : `<a class="wordmark" href="${pathOf(lang, "")}" aria-label="${esc(t("nav.wordmark.home"))}">${word}</a>`;
+    ? ""
+    : `<a class="wordmark" href="${pathOf(lang, "")}" aria-label="${esc(t("nav.wordmark.home"))}">${MARK}<span>${esc(fixed.brand)}</span></a>`;
   // Pages that make sound get the speaker; its slot is fixed-width so the nav never shifts (see styles.css).
   const speaker = withSound
     ? `<span class="sound-slot"><button type="button" class="sound js-only" id="sound" aria-pressed="true" aria-label="${esc(t("nav.sound"))}" title="${esc(t("nav.sound"))}">${SPEAKER}</button></span>`

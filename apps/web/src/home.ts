@@ -265,23 +265,6 @@ group.addEventListener("click", (e) => {
   });
 });
 
-el("replay").addEventListener("click", () => {
-  timers.splice(0).forEach(clearTimeout);
-  falling.replaceChildren();
-  specks.replaceChildren();
-  copied.replaceChildren();
-  stub.classList.remove("tear", "refeed");
-  torn = false;
-  busy = false;
-  dragging = false;
-  dx = dy = 0;
-  apply();
-  idx = 0;
-  feed.style.visibility = "hidden";
-  led.className = "led wait";
-  later(260, () => print(0, true));
-});
-
 wireSoundToggle();
 
 // First paint came from the build; bring the clock and the meter to life.

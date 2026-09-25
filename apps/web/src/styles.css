@@ -139,6 +139,8 @@ a:hover {
   cursor: pointer;
 }
 .top nav {
+  /* Right-aligned with or without a wordmark beside it (the home page has none). */
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 4px;
