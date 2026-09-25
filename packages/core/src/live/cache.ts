@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import type { PromptEvent, UsageEvent } from "../types.js";
 import type { EngineState } from "./engine.js";
 import type { SourcesState } from "./sources.js";
+import type { VoiceState } from "./voice.js";
 
 export interface TodayCache {
   version: 1;
@@ -12,6 +13,7 @@ export interface TodayCache {
   savedAt: number;
   engine: EngineState;
   sources: SourcesState;
+  voice?: VoiceState;
 }
 
 export const CACHE_PATH = join(homedir(), ".token-damage", "today.json");

@@ -5,6 +5,7 @@ export * from "./engine.js";
 export * from "./tail.js";
 export * from "./sources.js";
 export * from "./cache.js";
+export * from "./voice.js";
 // Named, not `export *`: view's `duration(ms)` would otherwise collide with roasts' `duration(minutes)`
 // at the package barrel (src/index.ts). Import `duration` from "./view.js" directly if you need it.
 export {
