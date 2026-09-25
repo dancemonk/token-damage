@@ -18,3 +18,4 @@ export {
   turnPrice,
   type ViewOptions,
 } from "./view.js";
+export * from "./statusline.js";
