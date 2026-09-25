@@ -3,7 +3,7 @@ export {
   achievements,
   type Achievement,
 } from "./achievements.js";
-export { damageClass, type DamageClass } from "./classes.js";
+export { damageClass, nextDamageClass, type DamageClass } from "./classes.js";
 export {
   dispute,
   disputeStamp,
