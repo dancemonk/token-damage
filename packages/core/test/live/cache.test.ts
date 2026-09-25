@@ -87,4 +87,24 @@ describe("today cache", () => {
     expect(clean.usage[0]?.parentSessionId).toBe(clean.usage[1]?.sessionId);
     expect(clean.usage[0]?.sessionId).toBe(hashPath("/p/child"));
   });
+
+  it("hashes Windows-style path ids", async () => {
+    const path = join(dir, "windows.json");
+    const winPaths = cache();
+    winPaths.engine.usage = [
+      usage({
+        ts: T0,
+        sessionId: "C:\\Users\\someone\\.codex\\sessions\\rollout.jsonl",
+        dedupeKey: "k|C:\\tmp\\x",
+      }),
+    ];
+    await saveCache(winPaths, path);
+    const text = await readFile(path, "utf8");
+    expect(text).not.toContain("Users");
+    expect(text).not.toContain("tmp");
+    const loaded = await loadCache("2026-09-24", path);
+    expect(loaded?.engine.usage[0]?.sessionId).toBe(
+      hashPath("C:\\Users\\someone\\.codex\\sessions\\rollout.jsonl"),
+    );
+  });
 });

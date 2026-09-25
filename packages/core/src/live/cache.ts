@@ -19,7 +19,7 @@ export const CACHE_PATH = join(homedir(), ".token-damage", "today.json");
 export const hashPath = (path: string): string =>
   createHash("sha256").update(path).digest("hex");
 
-const cleanId = (id: string) => (id.includes("/") ? hashPath(id) : id);
+const cleanId = (id: string) => (/[\\/]/.test(id) ? hashPath(id) : id);
 
 /** Ids are opaque, except when a scanner fell back to a file path (Codex rollouts without metadata). */
 export function sanitizeIds(state: EngineState): EngineState {
