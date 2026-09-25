@@ -1,6 +1,6 @@
 # @token-damage/core
 
-The engine behind [`token-damage`](https://www.npmjs.com/package/token-damage). It finds Claude Code transcripts, parses them line by line, dedupes the usage, adds it up, prices it, estimates the electricity as a range, picks an adjuster's note, and builds the receipt that the CLI prints and the share card draws.
+The engine behind [`token-damage`](https://www.npmjs.com/package/token-damage). It finds the logs of Claude Code, Codex, Gemini CLI and OpenCode, parses them, dedupes the usage, adds it up, prices it, estimates the electricity as a range, picks an adjuster's note, and builds the receipt that the CLI prints and the share card draws. Its live engine follows today's logs as they grow, for the CLI's `live` pane and Claude Code status line.
 
 It has no runtime dependencies. It never keeps prompt text: user messages are reduced to a word count during parsing.
 
@@ -14,6 +14,6 @@ for await (const record of scanClaude(claudeRoots(process.env, homedir()), stats
 const { totals } = aggregate({ usage: deduper.result(), prompts: deduper.prompts() });
 ```
 
-This is 0.x. The API follows what the CLI needs and will change without ceremony. The specs are in [`docs/`](https://github.com/dancemonk/token-damage/tree/main/docs).
+This is 0.x. The API follows what the CLI needs and will change without ceremony. The specs are in [`docs/`](https://github.com/dancemonk/token-damage/tree/main/docs); the site is [tokendamage.com](https://tokendamage.com).
 
 MIT.

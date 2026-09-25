@@ -28,8 +28,8 @@
   "files": [
     "dist"
   ],
-  "description": "Parsing, dedupe, metrics and the roast engine behind token-damage. Zero runtime dependencies.",
-  "homepage": "https://github.com/dancemonk/token-damage#readme",
+  "description": "Parsing, dedupe, metrics, the live engine and the roast engine behind token-damage. Zero runtime dependencies.",
+  "homepage": "https://tokendamage.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dancemonk/token-damage.git",

@@ -1,18 +1,21 @@
 {
   "name": "token-damage",
   "version": "0.3.0",
-  "description": "The receipt your AI agent never gave you. Reads Claude Code's local logs and prints an itemized receipt; uploads nothing.",
+  "description": "The receipt your AI agent never gave you. Reads the local logs of Claude Code, Codex, Gemini CLI and OpenCode and prints an itemized receipt, or watches today live. Uploads nothing.",
   "keywords": [
     "claude-code",
-    "claude",
+    "codex",
+    "gemini-cli",
+    "opencode",
     "tokens",
     "usage",
     "receipt",
+    "statusline",
     "cli",
     "ai",
     "llm"
   ],
-  "homepage": "https://github.com/dancemonk/token-damage#readme",
+  "homepage": "https://tokendamage.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dancemonk/token-damage.git",

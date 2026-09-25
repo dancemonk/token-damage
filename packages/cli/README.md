@@ -4,6 +4,8 @@
 
 <p align="center">The receipt your AI agent never gave you. 🧾</p>
 
+<p align="center"><a href="https://tokendamage.com">tokendamage.com</a></p>
+
 ```
 npx token-damage
 ```
@@ -14,7 +16,41 @@ Token Damage reads the logs Claude Code, Codex, Gemini CLI and OpenCode keep on 
 
 <p align="center"><img src="https://raw.githubusercontent.com/dancemonk/token-damage/main/docs/assets/share-card.png" width="320" alt="Share card for a sample month: 1,183,400,000 tokens, damage class ACT OF GOD"></p>
 
-## Options
+## Watch it live
+
+```
+npx token-damage live
+```
+
+A calm pane to keep next to your agent. The top rows are today; the one that counts up is the prompt running right now.
+
+```
+ WATER DAMAGE   next STRUCTURAL at 100M ······ 38%
+ today   1,212 words → 38.2M read          ≡ $41.20
+ now     claude+3 · 4 words → 9.8M ▸        ≡ $7.10
+ rate    1.4M/min ▁▂▃▅█▇▅▃▂▁   ● printing
+ ─────────────────────────────────────────────────
+ time   agent       you typed → it read       list
+ 13:41  claude      12 words →   3.1M      ≡ $2.40
+ 13:52  codex       31 words → 410.0K      ≡ $0.31
+ ✶ four words in. a library out. the usual.
+```
+
+`q` quits. `--json` streams snapshots as JSON lines instead, for tmux bars and scripts.
+
+To see the same numbers in Claude Code's own status line, install it once and run the setup. It shows the `settings.json` change and asks before writing:
+
+```
+npm i -g token-damage
+token-damage statusline --install
+```
+
+```
+▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx 41%
+WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
+```
+
+## Receipt options
 
 ```
 --plan 200     your monthly plan in USD, for "value extracted: 4.0× your plan"
@@ -23,21 +59,18 @@ Token Damage reads the logs Claude Code, Codex, Gemini CLI and OpenCode keep on 
 --no-anim      print it all at once
 ```
 
-`npx token-damage live` shows today's damage as it happens, in a pane.
-`token-damage statusline --install` puts two rows in Claude Code's own status line (needs a global install).
-
 `npx token-damage --help` lists the rest. Needs Node 22 or newer (22.13 or newer to read OpenCode).
 
 ## Privacy
 
-It reads Claude Code's transcripts and retention setting, Codex's session logs, Gemini CLI's chats and OpenCode's message database (read-only), and nothing else. Your prompts are counted, never stored. It makes no network calls and has no telemetry or accounts. A share link keeps its numbers after the `#`, the part of a URL browsers never send to a server.
+It reads Claude Code's transcripts and retention setting, Codex's session logs, Gemini CLI's chats and OpenCode's message database (read-only), and nothing else. Your prompts are counted, never stored. It makes no network calls and has no telemetry or accounts. The live view keeps one file, `~/.token-damage/today.json`, with numbers and hashed file names only. A share link keeps its numbers after the `#`, the part of a URL browsers never send to a server. More at [tokendamage.com/privacy](https://tokendamage.com/privacy).
 
 ## How the numbers work
 
-Daily token totals match [ccusage](https://github.com/ryoppippi/ccusage) on the logs we've tested. Prices come from Anthropic's, OpenAI's and Google's public price lists, and every receipt prints the date they were checked. Electricity is always a range, because nobody publishes the real figure. Satire is printed in red and says so. The details are in [docs/METRICS.md](https://github.com/dancemonk/token-damage/blob/main/docs/METRICS.md) and [docs/DATA-SOURCES.md](https://github.com/dancemonk/token-damage/blob/main/docs/DATA-SOURCES.md).
+Daily token totals match [ccusage](https://github.com/ryoppippi/ccusage) on the logs we've tested, and the live view's totals match the receipt's. Prices come from Anthropic's, OpenAI's and Google's public price lists, and every receipt prints the date they were checked. Electricity is always a range, because nobody publishes the real figure. Satire is printed in red and says so. The method is at [tokendamage.com/method](https://tokendamage.com/method); the details are in [docs/METRICS.md](https://github.com/dancemonk/token-damage/blob/main/docs/METRICS.md), [docs/DATA-SOURCES.md](https://github.com/dancemonk/token-damage/blob/main/docs/DATA-SOURCES.md) and [docs/LIVE.md](https://github.com/dancemonk/token-damage/blob/main/docs/LIVE.md).
 
 ## Source
 
-[github.com/dancemonk/token-damage](https://github.com/dancemonk/token-damage). Issues welcome, especially when a new Claude Code version breaks the numbers.
+[github.com/dancemonk/token-damage](https://github.com/dancemonk/token-damage). Issues welcome, especially when a new agent version breaks the numbers.
 
 MIT. Not affiliated with Anthropic. No refunds: tokens cannot be un-read.
