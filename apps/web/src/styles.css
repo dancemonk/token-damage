@@ -237,11 +237,23 @@ a:hover {
 }
 /* Paper still in the printer. It reaches up inside the printer (hidden behind it) so it can follow a pull
    without showing its top edge; what shows is the same 14px as before. */
+/* The strip springs back after a tear with a little overshoot. The well starts at the printer's top edge and
+   cuts off anything above it, so the bounce never shows paper over the printer. */
+.strip-well {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  height: 200px;
+  z-index: 5;
+  clip-path: inset(0 -100vw -100vh -100vw);
+  pointer-events: none;
+}
 .strip {
   position: absolute;
   left: 50%;
   margin-left: calc(var(--receipt-w) * var(--z) / -2);
-  top: 62px;
+  top: 2px;
   width: calc(var(--receipt-w) * var(--z));
   height: 48px;
   background: var(--paper);
@@ -1292,10 +1304,12 @@ a:hover {
     width: 6px;
     height: 6px;
   }
+  .strip-well {
+    top: 54px;
+  }
   .strip {
     left: 16px;
     margin-left: 0;
-    top: 56px;
   }
   .stage {
     margin-top: calc(104px / var(--z));
