@@ -88,7 +88,7 @@ exports[`sample customers > 0041: output is frozen 1`] = `
   },
   "deck": {
     "last": {
-      "joke": "joke.ads.1",
+      "joke": "joke.none.11",
       "news": "news.aircanada.1",
       "satire": "satire.anthropic.1",
     },
@@ -100,8 +100,8 @@ exports[`sample customers > 0041: output is frozen 1`] = `
     "seed": 0,
     "used": {
       "joke": [
-        "joke.tahoe.1",
-        "joke.ads.1",
+        "joke.none.13",
+        "joke.none.11",
       ],
       "news": [
         "news.aircanada.1",
@@ -112,8 +112,8 @@ exports[`sample customers > 0041: output is frozen 1`] = `
     },
   },
   "jokes": [
-    "All sales final. This offer is legally binding, no takesies backsies.",
-    "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
+    "Buy one billion tokens, get the next billion at the same price.",
+    "Thank you for shopping. Please come again, and again, and again.",
   ],
   "news": {
     "source": {
@@ -230,7 +230,7 @@ exports[`sample customers > 0042: output is frozen 1`] = `
   },
   "deck": {
     "last": {
-      "joke": "joke.ads.1",
+      "joke": "joke.none.11",
       "news": "news.aircanada.1",
       "satire": "satire.anthropic.1",
     },
@@ -242,8 +242,8 @@ exports[`sample customers > 0042: output is frozen 1`] = `
     "seed": 0,
     "used": {
       "joke": [
-        "joke.tahoe.1",
-        "joke.ads.1",
+        "joke.none.13",
+        "joke.none.11",
       ],
       "news": [
         "news.aircanada.1",
@@ -254,8 +254,8 @@ exports[`sample customers > 0042: output is frozen 1`] = `
     },
   },
   "jokes": [
-    "All sales final. This offer is legally binding, no takesies backsies.",
-    "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
+    "Buy one billion tokens, get the next billion at the same price.",
+    "Thank you for shopping. Please come again, and again, and again.",
   ],
   "news": {
     "source": {
@@ -333,7 +333,7 @@ exports[`sample customers > 0043: output is frozen 1`] = `
   },
   "deck": {
     "last": {
-      "joke": "joke.ads.1",
+      "joke": "joke.none.11",
       "news": "news.aircanada.1",
       "satire": "satire.anthropic.1",
     },
@@ -345,8 +345,8 @@ exports[`sample customers > 0043: output is frozen 1`] = `
     "seed": 0,
     "used": {
       "joke": [
-        "joke.tahoe.1",
-        "joke.ads.1",
+        "joke.none.13",
+        "joke.none.11",
       ],
       "news": [
         "news.aircanada.1",
@@ -357,8 +357,8 @@ exports[`sample customers > 0043: output is frozen 1`] = `
     },
   },
   "jokes": [
-    "All sales final. This offer is legally binding, no takesies backsies.",
-    "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
+    "Buy one billion tokens, get the next billion at the same price.",
+    "Thank you for shopping. Please come again, and again, and again.",
   ],
   "news": {
     "source": {
@@ -489,7 +489,7 @@ exports[`sample customers > 0044: output is frozen 1`] = `
   },
   "deck": {
     "last": {
-      "joke": "joke.ads.1",
+      "joke": "joke.none.11",
       "news": "news.aircanada.1",
       "satire": "satire.anthropic.1",
     },
@@ -501,8 +501,8 @@ exports[`sample customers > 0044: output is frozen 1`] = `
     "seed": 0,
     "used": {
       "joke": [
-        "joke.tahoe.1",
-        "joke.ads.1",
+        "joke.none.13",
+        "joke.none.11",
       ],
       "news": [
         "news.aircanada.1",
@@ -513,8 +513,8 @@ exports[`sample customers > 0044: output is frozen 1`] = `
     },
   },
   "jokes": [
-    "All sales final. This offer is legally binding, no takesies backsies.",
-    "Ad-free receipt. Chatbots started carrying ads in 2026; receipts are holding out.",
+    "Buy one billion tokens, get the next billion at the same price.",
+    "Thank you for shopping. Please come again, and again, and again.",
   ],
   "news": {
     "source": {

@@ -100,10 +100,10 @@ ADJUSTER'S NOTE
   your share: 0.0000083 anthropics.
 ✶ satire. economists were not consulted.
 ------------------------------------------------
-all sales final. this offer is legally
-  binding, no takesies backsies.
-ad-free receipt. chatbots started carrying
-  ads in 2026; receipts are holding out.
+buy one billion tokens, get the next billion
+  at the same price.
+thank you for shopping. please come again,
+  and again, and again.
 ------------------------------------------------
 meanwhile, jan 2026: moltbook opened, a
   social network only ai agents can post to.

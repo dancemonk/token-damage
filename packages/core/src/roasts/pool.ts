@@ -1072,4 +1072,23 @@ export const POOL_EN: PoolLine[] = [
     text: "Your agent has its own social network now. You're welcome to observe.",
     source: { date: "2026-01", url: "https://arxiv.org/abs/2602.10127" },
   },
+  // The shop was built by its own subject: Token Damage was written with an AI agent (tokendamage.com/method).
+  {
+    id: "joke.selfmade.1",
+    kind: "joke",
+    text: "This receipt printer was written by an AI agent. It printed its own receipt first.",
+    source: { date: "-", url: "https://github.com/dancemonk/token-damage" },
+  },
+  {
+    id: "joke.selfmade.2",
+    kind: "joke",
+    text: "No programmers were harmed in the making of this receipt. One typed a few paragraphs.",
+    source: { date: "-", url: "https://github.com/dancemonk/token-damage" },
+  },
+  {
+    id: "joke.selfmade.3",
+    kind: "joke",
+    text: "Complaints desk: staffed by the same AI that built the store.",
+    source: { date: "-", url: "https://github.com/dancemonk/token-damage" },
+  },
 ];

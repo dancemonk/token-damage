@@ -5,6 +5,7 @@ import { translator, type Catalog } from "../src/i18n.js";
 import { shareNote } from "../src/notes.js";
 import { receiptPaper } from "../src/receipt.js";
 import { readShare, shareView } from "../src/share-view.js";
+import fixed from "../src/fixed.json" with { type: "json" };
 
 // A v1 link as the CLI prints it. Links like this are already in chats and posts: it must decode forever.
 const FROZEN_V1 =
@@ -137,5 +138,13 @@ describe("share notes", () => {
     expect(
       shareNote({ ...p, note: "few-commits.1" }, "ru", catalog("ru").notes),
     ).toBeUndefined();
+  });
+});
+
+describe("the site's own receipt", () => {
+  it("is a valid share link, so /method's link opens a receipt, not the sample", () => {
+    const p = readShare(`#${fixed.selfReceipt.fragment}`);
+    expect(p).not.toBeNull();
+    expect(p!.end).toBe(fixed.selfReceipt.asOf);
   });
 });

@@ -12,7 +12,7 @@
       "price": 809.65,
       "saved": 4383.85,
       "kwh": [26, 120],
-      "ram": 7.9e-6,
+      "ram": 0.0000079,
       "class": "act-of-god"
     },
     {
@@ -22,7 +22,7 @@
       "price": 129.2,
       "saved": 749.94,
       "kwh": [3.7, 18],
-      "ram": 1.2e-6,
+      "ram": 0.0000012,
       "class": "structural"
     },
     {
@@ -42,7 +42,7 @@
       "price": 6721.1,
       "saved": 36385.95,
       "kwh": [220, 1000],
-      "ram": 6.5e-5,
+      "ram": 0.000065,
       "class": "uninsurable"
     }
   ],
@@ -68,5 +68,9 @@
     "https://www.trendforce.com/presscenter/news/20260601-13070.html",
     "https://www.trendforce.com/presscenter/news/20260202-12911.html",
     "https://www.globenewswire.com/news-release/2025/12/03/3199169/"
-  ]
+  ],
+  "selfReceipt": {
+    "asOf": "2026-09-24",
+    "fragment": "v1.eyJzdGFydCI6IjIwMjYtMDgtMjYiLCJlbmQiOiIyMDI2LTA5LTI0IiwidG9rZW5zIjpbNDgyMCw2NzkxNDc3LDYxMzExMzQxNCwyNDM5ODkyXSwiY2FsbHMiOjIwMDQsInNlc3Npb25zIjo1MiwiZGF5cyI6MSwic3ViYWdlbnRzIjowLCJ3b3JkcyI6MTI5NiwibGlzdCI6MjMxLjg4LCJzYXZlZCI6MjM1MS4yNSwicGxhbiI6MS4yLCJrd2giOlsxMiw1OF0sImNsYXNzIjoiU1RSVUNUVVJBTCIsImFjaCI6W10sIm5vdGUiOiJpY2ViZXJnLjAiLCJsYXN0IjoiMjE6MDAifQ"
+  }
 }
