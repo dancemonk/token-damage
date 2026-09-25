@@ -17,6 +17,7 @@ import {
   LiveEngine,
   LiveSources,
   loadCache,
+  localDay,
   paint,
   parseStatusInput,
   saveCache,
@@ -51,7 +52,12 @@ async function rows(o: StatuslineOptions): Promise<string> {
   const day = new LiveEngine({ now }).day;
   const cache = o.fixtures ? null : await loadCache(day);
   const engine = new LiveEngine({ now, ...(cache && { state: cache.engine }) });
-  const prev = cache ? engine.snapshot() : null;
+  // Built at the cache's own clock, not `at`: otherwise `prev.now === next.now` and every turn looks
+  // stale to voice.ts's `detect()`, so library/swarm/re-read/one-last-fix could never fire here.
+  const prev =
+    cache && localDay(cache.savedAt) === localDay(at)
+      ? new LiveEngine({ now: () => cache.savedAt, state: cache.engine }).snapshot()
+      : null;
   let sources = new LiveSources(dirs, {
     from: engine.from,
     hash: hashPath,

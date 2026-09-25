@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -125,6 +125,76 @@ describe("token-damage statusline", () => {
     const after = JSON.parse(readFileSync(cachePath, "utf8"));
     // A reconcile would have set reconciledAt to `at`; its absence proves the warm (poll) path ran.
     expect(after.reconciledAt).toBeUndefined();
+  });
+
+  it("uses the cache's own clock for `prev`, so a stale-looking turn can still speak (F2)", async () => {
+    const home = join(dir, "home-f2");
+    const corpus = join(dir, "corpus-f2");
+    const projectDir = join(corpus, "projects", "p2");
+    await mkdir(projectDir, { recursive: true });
+    const transcriptPath = join(projectDir, "s2.jsonl");
+    await writeFile(
+      transcriptPath,
+      [
+        line({
+          type: "user",
+          uuid: "v1",
+          sessionId: "s2",
+          timestamp: "2026-09-24T11:50:00.000Z",
+          message: { role: "user", content: "fix the login bug" },
+        }),
+        line({
+          type: "assistant",
+          uuid: "v2",
+          sessionId: "s2",
+          requestId: "r2",
+          timestamp: "2026-09-24T11:51:00.000Z",
+          message: {
+            id: "m2",
+            model: "claude-opus-4-7",
+            usage: { input_tokens: 100, output_tokens: 20 },
+          },
+        }),
+      ].join("\n") + "\n",
+    );
+    const env = {
+      HOME: home,
+      CLAUDE_CONFIG_DIR: corpus,
+    };
+    const stdin2 = line({
+      session_id: "s2",
+      transcript_path: "/Users/someone/.claude/projects/p2/s2.jsonl",
+    });
+
+    // Warm the cache: no trigger should fire yet (read is far under the library threshold).
+    const first = status(["--clock", "2026-09-24T11:52:00Z"], stdin2, env);
+    expect(first.status).toBe(0);
+
+    // A new call lands in the same open turn, pushing read past the library threshold.
+    await appendFile(
+      transcriptPath,
+      line({
+        type: "assistant",
+        uuid: "v3",
+        sessionId: "s2",
+        requestId: "r3",
+        timestamp: "2026-09-24T11:54:00.000Z",
+        message: {
+          id: "m3",
+          model: "claude-opus-4-7",
+          usage: { input_tokens: 6_000_000, output_tokens: 20 },
+        },
+      }) + "\n",
+    );
+    const second = status(
+      ["--clock", "2026-09-24T11:55:00Z", "--rows", "3"],
+      stdin2,
+      env,
+    );
+    expect(second.status).toBe(0);
+    const rows = second.stdout.trimEnd().split("\n");
+    expect(rows).toHaveLength(3);
+    expect(rows[2]).toMatch(/^✶ /);
   });
 
   it("prints the fallback row on a bad flag and still exits 0", () => {
