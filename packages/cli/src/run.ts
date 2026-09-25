@@ -6,8 +6,6 @@ import {
   aggregate,
   buildFacts,
   buildReceipt,
-  claudeRoots,
-  codexHomes,
   createDeduper,
   dispute,
   disputeStamp,
@@ -17,13 +15,11 @@ import {
   emptyStats,
   EXCUSES,
   freshDeck,
-  geminiDirs,
   listPrice,
   loadState,
   newDeck,
   nextState,
   observe,
-  opencodeDirs,
   paint,
   receiptLines,
   saveState,
@@ -43,6 +39,7 @@ import {
   shareUrl,
 } from "@token-damage/core";
 import { parseGuess, type Options } from "./args.js";
+import { resolveDirs } from "./dirs.js";
 import { VERSION } from "./version.js";
 
 /**
@@ -211,18 +208,11 @@ async function shareLink(
 }
 
 export async function run(options: Options, io: Io): Promise<number> {
-  const roots = options.configDir
-    ? [options.configDir]
-    : claudeRoots(process.env, homedir());
-  const homes = options.codexHome
-    ? [options.codexHome]
-    : codexHomes(process.env, homedir());
-  const geminiData = options.geminiDir
-    ? [options.geminiDir]
-    : geminiDirs(process.env, homedir());
-  const opencodeData = options.opencodeDir
-    ? [options.opencodeDir]
-    : opencodeDirs(process.env, homedir());
+  const dirs = resolveDirs(options);
+  const roots = dirs.claudeRoots;
+  const homes = dirs.codexHomes;
+  const geminiData = dirs.geminiDirs;
+  const opencodeData = dirs.opencodeDirs;
   // What each agent's scan reads, one line per agent.
   const scanned = [
     roots.map((r) => join(r, "projects")),
