@@ -1,3 +1,4 @@
+import { cleanId } from "./cache.js";
 import { numberWord } from "../roasts/slots.js";
 import type { LiveSnapshot } from "./snapshot.js";
 import { OPEN_WINDOW_MS, type Turn } from "./turns.js";
@@ -64,7 +65,7 @@ export const LIVE_LINES: Record<VoiceFamily, readonly string[]> = {
     "welcome back. nothing was billed while you were gone. now it is.",
     "the break is over. the claim reopens.",
     "you returned. so did the tokens.",
-    "an hour off. the agent picked up exactly where the bill left off.",
+    "a long break. the agent picked up exactly where the bill left off.",
   ],
   "one-last-fix": [
     "it is past three. in most states even the bars have closed.",
@@ -81,7 +82,7 @@ export const LIVE_LINES: Record<VoiceFamily, readonly string[]> = {
     "most of the window is gone. this is a reading, not a warning.",
   ],
   quiet: [
-    "quiet afternoon. suspicious.",
+    "quiet day. suspicious.",
     "no calls for hours. the meter is getting nervous.",
     "silence on the line. either focus or lunch.",
     "a long pause. the adjuster files it under unusual.",
@@ -127,11 +128,17 @@ export function detect(
 
   const o = next.open;
   if (o && fresh(o) && o.words !== null && o.words <= 10 && o.read >= 5e6)
-    out.push({ family: "library", key: `library:${o.sessionId}:${o.start}` });
+    out.push({
+      family: "library",
+      key: `library:${cleanId(o.sessionId)}:${o.start}`,
+    });
 
   for (const t of next.turns)
     if (fresh(t) && t.interns >= 3)
-      out.push({ family: "swarm", key: `swarm:${t.sessionId}:${t.start}` });
+      out.push({
+        family: "swarm",
+        key: `swarm:${cleanId(t.sessionId)}:${t.start}`,
+      });
 
   const bySession = new Map<string, Turn[]>();
   for (const t of next.turns)
@@ -144,7 +151,10 @@ export function detect(
       fresh(last3[2] as Turn) &&
       last3.every((t) => cacheShare(t) > 0.95)
     )
-      out.push({ family: "re-read", key: `reread:${session}` });
+      out.push({
+        family: "re-read",
+        key: `reread:${cleanId(session)}`,
+      });
   }
 
   if (

@@ -39,6 +39,23 @@ describe("detect", () => {
     ).not.toContain("library");
   });
 
+  it("library: keeps paths out of trigger keys", () => {
+    const pathId = "/Users/someone/.codex/sessions/rollout.jsonl";
+    const p = [prompt({ ts: T0 - min(3), words: 4, sessionId: pathId })];
+    const u = [usage({ ts: T0 - min(1), input: 6_000_000, sessionId: pathId })];
+    const before = snap([], p, T0 - min(2));
+    const after = snap(u, p, T0);
+    const triggers = detect(before, after, { timeZone: tz });
+    expect(families(triggers)).toContain("library");
+    const libraryTrigger = triggers.find((t) => t.family === "library");
+    expect(libraryTrigger?.key).not.toContain("/Users/");
+    const spoke = speak(triggers, emptyVoice(), T0, {
+      day: "2026-09-24",
+      words: 4,
+    });
+    expect(spoke.state.fired[0]).not.toContain("/Users/");
+  });
+
   it("swarm: three interns on one turn", () => {
     const p = [prompt({ ts: T0 - min(5) })];
     const u = ["a1", "a2", "a3"].map((a, i) =>
