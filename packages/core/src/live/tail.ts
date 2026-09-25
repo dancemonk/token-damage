@@ -30,7 +30,15 @@ export async function readAppended(
   const start = rewritten || !prev ? 0 : prev.offset;
   if (size <= start)
     return { lines: [], state: { offset: start, size }, rewritten };
-  const fh = await open(path, "r");
+  let fh;
+  try {
+    fh = await open(path, "r");
+  } catch (e) {
+    if (e instanceof Error && (e as NodeJS.ErrnoException).code === "ENOENT") {
+      return { lines: [], state: { offset: 0, size: 0 }, rewritten: false };
+    }
+    throw e;
+  }
   try {
     const buf = Buffer.alloc(size - start);
     const { bytesRead } = await fh.read(buf, 0, buf.length, start);
