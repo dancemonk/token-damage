@@ -164,4 +164,59 @@ describe("token-damage statusline --install", () => {
     expect(npx.stdout + npx.stderr).toContain("npm i -g token-damage");
     expect(JSON.parse(readFileSync(settings(), "utf8"))).toEqual({});
   });
+
+  it("shows an existing different status line before replacing it, and backs it up", async () => {
+    const cfgDir = join(dir, "claude-home-existing-yes");
+    await mkdir(cfgDir, { recursive: true });
+    const settingsPath = join(cfgDir, "settings.json");
+    const old = { type: "command", command: "bash other.sh" };
+    await writeFile(settingsPath, line({ theme: "dark", statusLine: old }));
+    const r = install("y\n", { CLAUDE_CONFIG_DIR: cfgDir });
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain(
+      '- "statusLine": {"type":"command","command":"bash other.sh"}',
+    );
+    expect(r.stdout).toContain('+ "statusLine":');
+    const written = JSON.parse(readFileSync(settingsPath, "utf8"));
+    expect(written.theme).toBe("dark");
+    expect(written.statusLine).toMatchObject({
+      type: "command",
+      refreshInterval: 10,
+    });
+    expect(written.statusLine.command).not.toBe("bash other.sh");
+    const backup = readFileSync(`${settingsPath}.token-damage.bak`, "utf8");
+    expect(backup).toContain("bash other.sh");
+  });
+
+  it("leaves an existing different status line alone on no", async () => {
+    const cfgDir = join(dir, "claude-home-existing-no");
+    await mkdir(cfgDir, { recursive: true });
+    const settingsPath = join(cfgDir, "settings.json");
+    const old = { type: "command", command: "bash other.sh" };
+    await writeFile(settingsPath, line({ theme: "dark", statusLine: old }));
+    const r = install("n\n", { CLAUDE_CONFIG_DIR: cfgDir });
+    expect(r.status).toBe(0);
+    expect(JSON.parse(readFileSync(settingsPath, "utf8"))).toEqual({
+      theme: "dark",
+      statusLine: old,
+    });
+    expect(existsSync(`${settingsPath}.token-damage.bak`)).toBe(false);
+  });
+
+  it("creates the config directory and settings.json on a first install", () => {
+    const cfgDir = join(dir, "claude-home-fresh", "nested");
+    expect(existsSync(cfgDir)).toBe(false);
+    const r = install("y\n", { CLAUDE_CONFIG_DIR: cfgDir });
+    expect(r.status).toBe(0);
+    const settingsPath = join(cfgDir, "settings.json");
+    expect(existsSync(cfgDir)).toBe(true);
+    expect(existsSync(settingsPath)).toBe(true);
+    const written = JSON.parse(readFileSync(settingsPath, "utf8"));
+    expect(written.statusLine).toMatchObject({
+      type: "command",
+      refreshInterval: 10,
+    });
+    // Nothing existed to back up.
+    expect(existsSync(`${settingsPath}.token-damage.bak`)).toBe(false);
+  });
 });
