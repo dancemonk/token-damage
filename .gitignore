@@ -20,3 +20,4 @@ docs/WEBSITE.md
 
 # Cloudflare wrangler's local state (wrangler dev)
 .wrangler/
+docs/superpowers/

@@ -27,7 +27,7 @@ const total = (usage: readonly UsageEvent[]) =>
   );
 
 /**
- * Today's records and what happened on the tape; docs/superpowers/specs/2026-09-24-live-design.md §Engine.
+ * Today's records and what happened on the tape; docs/LIVE.md §Engine.
  * Claude Code lines accumulate (they arrive as appended bytes). Codex, Gemini CLI and OpenCode arrive as a full
  * rescan of today and replace their pool, so a record a half-written file produced never lingers.
  */

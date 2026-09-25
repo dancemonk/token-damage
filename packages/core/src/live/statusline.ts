@@ -100,7 +100,7 @@ function limitsText(
   return join([five, seven]) || false;
 }
 
-/** docs/superpowers/specs/2026-09-24-live-design.md §Surface 2. */
+/** docs/LIVE.md §Surface 2. */
 export function statuslineRows(
   s: LiveSnapshot,
   input: StatusInput,

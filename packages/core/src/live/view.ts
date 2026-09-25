@@ -206,7 +206,7 @@ interface Item {
 }
 
 // Wrapped at width - 2 so a continuation line's 2-space hang still fits within width; the receipt's own
-// `hang` does the same thing at its fixed WIDTH (docs/superpowers/specs/2026-09-24-live-design.md §Tape).
+// `hang` does the same thing at its fixed WIDTH (docs/LIVE.md §Tape).
 function hang(text: string, width: number): string[] {
   return wrap(text, width - 2).map((line, i) => (i ? `  ${line}` : line));
 }
@@ -287,7 +287,7 @@ function tape(
   return out;
 }
 
-/** The pane: docs/superpowers/specs/2026-09-24-live-design.md §Surface 1. */
+/** The pane: docs/LIVE.md §Surface 1. */
 export function liveLines(
   s: LiveSnapshot,
   events: readonly TapeEvent[],

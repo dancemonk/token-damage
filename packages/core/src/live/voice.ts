@@ -112,7 +112,7 @@ const cacheShare = (t: Turn) => {
   return read === 0 ? 0 : cached / read;
 };
 
-/** Measured facts that deserve a remark; docs/superpowers/specs/2026-09-24-live-design.md §Voice. */
+/** Measured facts that deserve a remark; docs/LIVE.md §Voice. */
 export function detect(
   prev: LiveSnapshot | null,
   next: LiveSnapshot,

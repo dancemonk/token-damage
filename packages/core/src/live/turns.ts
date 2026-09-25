@@ -43,7 +43,7 @@ function newTurn(
   };
 }
 
-/** Prompt-to-prompt attribution per root session; docs/superpowers/specs/2026-09-24-live-design.md §Turns. */
+/** Prompt-to-prompt attribution per root session; docs/LIVE.md §Turns. */
 export function buildTurns(
   usage: readonly UsageEvent[],
   prompts: readonly PromptEvent[],

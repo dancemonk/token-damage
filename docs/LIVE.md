@@ -1,6 +1,6 @@
-# Live view and status line — design
+# Live view and status line
 
-Date: 2026-09-24. Status: approved in conversation, awaiting file review. Builds after the website (Task 10).
+How `token-damage live` and `token-damage statusline` work, and why they look the way they do. Shipped in 0.3.0.
 
 ## Why
 
