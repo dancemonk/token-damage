@@ -33,7 +33,7 @@ export const AGENT_SHORT: Record<Source, string> = {
   opencode: "opencode",
 };
 
-const clip = (t: string, w: number) =>
+export const clip = (t: string, w: number) =>
   t.length <= w ? t : `${t.slice(0, Math.max(0, w - 1))}…`;
 
 function fit(left: string, right: string, width: number): string {
@@ -83,13 +83,19 @@ export const turnPrice = (t: Turn): string => priceOf(t.byModel);
 
 const threshold = (at: number) => (at >= 1e9 ? `${at / 1e9}B` : `${at / 1e6}M`);
 
-function clock(ts: number, timeZone?: string): string {
+export function clock(ts: number, timeZone?: string): string {
   return new Intl.DateTimeFormat("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
     ...(timeZone && { timeZone }),
   }).format(ts);
+}
+
+export function todayPrice(s: LiveSnapshot): string {
+  return s.notPriced
+    ? "not priced"
+    : `≡ ${formatUsd(s.price)}${s.partlyPriced ? "+" : ""}`;
 }
 
 function resetLabel(ts: number, now: number, timeZone?: string): string {
@@ -136,12 +142,9 @@ function glance(s: LiveSnapshot, o: ViewOptions, cols: Cols): Line[] {
         ? left + "·".repeat(dots) + right
         : clip(`${d.name} · ${Math.floor(d.pct)}% to ${d.next.name}`, w);
   }
-  const todayPrice = s.notPriced
-    ? "not priced"
-    : `≡ ${formatUsd(s.price)}${s.partlyPriced ? "+" : ""}`;
   const today = fit(
     `today   ${n(s.words)} words → ${compactTokens(s.read)} read`,
-    cols.price ? todayPrice : "",
+    cols.price ? todayPrice(s) : "",
     w,
   );
 

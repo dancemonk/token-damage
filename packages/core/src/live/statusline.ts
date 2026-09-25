@@ -1,9 +1,8 @@
-import { formatUsd } from "../metrics/format.js";
-import { compactTokens, type Line } from "../receipt/text.js";
+import { compactTokens, n, type Line } from "../receipt/text.js";
 import type { TapeEvent } from "./engine.js";
 import type { LimitWindow, Limits, LiveSnapshot } from "./snapshot.js";
 import type { Turn } from "./turns.js";
-import { duration, turnPrice } from "./view.js";
+import { clip, clock, duration, todayPrice, turnPrice } from "./view.js";
 
 export interface StatusInput {
   sessionId: string | null;
@@ -60,21 +59,9 @@ export function parseStatusInput(raw: string, now: number): StatusInput {
   return { sessionId, contextPct, limits };
 }
 
-const clip = (t: string, w: number) =>
-  t.length <= w ? t : `${t.slice(0, Math.max(0, w - 1))}…`;
 const join = (parts: (string | false | null | undefined)[]) =>
   parts.filter(Boolean).join(" · ");
-const wordsOf = (t: Turn) =>
-  `${t.words === null ? "—" : t.words.toLocaleString("en-US")} words`;
-
-function clock(ts: number, timeZone?: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-    ...(timeZone && { timeZone }),
-  }).format(ts);
-}
+const wordsOf = (t: Turn) => `${t.words === null ? "—" : n(t.words)} words`;
 
 function sessionRow(s: LiveSnapshot, input: StatusInput): string {
   const ctx =
@@ -120,14 +107,11 @@ export function statuslineRows(
   events: readonly TapeEvent[],
   o: StatusOptions,
 ): Line[] {
-  const price = s.notPriced
-    ? "not priced"
-    : `≡ ${formatUsd(s.price)}${s.partlyPriced ? "+" : ""}`;
   if (o.rows === 1) {
     const open = s.turns.find((t) => t.sessionId === input.sessionId && t.open);
     const turn = open
       ? `▸ ${wordsOf(open)} → ${compactTokens(open.read)} ${turnPrice(open)}`
-      : `today ${compactTokens(s.total)} ${price}`;
+      : `today ${compactTokens(s.total)} ${todayPrice(s)}`;
     return [
       {
         text: clip(
@@ -147,7 +131,7 @@ export function statuslineRows(
       text: clip(
         join([
           s.damage.name,
-          `today ${compactTokens(s.total)} ${price}`,
+          `today ${compactTokens(s.total)} ${todayPrice(s)}`,
           limitsText(input.limits, true, o.timeZone),
         ]),
         o.width,
