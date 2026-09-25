@@ -1,0 +1,55 @@
+name: Numbers look wrong
+description: A total, price or count on the receipt, the live pane or the status line doesn't match what you expected.
+labels: ["numbers"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Please don't paste transcripts or log lines.** They contain your prompts and code. Numbers and versions are enough; if we need a sample, we'll ask for a sanitized one.
+  - type: input
+    id: version
+    attributes:
+      label: Token Damage version
+      description: Output of `npx token-damage --version`.
+      placeholder: token-damage 0.3.2
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Which agent's numbers look wrong?
+      options:
+        - Claude Code
+        - Codex
+        - Gemini CLI
+        - OpenCode
+        - Several
+    validations:
+      required: true
+  - type: input
+    id: agent-version
+    attributes:
+      label: Agent version
+      description: e.g. `claude --version`, `codex --version`, `gemini --version`, `opencode --version`.
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command you ran
+      placeholder: npx token-damage --since 7d
+  - type: textarea
+    id: numbers
+    attributes:
+      label: What you saw, and what you expected
+      description: The line from the receipt, and where the other number comes from (ccusage, a provider dashboard, a hand count). Numbers only, please.
+      placeholder: |
+        Receipt: TOKENS READ BY AGENTS ....... 1,178,700,000
+        ccusage daily total for the same days: 1,203,400,000
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS and Node version
+      placeholder: macOS 26, Node 22.13
