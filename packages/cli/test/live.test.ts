@@ -60,6 +60,8 @@ describe("token-damage live", () => {
     expect(snap.read).toBe(measured.tokensRead.value);
     expect(snap.written).toBe(measured.tokensWritten.value);
     expect(snap.words).toBe(measured.words.value);
+    // Spec test 4 (F6): the temp corpus dir never leaks into --once's output.
+    expect(live.stdout).not.toContain(dir);
     expect(existsSync(join(dir, "home", ".token-damage", "today.json"))).toBe(
       false,
     );
