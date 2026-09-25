@@ -56,7 +56,10 @@ async function rows(o: StatuslineOptions): Promise<string> {
   // stale to voice.ts's `detect()`, so library/swarm/re-read/one-last-fix could never fire here.
   const prev =
     cache && localDay(cache.savedAt) === localDay(at)
-      ? new LiveEngine({ now: () => cache.savedAt, state: cache.engine }).snapshot()
+      ? new LiveEngine({
+          now: () => cache.savedAt,
+          state: cache.engine,
+        }).snapshot()
       : null;
   let sources = new LiveSources(dirs, {
     from: engine.from,
