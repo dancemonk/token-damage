@@ -132,7 +132,8 @@ describe("severity bands", () => {
       }
     }
     expect(fired).toBeGreaterThan(5000);
-  });
+    // CPU-bound (~2.5 s on a fast machine); CI runners are slower and share cores with other heavy tests.
+  }, 60_000);
 
   it("keeps the harshest lines for the data that earns them", () => {
     const base = customers[2]?.facts as Facts;
