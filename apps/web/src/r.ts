@@ -68,7 +68,19 @@ function showNews() {
 const guessed = () => Number((10 ** Number(range.value)).toPrecision(2));
 
 const payload = readShare(location.hash);
+// Token Damage's own receipt, linked from /method: say whose it is, stamp it, and offer the way back.
+const self = location.hash.slice(1) === fixed.selfReceipt.fragment;
 showNews();
+if (self) {
+  el("self-note").textContent = t("r.self.note", {
+    date: new Intl.DateTimeFormat(locale, {
+      dateStyle: "long",
+      timeZone: "UTC",
+    }).format(new Date(`${fixed.selfReceipt.asOf}T00:00:00Z`)),
+  });
+  el("self-note").hidden = false;
+  el("self-back").hidden = false;
+}
 if (!payload) {
   el("notice").hidden = false;
   const key = `sample.${fixed.samples[0]!.trans}`;
@@ -86,11 +98,9 @@ if (!payload) {
   quiz.hidden = false;
 } else {
   const days = periodDays(payload.start, payload.end);
-  el("prompt").textContent = t(
-    "r.prompt",
-    { days: number(days, locale) },
-    days,
-  );
+  el("prompt").textContent = self
+    ? t("r.self.prompt")
+    : t("r.prompt", { days: number(days, locale) }, days);
   guess.hidden = false;
   const show = () => (out.value = compact(guessed(), locale));
   range.addEventListener("input", show);
@@ -99,8 +109,21 @@ if (!payload) {
     const g = guessed();
     const real = totalTokens(payload);
     guess.hidden = true;
+    const view = shareView(
+      payload,
+      catalog.meta.lang,
+      catalog.notes,
+      t,
+      locale,
+    );
     printReceipt(
-      shareView(payload, catalog.meta.lang, catalog.notes, t, locale),
+      self
+        ? {
+            ...view,
+            stamps: [...view.stamps, t("r.self.stamp")],
+            who: t("r.self.who"),
+          }
+        : view,
       true,
     );
     const factor = Math.max(g, real) / Math.max(1, Math.min(g, real));
@@ -110,7 +133,8 @@ if (!payload) {
       factor: number(factor, locale, { maximumSignificantDigits: 3 }),
     });
     result.hidden = false;
-    quiz.hidden = false;
+    // Our own receipt already offers the way back; the quiz is for strangers' links.
+    quiz.hidden = self;
     result.focus();
   });
 }

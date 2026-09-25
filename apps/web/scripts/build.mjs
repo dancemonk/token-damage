@@ -474,6 +474,7 @@ for (const lang of LANGS) {
       ogAlt: slug === "r" ? t("r.meta.description") : t("og.home"),
       quizHref: pathOf(lang, "quiz"),
       homeHref: pathOf(lang, ""),
+      methodSelfHref: `${pathOf(lang, "method")}#self`,
       // Token Damage's receipt for building itself (fixed.json), opened on this language's /r.
       selfReceipt: `${pathOf(lang, "r")}#${fixed.selfReceipt.fragment}`,
       selfReceiptLink: t("method.self.link", {

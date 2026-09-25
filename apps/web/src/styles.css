@@ -1079,6 +1079,15 @@ a:hover {
 .r-copied {
   color: var(--bright);
 }
+.r-self {
+  color: var(--bright);
+}
+.r-back {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+}
 .r-copied:empty {
   display: none;
 }
