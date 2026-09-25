@@ -94,23 +94,51 @@ export class LiveSources {
   async scanAll(): Promise<LiveRecord[]> {
     const out: LiveRecord[] = [];
     const keep = (r: LiveRecord) => r.ts >= this.#from && out.push(r);
-    // Claude: full read, and every file becomes a tail so the next poll continues from its end.
+
+    // Claude: a file whose mtime predates the window cannot hold a today record; remember it as old,
+    // exactly as poll() would once it noticed. Every other file is read in full and becomes a tail so
+    // the next poll continues from its end.
     for (const file of await findTranscripts(this.#dirs.claudeRoots)) {
       const key = this.#hash(file.path);
+      const mtime = await mtimeOf(file.path);
+      if (mtime !== undefined && mtime < this.#from) {
+        this.#old.add(key);
+        continue;
+      }
       const { lines, state } = await readAppended(file.path);
       this.#state.tails[key] = state;
       for (const line of lines) this.#parseClaude(line, file.subagent, keep);
     }
+
+    // Codex: only rollouts recent enough to be today's or a fork parent of one; `keep` still filters
+    // every record by timestamp, `recent` only limits which files scanCodex opens.
+    const codexPaths = await findRollouts(this.#dirs.codexHomes);
+    const codexRecent = await this.#recent(codexPaths, this.#from - 2 * DAY_MS);
     const codexStats = emptyCodexStats();
-    for await (const r of scanCodex(this.#dirs.codexHomes, codexStats)) keep(r);
-    const geminiStats = emptyGeminiStats();
-    for await (const r of scanGemini(this.#dirs.geminiDirs, geminiStats))
+    for await (const r of scanCodex(
+      this.#dirs.codexHomes,
+      codexStats,
+      codexRecent,
+    ))
       keep(r);
+
+    // Gemini: only chats modified today or later.
+    const chats = (await findChats(this.#dirs.geminiDirs)).map((c) => c.path);
+    const geminiRecent = await this.#recent(chats, this.#from);
+    const geminiStats = emptyGeminiStats();
+    for await (const r of scanGemini(
+      this.#dirs.geminiDirs,
+      geminiStats,
+      geminiRecent,
+    ))
+      keep(r);
+
     const ocStats = emptyOpenCodeStats();
     for await (const r of scanOpenCode(this.#dirs.opencodeDirs, ocStats))
       keep(r);
     this.noSqlite = ocStats.noSqlite > 0;
-    await this.#rememberMtimes();
+
+    await this.#rememberMtimes(codexPaths, chats);
     return out;
   }
 
@@ -232,11 +260,19 @@ export class LiveSources {
     return { changed, recent, fresh };
   }
 
-  async #rememberMtimes(): Promise<void> {
-    const paths = [
-      ...(await findRollouts(this.#dirs.codexHomes)),
-      ...(await findChats(this.#dirs.geminiDirs)).map((c) => c.path),
-    ];
+  /** Paths modified at or after `since`; a cheap mtime filter, no file content read. */
+  async #recent(paths: string[], since: number): Promise<string[]> {
+    const out: string[] = [];
+    for (const path of paths) {
+      const mtime = await mtimeOf(path);
+      if (mtime !== undefined && mtime >= since) out.push(path);
+    }
+    return out;
+  }
+
+  /** `codexPaths` and `chats` are reused from the caller's own scan, so nothing is listed twice. */
+  async #rememberMtimes(codexPaths: string[], chats: string[]): Promise<void> {
+    const paths = [...codexPaths, ...chats];
     for (const d of this.#dirs.opencodeDirs) {
       const db = await findDatabase(d);
       if (db) paths.push(db, `${db}-wal`);

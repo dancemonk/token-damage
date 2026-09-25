@@ -193,6 +193,42 @@ describe("LiveSources", () => {
     expect(before.calls).toBeGreaterThan(0);
   });
 
+  it("scans only files that could hold today's records, remembering the rest as old", async () => {
+    const root = join(dir, "today-only");
+    await mkdir(join(root, "projects", "p"), { recursive: true });
+    const from = Date.UTC(2026, 8, 24); // today's midnight, UTC
+    const line = (id: string, ts: string) =>
+      JSON.stringify({
+        type: "assistant",
+        uuid: id,
+        sessionId: id,
+        timestamp: ts,
+        requestId: `r-${id}`,
+        message: {
+          id: `m-${id}`,
+          model: "claude-opus-4-7",
+          usage: { input_tokens: 5, output_tokens: 1 },
+        },
+      }) + "\n";
+    const oldFile = join(root, "projects", "p", "old.jsonl");
+    const newFile = join(root, "projects", "p", "new.jsonl");
+    await writeFile(oldFile, line("old", "2026-09-20T10:00:00.000Z"));
+    await writeFile(newFile, line("new", "2026-09-24T10:00:00.000Z"));
+    const twoDaysBefore = new Date(from - 2 * 24 * 60 * 60 * 1000);
+    const laterToday = new Date(from + 60 * 60 * 1000);
+    await utimes(oldFile, twoDaysBefore, twoDaysBefore);
+    await utimes(newFile, laterToday, laterToday);
+
+    const sources = new LiveSources(dirsOf(root), { from, hash });
+    const records = await sources.scanAll();
+    expect(records.map((r) => r.kind)).toEqual(["usage"]);
+    expect((records[0] as { sessionId: string }).sessionId).toBe("new");
+    expect(sources.state().old).toEqual([hash(oldFile)]);
+    // The old file was skipped outright: never opened, never turned into a tail.
+    expect(sources.state().tails[hash(oldFile)]).toBeUndefined();
+    expect(sources.state().tails[hash(newFile)]).toBeDefined();
+  });
+
   it("reports new files and skips files older than the window", async () => {
     const root = join(dir, "new");
     await mkdir(join(root, "projects", "p"), { recursive: true });
