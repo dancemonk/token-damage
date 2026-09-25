@@ -43,3 +43,9 @@ export function damageFloor(tokens: number): number {
   return (CLASSES.find(([min]) => tokens >= min) ??
     (CLASSES.at(-1) as [number, DamageClass]))[0];
 }
+
+/** The token count where the named class starts; 0 (PAPER CUT's floor) for a name not in the table. */
+export function floorOf(name: string): number {
+  return (CLASSES.find(([, c]) => c.name === name) ??
+    (CLASSES.at(-1) as [number, DamageClass]))[0];
+}

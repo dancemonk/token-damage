@@ -48,6 +48,46 @@ describe("LiveEngine", () => {
     expect(e.events()).toHaveLength(1);
   });
 
+  it("never stamps a shrinking pool's downgrade, nor a re-growth back to the stamped class", () => {
+    const { e } = engine(T0);
+    const grow = e.setPool("gemini", [
+      usage({ ts: T0 - min(3), source: "gemini", dedupeKey: "g1", input: 2e7 }),
+    ]);
+    expect(grow).toEqual([{ kind: "stamped", ts: T0, name: "WATER DAMAGE" }]);
+
+    const shrink = e.setPool("gemini", [
+      usage({ ts: T0 - min(2), source: "gemini", dedupeKey: "g2", input: 5e5 }),
+    ]);
+    expect(shrink).toEqual([]);
+    expect(e.snapshot().read).toBe(5e5);
+
+    const regrow = e.setPool("gemini", [
+      usage({ ts: T0 - min(1), source: "gemini", dedupeKey: "g3", input: 2e7 }),
+    ]);
+    expect(regrow).toEqual([]);
+    expect(e.events()).toHaveLength(1);
+
+    const past = e.setPool("gemini", [
+      usage({ ts: T0, source: "gemini", dedupeKey: "g4", input: 2e8 }),
+    ]);
+    expect(past).toEqual([{ kind: "stamped", ts: T0, name: "STRUCTURAL" }]);
+    expect(e.events()).toHaveLength(2);
+  });
+
+  it("keeps the stamped peak across a state round-trip: no re-stamp after reload", () => {
+    const { e } = engine(T0);
+    e.setPool("gemini", [
+      usage({ ts: T0 - min(1), source: "gemini", dedupeKey: "g1", input: 2e8 }),
+    ]);
+    expect(e.events()).toHaveLength(1);
+    const { e: again } = engine(T0, e.state());
+    const restamp = again.setPool("gemini", [
+      usage({ ts: T0, source: "gemini", dedupeKey: "g1", input: 2e8 }),
+    ]);
+    expect(restamp).toEqual([]);
+    expect(again.events()).toHaveLength(1);
+  });
+
   it("keeps events and limits across a reconcile", () => {
     const { e } = engine(T0);
     e.add([usage({ ts: T0 - min(1), input: 2_000_000 })]);

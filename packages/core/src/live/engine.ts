@@ -1,5 +1,5 @@
 import { createDeduper, type Deduper } from "../adapters/claude/dedupe.js";
-import { damageClass } from "../roasts/classes.js";
+import { damageClass, damageFloor, floorOf } from "../roasts/classes.js";
 import type { PromptEvent, Source, UsageEvent } from "../types.js";
 import { localDay, midnightOf, nextMidnight } from "./day.js";
 import { buildSnapshot, type Limits, type LiveSnapshot } from "./snapshot.js";
@@ -41,6 +41,8 @@ export class LiveEngine {
   #pools = new Map<Source, LiveRecord[]>();
   #events: TapeEvent[] = [];
   #limits: Limits | null = null;
+  /** The highest damage-class floor stamped today; `#stamp` only fires above it, never below. */
+  #peak = 0;
 
   constructor(opts: {
     now: () => number;
@@ -59,6 +61,17 @@ export class LiveEngine {
       this.#events = [...s.events];
       this.#limits = s.limits;
     }
+    this.#peak = this.#initialPeak();
+  }
+
+  /** The tape's highest stamped floor, or the current total's floor when nothing has stamped yet. */
+  #initialPeak(): number {
+    const stampedFloors = this.#events
+      .filter((e) => e.kind === "stamped")
+      .map((e) => floorOf(e.name));
+    return stampedFloors.length > 0
+      ? Math.max(...stampedFloors)
+      : damageFloor(total(this.#merged().result()));
   }
 
   #inWindow = (r: LiveRecord) => r.ts >= this.from && r.ts < this.to;
@@ -72,15 +85,18 @@ export class LiveEngine {
     return d;
   }
 
+  /** Fires only on an upgrade past the highest class stamped today; a shrinking pool never regresses
+   * the peak, so it neither stamps a downgrade now nor a duplicate upgrade on later re-growth. */
   #stamp(change: () => void): TapeEvent[] {
-    const before = damageClass(total(this.#merged().result())).name;
     change();
-    const after = damageClass(total(this.#merged().result())).name;
-    if (after === before) return [];
+    const afterTotal = total(this.#merged().result());
+    const afterFloor = damageFloor(afterTotal);
+    if (afterFloor <= this.#peak) return [];
+    this.#peak = afterFloor;
     const stamped: TapeEvent = {
       kind: "stamped",
       ts: this.#now(),
-      name: after,
+      name: damageClass(afterTotal).name,
     };
     this.#events.push(stamped);
     return [stamped];
@@ -167,6 +183,7 @@ export class LiveEngine {
     this.#appended = createDeduper();
     this.#pools = new Map();
     this.#events = [tear];
+    this.#peak = 0;
     return tear;
   }
 }
