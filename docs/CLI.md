@@ -205,8 +205,6 @@ On any error, or past a 2-second guard, it prints one row — `token damage · (
 stack trace in the status bar.
 
 ## Files it writes
-- `~/.token-damage/history.json` — daily aggregates only (tokens by type/model, calls, sessions, words, first/last
-  call, subagents). This is how history survives the 30-day deletion. No text, no paths.
 - `~/.token-damage/state.json` — run counter, note cooldowns, and the pool deck (seed and line ids, never text).
 - `~/.token-damage/today.json` — written by `live` and `statusline` only: today's numbers, path hashes and byte
   offsets, not text. Discarded and rebuilt every day. See `docs/PRIVACY.md`.

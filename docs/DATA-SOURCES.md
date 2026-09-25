@@ -26,9 +26,9 @@ Assume breakage every few months. Keep fixtures per tool version and a regressio
 - Sessions started or last continued in Claude Desktop / Cowork are kept indefinitely (v2.1.248+) unless
   `desktopSessionCleanupPeriodDays` is set.
 - Subagent transcripts are deleted with their parent.
-- Product behaviour: on first run, if retention is at default, say "Claude Code has already deleted anything
-  older than 30 days. We'll keep aggregates from now on." Offer (never silently set) a higher value, e.g. 3650.
-  We keep only aggregates in `~/.token-damage/history.json`, never transcripts.
+- Product behaviour: if retention is at default, the receipt says Claude Code already deleted everything older
+  than 30 days and covers what survived. Not built yet: offering (never silently setting) a higher value, e.g.
+  3650, and keeping daily aggregates of our own so history outlives the sweep. Aggregates only, never transcripts.
 
 ### Line shape (assistant lines with usage)
 ```json

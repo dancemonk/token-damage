@@ -68,8 +68,9 @@ interface Receipt { period: {start: string; end: string}; measured: {...}; price
 The receipt model is the single source for all outputs; renderers never compute.
 
 ## Storage
-`~/.token-damage/history.json` (daily aggregates, merged on every run, never text), `state.json` (cooldowns,
-achievements, last guess). SQLite is not needed for MVP. Migrate to SQLite only if history exceeds ~10 MB.
+`~/.token-damage/state.json` (run counter, note cooldowns, pool deck; never text) and, for `live` and
+`statusline`, `today.json` (see Live). No history file yet: every run re-reads the logs, so a receipt covers
+only what the agents have not deleted. A future history file holds daily aggregates only, never text.
 
 ## Live
 
