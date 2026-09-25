@@ -9,6 +9,7 @@ import { next, poolLines } from "./pool.js";
 import { lastAside, setLastAside } from "./prefs.js";
 import {
   newsLine,
+  pickCashier,
   receiptPaper,
   sampleView,
   type ReceiptView,
@@ -92,6 +93,7 @@ function wire(animate: boolean) {
 
 function print(i: number, withSound: boolean) {
   const view = sampleView(i, t, catalog.meta.locale, new Date(), noteFor(i));
+  view.cashier = pickCashier(t);
   Object.assign(view, poolLines(catalog.pool, view.tokens, fmt));
   wire(true);
   receipt.innerHTML = receiptPaper(view, t, { count: "0", slam: true });
@@ -277,6 +279,8 @@ led.classList.add("boot");
 const first = poolLines(catalog.pool, fixed.samples[0]!.tokens, fmt);
 const firstSatire = receipt.querySelector(".pool-satire");
 if (firstSatire && first.satire) firstSatire.textContent = `✶ ${first.satire}`;
+const firstCashier = receipt.querySelector(".r-cashier");
+if (firstCashier) firstCashier.textContent = pickCashier(t);
 const firstJoke = receipt.querySelector(".pool-joke");
 if (firstJoke && first.joke) firstJoke.textContent = first.joke;
 wire(false);

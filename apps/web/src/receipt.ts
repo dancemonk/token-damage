@@ -29,6 +29,8 @@ export interface ReceiptView {
   achievements?: string[];
   /** Left part of the fine print: "SAMPLE · CUSTOMER 0041" or "SHARED RECEIPT". */
   who: string;
+  /** Who rang it up. The build's first bill leaves it out and gets the first cashier; later bills pick at random. */
+  cashier?: string;
 }
 
 export const esc = (s: string) =>
@@ -37,6 +39,21 @@ export const esc = (s: string) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+
+/** The cashiers on duty, in the page language (`receipt.cashiers`, separated by "|"). */
+export const cashiers = (t: T): string[] => t("receipt.cashiers").split("|");
+
+/** A cashier for a new bill, each equally likely. */
+export function pickCashier(t: T, random: () => number = Math.random): string {
+  const all = cashiers(t);
+  return all[Math.min(all.length - 1, Math.floor(random() * all.length))]!;
+}
+
+/** "STORE 0001 · REG 01 · CASHIER: ARTYOM", the name in its own span so the page can swap it on the first bill. */
+function storeLine(t: T, cashier = cashiers(t)[0]!): string {
+  const [before = "", after = ""] = t("receipt.store").split("{cashier}");
+  return `${esc(before)}<span class="r-cashier">${esc(cashier)}</span>${esc(after)}`;
+}
 
 const MARK_PATH =
   "M7 27V11L9 9L11 11L13 9L14 10Q15 4 16 2Q17 6 19 6Q20 5 21 4Q22 8 24 9L25 11V27L24 29L23 27L22 29L21 27L20 29L19 27L18 29L17 27L16 29L15 27L14 29L13 27L12 29L11 27L10 29L9 27L8 29ZM10 15H22V16.5H10ZM10 19H22V20.5H10ZM10 23H17V24.5H10Z";
@@ -79,7 +96,7 @@ export function receiptPaper(
 <div class="paper-body">
 <div class="r-head">
 <div class="r-brand"><svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><path d="${MARK_PATH}" fill="currentColor" fill-rule="evenodd"></path></svg><span>${esc(fixed.brand)}</span></div>
-<div class="r-meta">${esc(t("receipt.store"))}<br><span class="r-date">${esc(v.date)}</span> · ${esc(t("receipt.trans"))}${esc(v.trans)}</div>
+<div class="r-meta">${storeLine(t, v.cashier)}<br><span class="r-date">${esc(v.date)}</span> · ${esc(t("receipt.trans"))}${esc(v.trans)}</div>
 </div>
 ${rule}
 <div class="r-hero">

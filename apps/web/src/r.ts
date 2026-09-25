@@ -6,6 +6,7 @@ import { countUp, restart } from "./motion.js";
 import { next, poolLines } from "./pool.js";
 import {
   newsLine,
+  pickCashier,
   receiptPaper,
   sampleView,
   type ReceiptView,
@@ -43,10 +44,14 @@ if (location.hash)
 /** The receipt feeds out of the printer, as on the home page, with its stub and the command attached. */
 function printReceipt(view: ReceiptView, withSound: boolean) {
   const lines = poolLines(catalog.pool, view.tokens, receiptFormat(locale));
-  receipt.innerHTML = receiptPaper({ ...view, ...lines }, t, {
-    count: "0",
-    slam: true,
-  });
+  receipt.innerHTML = receiptPaper(
+    { ...view, ...lines, cashier: pickCashier(t) },
+    t,
+    {
+      count: "0",
+      slam: true,
+    },
+  );
   feed.hidden = false;
   restart(feed, "feed");
   led.className = "led";

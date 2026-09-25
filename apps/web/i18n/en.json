@@ -156,7 +156,8 @@
     "privacy.site.body": "No cookies, no analytics, no accounts. Fonts are served from this site. It remembers three things in your browser: whether sound is on, which aside it showed last, and which jokes you've already seen, so nothing repeats.",
     "privacy.affiliation": "Token Damage is not affiliated with Anthropic, OpenAI, Google or the makers of OpenCode. Product names are used to describe compatibility.",
     "privacy.source": "The code is open source, so you can check all of this yourself.",
-    "receipt.store": "STORE 0001 · REG 01 · CASHIER: ARTYOM",
+    "receipt.store": "STORE 0001 · REG 01 · CASHIER: {cashier}",
+    "receipt.cashiers": "ARTYOM|DARIA",
     "receipt.trans": "TRANS #",
     "receipt.typed": "YOU TYPED ·",
     "receipt.words": {

@@ -113,6 +113,8 @@ function receiptFor(own) {
       .filter((k) => k.startsWith("receipt."))
       .map((k) => [k.slice(8), s(k)]),
   );
+  // Preview cards are static: they name the first cashier on duty.
+  R.store = R.store.replace("{cashier}", R.cashiers.split("|")[0]);
   R.words = plural("receipt.words", c.words);
   R.days = plural("receipt.days", 30);
   return {
