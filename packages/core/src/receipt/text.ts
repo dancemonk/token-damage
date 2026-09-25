@@ -7,7 +7,7 @@ export const WIDTH = 48;
 /** One printed line and how to colour it: rules muted, estimates ochre, satire and the stamp red. */
 export interface Line {
   text: string;
-  style?: "muted" | "ochre" | "red" | "stamp";
+  style?: "muted" | "ochre" | "red" | "stamp" | "bold";
 }
 
 const MONTHS = [
@@ -38,7 +38,7 @@ const spaced = (text: string) =>
     .map((word) => word.split("").join(" "))
     .join("   ");
 
-function compactTokens(x: number): string {
+export function compactTokens(x: number): string {
   if (x >= 1e9) return `${(x / 1e9).toFixed(2)}B`;
   if (x >= 1e6) return `${(x / 1e6).toFixed(1)}M`;
   if (x >= 1e3) return `${(x / 1e3).toFixed(1)}K`;
@@ -304,6 +304,7 @@ const ANSI: Record<NonNullable<Line["style"]>, [string, string]> = {
   ochre: ["\x1b[33m", "\x1b[39m"],
   red: ["\x1b[31m", "\x1b[39m"],
   stamp: ["\x1b[1;31m", "\x1b[22;39m"],
+  bold: ["\x1b[1m", "\x1b[22m"],
 };
 
 export function paint(line: Line, color: boolean): string {
