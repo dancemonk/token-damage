@@ -57,10 +57,11 @@ function valid(p: SharePayload): boolean {
       (strings(p.dispute) && p.dispute.length === 2)) &&
     (p.note === undefined || typeof p.note === "string") &&
     (p.last === undefined || clock(p.last)) &&
+    // Loose on purpose: a newer CLI may know more agents than this site, and unknown ids are dropped at render.
     (p.agents === undefined ||
       (strings(p.agents) &&
         p.agents.length >= 1 &&
-        p.agents.length <= 4 &&
+        p.agents.length <= 16 &&
         new Set(p.agents).size === p.agents.length)) &&
     (p.partly === undefined || p.partly === true)
   );

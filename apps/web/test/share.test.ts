@@ -90,6 +90,18 @@ describe.each(LANGS)("share links on /%s", (lang) => {
     const open = (agents: string[]) =>
       readShare(hashOf(shareUrl({ ...base, agents })));
     expect(view(open(["cursor", "codex"])!).agents).toBe("CODEX");
+    // A newer CLI may know more agents than this site: five or more ids still open the receipt.
+    const five = open([
+      "claude-code",
+      "codex",
+      "gemini",
+      "opencode",
+      "antigravity",
+    ]);
+    expect(five).not.toBeNull();
+    expect(view(five!).agents).toBe(
+      "CLAUDE CODE + CODEX + GEMINI CLI + OPENCODE",
+    );
     for (const odd of [["<b>x</b>"], ["constructor"], ["__proto__"]]) {
       const v = view(open(odd)!);
       expect(v.agents, odd[0]).toBeUndefined();
@@ -173,7 +185,7 @@ describe.each(LANGS)("share links on /%s", (lang) => {
       { agents: "codex" },
       { agents: [] },
       { agents: ["codex", "codex"] },
-      { agents: ["claude-code", "codex", "gemini", "opencode", "cursor"] },
+      { agents: Array.from({ length: 17 }, (_, i) => `agent-${i}`) },
       { agents: [1] },
       { partly: false },
       { partly: "yes" },
