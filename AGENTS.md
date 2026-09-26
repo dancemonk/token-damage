@@ -25,6 +25,9 @@ Code), and tokendamage.com (a static site that opens share links). Nothing is up
 ## Map
 
 - `packages/core` (pure TypeScript, zero runtime dependencies)
+  - `src/agents.ts`: each agent's name, short name and provider scope (pure; the website imports it)
+  - `src/adapters/registry.ts`: `ADAPTERS`, one `Adapter` per agent (`contract.ts`); the CLI, the live pane and
+    the oracle loop over it
   - `src/adapters/{claude,codex,gemini,opencode}`: find and parse logs into `UsageEvent` / `PromptEvent`
   - `src/aggregate`: dedupe, daily and session totals
   - `src/metrics`: prices (`prices.json`), energy, satire
@@ -68,6 +71,22 @@ pnpm oracle:live           # the live pane's totals == the receipt's, for today
 - Note families need ≥ 5 variants that pass the band test, and a Russian version of each in
   `apps/web/i18n/ru.json` → `notes` using the same slots. `en.json` and `ru.json` keep the same keys.
 - Live-pane remarks are lowercase ASCII with no digits.
+
+## Adding an agent
+
+Real logs first: use the agent for real (two sessions on two days, a resumed session and a subagent if it has
+them, two models if it can switch) and copy its logs outside the repo. Then:
+
+1. `docs/DATA-SOURCES.md`: a section with the same headings as the others, rules taken from ccusage's
+   `rust/adapters/<command>/src/` and checked against your lines.
+2. A sanitized fixture at `packages/core/fixtures/<command>/<fixtureDir>/`, a sanitization test, and a
+   hand-derived `expected.json`.
+3. `Source` in `types.ts`, a row in `AGENTS` (`agents.ts`), `src/adapters/<id>/` with an `adapter.ts`, and one
+   line in `ADAPTERS`. The schema enum in `schema/receipt.schema.json` (a test compares them).
+4. `node scripts/oracle.mjs --fixtures --agent <command>` and `pnpm oracle` exact; list any chosen divergence.
+5. Its models in `prices.json` with sources; unlisted models stay "not priced".
+6. README, `docs/PRIVACY.md`, `privacy.reads.body` and `privacy.affiliation` in `apps/web/i18n/{en,ru}.json`,
+   `docs/CLI.md`, the tested-versions table.
 
 ## Gotchas
 

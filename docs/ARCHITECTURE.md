@@ -4,6 +4,8 @@
 ```
 token-damage/
   packages/core/           parsing, dedupe, metrics, roasts; zero runtime deps
+    src/agents.ts          each agent's name, short name, provider scope (pure; the website imports it)
+    src/adapters/contract.ts, registry.ts   the Adapter contract and ADAPTERS, one per agent
     src/adapters/claude/   discovery, parser, dedupe (shared by every source)
     src/adapters/codex/    discovery, rollout parser, replay filter
     src/adapters/gemini/   discovery, chat parser (JSONL and older JSON)
