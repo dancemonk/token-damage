@@ -1,4 +1,5 @@
 export type * from "./types.js";
+export { AGENTS, type AgentInfo } from "./agents.js";
 export * from "./adapters/claude/index.js";
 export * from "./adapters/codex/index.js";
 export * from "./adapters/gemini/index.js";
