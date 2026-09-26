@@ -3,7 +3,7 @@ import { SHARE_BASE, shareUrl } from "@token-damage/core/web";
 import { describe, expect, it } from "vitest";
 import { translator, type Catalog } from "../src/i18n.js";
 import { shareNote } from "../src/notes.js";
-import { receiptPaper } from "../src/receipt.js";
+import { receiptPaper, sampleView } from "../src/receipt.js";
 import { readShare, shareView } from "../src/share-view.js";
 import fixed from "../src/fixed.json" with { type: "json" };
 
@@ -19,11 +19,22 @@ const catalog = (lang: string) =>
 const LANGS = ["en", "ru"];
 
 // What each language prints for the frozen link's class, verdict and achievements.
-const EXPECT: Record<string, { stamps: string[]; ach: string[] }> = {
-  en: { stamps: ["ACT OF GOD", "DENIED"], ach: ["ONE LAST FIX", "CACHE LORD"] },
+const EXPECT: Record<
+  string,
+  { stamps: string[]; ach: string[]; progress: string; top: string }
+> = {
+  en: {
+    stamps: ["ACT OF GOD", "DENIED"],
+    ach: ["ONE LAST FIX", "CACHE LORD"],
+    progress: "4% to UNINSURABLE",
+    top: "top of the scale",
+  },
   ru: {
     stamps: ["ФОРС-МАЖОР", "ОТКАЗАНО"],
     ach: ["ПОСЛЕДНЯЯ ПРАВКА", "ВЛАСТЕЛИН КЭША"],
+    // Non-breaking spaces keep the class name on one line when the row wraps on a phone.
+    progress: "4% до класса «НЕ\u00a0ПОДЛЕЖИТ\u00a0СТРАХОВАНИЮ»",
+    top: "выше некуда",
   },
 };
 
@@ -44,6 +55,37 @@ describe.each(LANGS)("share links on /%s", (lang) => {
     expect(v.note?.lang).toBe(lang);
     expect(v.note?.text).toMatch(/Gatsby|Гэтсби/);
     expect(v.days).toBe(30);
+  });
+
+  it("shows how far the link's total is into its class, from the tokens it already carries", () => {
+    const v = view(readShare(hashOf(FROZEN_V1))!);
+    // 1,183,456,000 tokens: ACT OF GOD runs 1B → 5B, so 4.6% of the way.
+    expect(v.progress).toEqual({
+      share: (1_183_456_000 - 1e9) / 4e9,
+      text: EXPECT[lang]!.progress,
+    });
+    const html = receiptPaper(v, t);
+    expect(html).toContain('<div class="r-progress">');
+    expect(html).toContain('style="width:4%"');
+    expect(html).toContain(EXPECT[lang]!.progress);
+  });
+
+  it("puts every sample customer's class progress under the stamp", () => {
+    const at = new Date(Date.UTC(2026, 8, 24, 12));
+    const progress = fixed.samples.map(
+      (_, i) => sampleView(i, t, c.meta.locale, at, undefined).progress,
+    );
+    expect(progress[0]).toEqual({
+      share: (1_183_400_000 - 1e9) / 4e9,
+      text: EXPECT[lang]!.progress,
+    });
+    expect(progress.map((p) => Math.floor(p!.share * 100))).toEqual([
+      4, 9, 21, 100,
+    ]);
+    expect(progress[3]).toEqual({ share: 1, text: EXPECT[lang]!.top });
+    expect(
+      receiptPaper(sampleView(3, t, c.meta.locale, at, undefined), t),
+    ).toContain('style="width:100%"');
   });
 
   it("round-trips what the CLI encodes", () => {

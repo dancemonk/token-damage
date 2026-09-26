@@ -183,6 +183,33 @@ describe("receipt for several agents", () => {
   });
 });
 
+describe("share card", () => {
+  it("puts class progress under the stamp, in ink", () => {
+    const paper = receiptSvg(receipt([claudeCall]));
+    expect(paper).toContain(">1% to FENDER BENDER<");
+    expect(paper).toMatch(/<rect [^>]*class="progress"[^>]*fill="#1f1d1a"/);
+    const top = receiptSvg(receipt([call({ cacheRead: 6e9 })]));
+    expect(top).toContain(">top of the scale<");
+  });
+
+  it("drops the progress row rather than let a long note push the paper off the card", () => {
+    const r = receipt([claudeCall]);
+    const drawn: boolean[] = [];
+    for (let lines = 1; lines <= 12; lines++) {
+      // Nine five-letter words fill one 49-column note line.
+      const text = Array.from({ length: lines * 9 }, () => "words").join(" ");
+      const svg = receiptSvg({ ...r, note: { family: "x", variant: 0, text } });
+      const top =
+        Number(/<rect x="140" y="([\d.-]+)" width="800"/.exec(svg)?.[1]) - 14;
+      const row = svg.includes('class="progress"');
+      if (row) expect(top, `${lines} lines`).toBeGreaterThanOrEqual(16);
+      drawn.push(row);
+    }
+    expect(drawn).toContain(true);
+    expect(drawn).toContain(false);
+  });
+});
+
 describe("receipt facts for bars", () => {
   it("lists every day of the period, oldest first, with zero for quiet days", () => {
     const r = receipt([claudeCall, solCall]);

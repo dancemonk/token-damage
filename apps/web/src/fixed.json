@@ -13,7 +13,9 @@
       "saved": 4383.85,
       "kwh": [26, 120],
       "ram": 0.0000079,
-      "class": "act-of-god"
+      "class": "act-of-god",
+      "progress": 0.04585,
+      "next": "uninsurable"
     },
     {
       "trans": "0042",
@@ -23,7 +25,9 @@
       "saved": 749.94,
       "kwh": [3.7, 18],
       "ram": 0.0000012,
-      "class": "structural"
+      "class": "structural",
+      "progress": 0.0966911,
+      "next": "act-of-god"
     },
     {
       "trans": "0043",
@@ -33,7 +37,9 @@
       "saved": 7.04,
       "kwh": [0.094, 0.44],
       "ram": 2e-8,
-      "class": "fender-bender"
+      "class": "fender-bender",
+      "progress": 0.2176,
+      "next": "water-damage"
     },
     {
       "trans": "0044",
@@ -43,7 +49,9 @@
       "saved": 36385.95,
       "kwh": [220, 1000],
       "ram": 0.000065,
-      "class": "uninsurable"
+      "class": "uninsurable",
+      "progress": 1,
+      "next": null
     }
   ],
   "quiz": {

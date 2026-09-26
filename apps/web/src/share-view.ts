@@ -1,15 +1,16 @@
 import {
   ACHIEVEMENT_NAMES,
-  SHARE_BASE,
+  classProgress,
   damageClass,
   decodeShare,
   ramX,
+  SHARE_BASE,
   type SharePayload,
 } from "@token-damage/core/web";
 import { periodDays, receiptFormat } from "./format.js";
 import type { T } from "./i18n.js";
 import { shareNote } from "./notes.js";
-import type { ReceiptView } from "./receipt.js";
+import { classSlug, progressView, type ReceiptView } from "./receipt.js";
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 const HHMM = /^(\d{2}):(\d{2})$/;
@@ -88,7 +89,7 @@ export function shareView(
     rows.push({ label: t("receipt.latestCall"), value: f.time(p.last) });
   // The period's last day at the latest call, read as wall time (the link carries no time zone).
   const when = new Date(`${p.end}T${p.last ?? "00:00"}:00Z`);
-  const slug = (name: string) => name.toLowerCase().replace(/ /g, "-");
+  const reached = classProgress(total);
   return {
     trans: String(total % 10_000).padStart(4, "0"),
     date: f.clock(when, "UTC"),
@@ -104,11 +105,16 @@ export function shareView(
     ram: f.satire(ramX(total).value),
     note: shareNote(p, lang, notes),
     stamps: [
-      t(`class.${slug(damageClass(total).name)}`),
+      t(`class.${classSlug(damageClass(total).name)}`),
       ...(verdict && VERDICTS.has(verdict)
         ? [t(`verdict.${verdict.toLowerCase()}`)]
         : []),
     ],
+    progress: progressView(
+      reached.progress,
+      reached.next && classSlug(reached.next.name),
+      t,
+    ),
     achievements: p.ach.flatMap((id) =>
       // Own keys only: "constructor" is `in` every object.
       Object.hasOwn(ACHIEVEMENT_NAMES, id) ? [t(`ach.${id}`)] : [],
