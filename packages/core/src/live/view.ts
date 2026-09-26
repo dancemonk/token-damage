@@ -7,6 +7,7 @@ import {
   wrap,
   type Line,
 } from "../receipt/text.js";
+import { sparkline } from "../receipt/glyphs.js";
 import type { Source, TokenSums } from "../types.js";
 import type { TapeEvent } from "./engine.js";
 import type { LiveSnapshot } from "./snapshot.js";
@@ -23,7 +24,6 @@ export const MIN_WIDTH = 40;
 export const FULL_HEIGHT = 12;
 export const IDLE_GAP_MS = 600_000;
 const STAMP_RED_MS = 60_000;
-const SPARKS = "▁▂▃▄▅▆▇█";
 
 // Short on purpose: the receipt's AGENT_NAMES ("claude code", "gemini cli") do not fit the 10-column agent cell.
 export const AGENT_SHORT: Record<Source, string> = {
@@ -54,13 +54,6 @@ function center(text: string, fill: string, width: number): string {
     .repeat(Math.ceil(side / fill.length))
     .slice(0, side - left.length);
   return left + t + right;
-}
-
-export function sparkline(values: readonly number[]): string {
-  const max = Math.max(0, ...values);
-  return values
-    .map((v) => SPARKS[max === 0 ? 0 : Math.min(7, Math.round((v / max) * 7))])
-    .join("");
 }
 
 export function duration(ms: number): string {
@@ -323,3 +316,5 @@ export function liveLines(
   }));
   return [...top, rule, header, ...blank, ...rows, footer];
 }
+
+export { sparkline };
