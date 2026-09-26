@@ -5,11 +5,11 @@ exports[`share card SVG > layout is frozen 1`] = `
 <defs><filter id="shadow" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.45"/></filter></defs>
 <rect width="1080" height="1920" fill="#161514"/>
 <g filter="url(#shadow)">
-<path d="M140 79.05999999999995L152 67.05999999999995L164 79.05999999999995L176 67.05999999999995L188 79.05999999999995L200 67.05999999999995L212 79.05999999999995L224 67.05999999999995L236 79.05999999999995L248 67.05999999999995L260 79.05999999999995L272 67.05999999999995L284 79.05999999999995L296 67.05999999999995L308 79.05999999999995L320 67.05999999999995L332 79.05999999999995L344 67.05999999999995L356 79.05999999999995L368 67.05999999999995L380 79.05999999999995L392 67.05999999999995L404 79.05999999999995L416 67.05999999999995L428 79.05999999999995L440 67.05999999999995L452 79.05999999999995L464 67.05999999999995L476 79.05999999999995L488 67.05999999999995L500 79.05999999999995L512 67.05999999999995L524 79.05999999999995L536 67.05999999999995L548 79.05999999999995L560 67.05999999999995L572 79.05999999999995L584 67.05999999999995L596 79.05999999999995L608 67.05999999999995L620 79.05999999999995L632 67.05999999999995L644 79.05999999999995L656 67.05999999999995L668 79.05999999999995L680 67.05999999999995L692 79.05999999999995L704 67.05999999999995L716 79.05999999999995L728 67.05999999999995L740 79.05999999999995L752 67.05999999999995L764 79.05999999999995L776 67.05999999999995L788 79.05999999999995L800 67.05999999999995L812 79.05999999999995L824 67.05999999999995L836 79.05999999999995L848 67.05999999999995L860 79.05999999999995L872 67.05999999999995L884 79.05999999999995L896 67.05999999999995L908 79.05999999999995L920 67.05999999999995L932 79.05999999999995L944 67.05999999999995L940 79.05999999999995Z" fill="#f3efe6"/>
-<rect x="140" y="79.05999999999995" width="800" height="1761.88" fill="#f3efe6"/>
-<path d="M140 1840.94L152 1852.94L164 1840.94L176 1852.94L188 1840.94L200 1852.94L212 1840.94L224 1852.94L236 1840.94L248 1852.94L260 1840.94L272 1852.94L284 1840.94L296 1852.94L308 1840.94L320 1852.94L332 1840.94L344 1852.94L356 1840.94L368 1852.94L380 1840.94L392 1852.94L404 1840.94L416 1852.94L428 1840.94L440 1852.94L452 1840.94L464 1852.94L476 1840.94L488 1852.94L500 1840.94L512 1852.94L524 1840.94L536 1852.94L548 1840.94L560 1852.94L572 1840.94L584 1852.94L596 1840.94L608 1852.94L620 1840.94L632 1852.94L644 1840.94L656 1852.94L668 1840.94L680 1852.94L692 1840.94L704 1852.94L716 1840.94L728 1852.94L740 1840.94L752 1852.94L764 1840.94L776 1852.94L788 1840.94L800 1852.94L812 1840.94L824 1852.94L836 1840.94L848 1852.94L860 1840.94L872 1852.94L884 1840.94L896 1852.94L908 1840.94L920 1852.94L932 1840.94L944 1852.94L940 1840.94Z" fill="#f3efe6"/>
+<path d="M140 55.70999999999992L152 43.70999999999992L164 55.70999999999992L176 43.70999999999992L188 55.70999999999992L200 43.70999999999992L212 55.70999999999992L224 43.70999999999992L236 55.70999999999992L248 43.70999999999992L260 55.70999999999992L272 43.70999999999992L284 55.70999999999992L296 43.70999999999992L308 55.70999999999992L320 43.70999999999992L332 55.70999999999992L344 43.70999999999992L356 55.70999999999992L368 43.70999999999992L380 55.70999999999992L392 43.70999999999992L404 55.70999999999992L416 43.70999999999992L428 55.70999999999992L440 43.70999999999992L452 55.70999999999992L464 43.70999999999992L476 55.70999999999992L488 43.70999999999992L500 55.70999999999992L512 43.70999999999992L524 55.70999999999992L536 43.70999999999992L548 55.70999999999992L560 43.70999999999992L572 55.70999999999992L584 43.70999999999992L596 55.70999999999992L608 43.70999999999992L620 55.70999999999992L632 43.70999999999992L644 55.70999999999992L656 43.70999999999992L668 55.70999999999992L680 43.70999999999992L692 55.70999999999992L704 43.70999999999992L716 55.70999999999992L728 43.70999999999992L740 55.70999999999992L752 43.70999999999992L764 55.70999999999992L776 43.70999999999992L788 55.70999999999992L800 43.70999999999992L812 55.70999999999992L824 43.70999999999992L836 55.70999999999992L848 43.70999999999992L860 55.70999999999992L872 43.70999999999992L884 55.70999999999992L896 43.70999999999992L908 55.70999999999992L920 43.70999999999992L932 55.70999999999992L944 43.70999999999992L940 55.70999999999992Z" fill="#f3efe6"/>
+<rect x="140" y="55.70999999999992" width="800" height="1808.5800000000002" fill="#f3efe6"/>
+<path d="M140 1864.29L152 1876.29L164 1864.29L176 1876.29L188 1864.29L200 1876.29L212 1864.29L224 1876.29L236 1864.29L248 1876.29L260 1864.29L272 1876.29L284 1864.29L296 1876.29L308 1864.29L320 1876.29L332 1864.29L344 1876.29L356 1864.29L368 1876.29L380 1864.29L392 1876.29L404 1864.29L416 1876.29L428 1864.29L440 1876.29L452 1864.29L464 1876.29L476 1864.29L488 1876.29L500 1864.29L512 1876.29L524 1864.29L536 1876.29L548 1864.29L560 1876.29L572 1864.29L584 1876.29L596 1864.29L608 1876.29L620 1864.29L632 1876.29L644 1864.29L656 1876.29L668 1864.29L680 1876.29L692 1864.29L704 1876.29L716 1864.29L728 1876.29L740 1864.29L752 1876.29L764 1864.29L776 1876.29L788 1864.29L800 1876.29L812 1864.29L824 1876.29L836 1864.29L848 1876.29L860 1864.29L872 1876.29L884 1864.29L896 1876.29L908 1864.29L920 1876.29L932 1864.29L944 1876.29L940 1864.29Z" fill="#f3efe6"/>
 </g>
-<g transform="translate(0 123.05999999999995)">
+<g transform="translate(0 99.70999999999992)">
 <path transform="translate(512 0) scale(1.75)" d="M7 27V11L9 9L11 11L13 9L14 10Q15 4 16 2Q17 6 19 6Q20 5 21 4Q22 8 24 9L25 11V27L24 29L23 27L22 29L21 27L20 29L19 27L18 29L17 27L16 29L15 27L14 29L13 27L12 29L11 27L10 29L9 27L8 29ZM10 15H22V16.5H10ZM10 19H22V20.5H10ZM10 23H17V24.5H10Z" fill="#17160f" fill-rule="evenodd"/>
 <text x="540" y="116.00" font-family="IBM Plex Mono" font-size="60" font-weight="700" fill="#1f1d1a" text-anchor="middle" letter-spacing="6">TOKEN DAMAGE</text>
 <text x="540" y="149.45" font-family="IBM Plex Mono" font-size="18" fill="#6b665c" text-anchor="middle" letter-spacing="5.4">CUSTOMER COPY</text>
@@ -64,86 +64,89 @@ exports[`share card SVG > layout is frozen 1`] = `
 <rect x="327.8544" y="1022.8999999999997" width="424.2912" height="90" fill="none" stroke="#b3261e" stroke-width="2"/>
 <text x="540" y="1082.89" font-family="Special Elite" font-size="64" fill="#b3261e" text-anchor="middle" letter-spacing="2.56">ACT OF GOD</text>
 </g>
-<text x="196" y="1163.27" font-family="IBM Plex Mono" font-size="15" fill="#6b665c" letter-spacing="3">ADJUSTER'S NOTE</text>
-<text x="196" y="1200.35" font-family="IBM Plex Mono" font-size="23" font-style="italic" fill="#1f1d1a">For every word you typed, the machine read 80,558</text>
-<text x="196" y="1233.01" font-family="IBM Plex Mono" font-size="23" font-style="italic" fill="#1f1d1a">tokens. That's The Great Gatsby, and a third of</text>
-<text x="196" y="1265.67" font-family="IBM Plex Mono" font-size="23" font-style="italic" fill="#1f1d1a">it again. Per word.</text>
-<line x1="196" y1="1296.3799999999999" x2="884" y2="1296.3799999999999" stroke="#1f1d1a" stroke-width="2" stroke-dasharray="6 6"/>
-<text x="196" y="1334.75" font-family="IBM Plex Mono" font-size="15" fill="#6b665c" letter-spacing="3">WORLD CHECK</text>
-<text x="884" y="1334.75" font-family="IBM Plex Mono" font-size="15" fill="#6b665c" text-anchor="end" letter-spacing="3">AS OF SEP 2026</text>
-<text x="196" y="1371.98" font-family="IBM Plex Mono" font-size="21" fill="#1f1d1a"><tspan font-weight="700">RAM prices: +93–98% in 3 months.</tspan><tspan> AI data centers need</tspan></text>
-<text x="196" y="1402.43" font-family="IBM Plex Mono" font-size="21" fill="#1f1d1a"><tspan>the memory. Everyone else pays more.</tspan></text>
-<text x="196" y="1433.11" font-family="IBM Plex Mono" font-size="13" fill="#6b665c">source: TrendForce · conventional DRAM contract prices, Q1 2026</text>
-<polygon points="202.00,1460.38 203.30,1464.33 207.37,1463.48 204.60,1466.58 207.37,1469.68 203.30,1468.83 202.00,1472.78 200.70,1468.83 196.63,1469.68 199.40,1466.58 196.63,1463.48 200.70,1464.33" fill="#b3261e"/><text x="220" y="1473.18" font-family="IBM Plex Mono" font-size="20" fill="#b3261e">YOUR SHARE OF THIS</text>
-<text x="884" y="1473.18" font-family="IBM Plex Mono" font-size="20" font-weight="700" fill="#b3261e" text-anchor="end">+$0.0000079 / stick</text>
-<polygon points="200.80,1494.84 201.84,1498.00 205.10,1497.32 202.88,1499.80 205.10,1502.28 201.84,1501.60 200.80,1504.76 199.76,1501.60 196.50,1502.28 198.72,1499.80 196.50,1497.32 199.76,1498.00" fill="#b3261e"/><text x="215.2" y="1505.08" font-family="IBM Plex Mono" font-size="16" fill="#b3261e">made up. nobody can measure it. the +95% is real.</text>
-<line x1="196" y1="1532.48" x2="884" y2="1532.48" stroke="#1f1d1a" stroke-width="2" stroke-dasharray="6 6"/>
-<text x="246" y="1569.83" font-family="IBM Plex Mono" font-size="14" fill="#6b665c">plain = measured ·</text><rect x="406.72" y="1563.67" width="6.16" height="0.84" fill="#6b665c"/><rect x="406.72" y="1565.91" width="6.16" height="0.84" fill="#6b665c"/><rect x="406.72" y="1568.15" width="6.16" height="0.84" fill="#6b665c"/><text x="422.3999999999996" y="1569.83" font-family="IBM Plex Mono" font-size="14" fill="#6b665c">list-price equiv. ·</text><text x="590.3999999999992" y="1569.83" font-family="IBM Plex Mono" font-size="14" fill="#7a5a12">≈ estimate (range)</text><text x="749.9999999999987" y="1569.83" font-family="IBM Plex Mono" font-size="14" fill="#6b665c">·</text><polygon points="771.00,1560.87 771.91,1563.63 774.76,1563.04 772.82,1565.21 774.76,1567.38 771.91,1566.79 771.00,1569.55 770.09,1566.79 767.24,1567.38 769.18,1565.21 767.24,1563.04 770.09,1563.63" fill="#b3261e"/><text x="783.5999999999987" y="1569.83" font-family="IBM Plex Mono" font-size="14" fill="#b3261e">satire</text>
-<text x="540" y="1592.03" font-family="IBM Plex Mono" font-size="14" fill="#6b665c" text-anchor="middle">method v1 · prices as of 2026-09-24 · npx token-damage</text>
-<rect x="346" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="351" y="1613.88" width="4" height="56" fill="#1f1d1a"/>
-<rect x="359" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="363" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="367" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="374" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="380" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="384" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="389" y="1613.88" width="4" height="56" fill="#1f1d1a"/>
-<rect x="395" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="399" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="404" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="410" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="414" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="424" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="428" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="434" y="1613.88" width="4" height="56" fill="#1f1d1a"/>
-<rect x="440" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="444" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="448" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="454" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="460" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="466" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="473" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="481" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="487" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="493" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="498" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="504" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="512" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="516" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="520" y="1613.88" width="4" height="56" fill="#1f1d1a"/>
-<rect x="528" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="533" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="539" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="544" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="550" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="554" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="562" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="568" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="575" y="1613.88" width="4" height="56" fill="#1f1d1a"/>
-<rect x="582" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="591" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="598" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="602" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="607" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="612" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="617" y="1613.88" width="4" height="56" fill="#1f1d1a"/>
-<rect x="623" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="631" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="637" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="643" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="652" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="657" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="662" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="666" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="672" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="682" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="686" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="696" y="1613.88" width="3" height="56" fill="#1f1d1a"/>
-<rect x="703" y="1613.88" width="2" height="56" fill="#1f1d1a"/>
-<rect x="709" y="1613.88" width="4" height="56" fill="#1f1d1a"/>
-<rect x="716" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
-<rect x="725" y="1613.88" width="6" height="56" fill="#1f1d1a"/>
+<line x1="196" y1="1163.8999999999996" x2="674.20" y2="1163.8999999999996" stroke="#b9b2a3" stroke-width="2" stroke-dasharray="2 4"/>
+<rect class="progress" x="196" y="1152.8999999999996" width="19.13" height="10" fill="#1f1d1a"/>
+<text x="884" y="1167.37" font-family="IBM Plex Mono" font-size="19" fill="#1f1d1a" text-anchor="end">4% to UNINSURABLE</text>
+<text x="196" y="1209.97" font-family="IBM Plex Mono" font-size="15" fill="#6b665c" letter-spacing="3">ADJUSTER'S NOTE</text>
+<text x="196" y="1247.05" font-family="IBM Plex Mono" font-size="23" font-style="italic" fill="#1f1d1a">For every word you typed, the machine read 80,558</text>
+<text x="196" y="1279.71" font-family="IBM Plex Mono" font-size="23" font-style="italic" fill="#1f1d1a">tokens. That's The Great Gatsby, and a third of</text>
+<text x="196" y="1312.37" font-family="IBM Plex Mono" font-size="23" font-style="italic" fill="#1f1d1a">it again. Per word.</text>
+<line x1="196" y1="1343.08" x2="884" y2="1343.08" stroke="#1f1d1a" stroke-width="2" stroke-dasharray="6 6"/>
+<text x="196" y="1381.45" font-family="IBM Plex Mono" font-size="15" fill="#6b665c" letter-spacing="3">WORLD CHECK</text>
+<text x="884" y="1381.45" font-family="IBM Plex Mono" font-size="15" fill="#6b665c" text-anchor="end" letter-spacing="3">AS OF SEP 2026</text>
+<text x="196" y="1418.68" font-family="IBM Plex Mono" font-size="21" fill="#1f1d1a"><tspan font-weight="700">RAM prices: +93–98% in 3 months.</tspan><tspan> AI data centers need</tspan></text>
+<text x="196" y="1449.13" font-family="IBM Plex Mono" font-size="21" fill="#1f1d1a"><tspan>the memory. Everyone else pays more.</tspan></text>
+<text x="196" y="1479.81" font-family="IBM Plex Mono" font-size="13" fill="#6b665c">source: TrendForce · conventional DRAM contract prices, Q1 2026</text>
+<polygon points="202.00,1507.08 203.30,1511.03 207.37,1510.18 204.60,1513.28 207.37,1516.38 203.30,1515.53 202.00,1519.48 200.70,1515.53 196.63,1516.38 199.40,1513.28 196.63,1510.18 200.70,1511.03" fill="#b3261e"/><text x="220" y="1519.88" font-family="IBM Plex Mono" font-size="20" fill="#b3261e">YOUR SHARE OF THIS</text>
+<text x="884" y="1519.88" font-family="IBM Plex Mono" font-size="20" font-weight="700" fill="#b3261e" text-anchor="end">+$0.0000079 / stick</text>
+<polygon points="200.80,1541.54 201.84,1544.70 205.10,1544.02 202.88,1546.50 205.10,1548.98 201.84,1548.30 200.80,1551.46 199.76,1548.30 196.50,1548.98 198.72,1546.50 196.50,1544.02 199.76,1544.70" fill="#b3261e"/><text x="215.2" y="1551.78" font-family="IBM Plex Mono" font-size="16" fill="#b3261e">made up. nobody can measure it. the +95% is real.</text>
+<line x1="196" y1="1579.18" x2="884" y2="1579.18" stroke="#1f1d1a" stroke-width="2" stroke-dasharray="6 6"/>
+<text x="246" y="1616.53" font-family="IBM Plex Mono" font-size="14" fill="#6b665c">plain = measured ·</text><rect x="406.72" y="1610.37" width="6.16" height="0.84" fill="#6b665c"/><rect x="406.72" y="1612.61" width="6.16" height="0.84" fill="#6b665c"/><rect x="406.72" y="1614.85" width="6.16" height="0.84" fill="#6b665c"/><text x="422.3999999999996" y="1616.53" font-family="IBM Plex Mono" font-size="14" fill="#6b665c">list-price equiv. ·</text><text x="590.3999999999992" y="1616.53" font-family="IBM Plex Mono" font-size="14" fill="#7a5a12">≈ estimate (range)</text><text x="749.9999999999987" y="1616.53" font-family="IBM Plex Mono" font-size="14" fill="#6b665c">·</text><polygon points="771.00,1607.57 771.91,1610.33 774.76,1609.74 772.82,1611.91 774.76,1614.08 771.91,1613.49 771.00,1616.25 770.09,1613.49 767.24,1614.08 769.18,1611.91 767.24,1609.74 770.09,1610.33" fill="#b3261e"/><text x="783.5999999999987" y="1616.53" font-family="IBM Plex Mono" font-size="14" fill="#b3261e">satire</text>
+<text x="540" y="1638.73" font-family="IBM Plex Mono" font-size="14" fill="#6b665c" text-anchor="middle">method v1 · prices as of 2026-09-24 · npx token-damage</text>
+<rect x="346" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="351" y="1660.5800000000002" width="4" height="56" fill="#1f1d1a"/>
+<rect x="359" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="363" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="367" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="374" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="380" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="384" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="389" y="1660.5800000000002" width="4" height="56" fill="#1f1d1a"/>
+<rect x="395" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="399" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="404" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="410" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="414" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="424" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="428" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="434" y="1660.5800000000002" width="4" height="56" fill="#1f1d1a"/>
+<rect x="440" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="444" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="448" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="454" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="460" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="466" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="473" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="481" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="487" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="493" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="498" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="504" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="512" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="516" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="520" y="1660.5800000000002" width="4" height="56" fill="#1f1d1a"/>
+<rect x="528" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="533" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="539" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="544" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="550" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="554" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="562" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="568" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="575" y="1660.5800000000002" width="4" height="56" fill="#1f1d1a"/>
+<rect x="582" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="591" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="598" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="602" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="607" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="612" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="617" y="1660.5800000000002" width="4" height="56" fill="#1f1d1a"/>
+<rect x="623" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="631" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="637" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="643" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="652" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="657" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="662" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="666" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="672" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="682" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="686" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="696" y="1660.5800000000002" width="3" height="56" fill="#1f1d1a"/>
+<rect x="703" y="1660.5800000000002" width="2" height="56" fill="#1f1d1a"/>
+<rect x="709" y="1660.5800000000002" width="4" height="56" fill="#1f1d1a"/>
+<rect x="716" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
+<rect x="725" y="1660.5800000000002" width="6" height="56" fill="#1f1d1a"/>
 </g>
 </svg>"
 `;

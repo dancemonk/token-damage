@@ -201,6 +201,8 @@
     "class.water-damage": "ЗАЛИВ",
     "class.fender-bender": "МЕЛКОЕ ДТП",
     "class.paper-cut": "ПОРЕЗ БУМАГОЙ",
+    "receipt.toNext": "{pct}% до класса «{name}»",
+    "receipt.topOfScale": "выше некуда",
     "verdict.denied": "ОТКАЗАНО",
     "verdict.approved": "ОДОБРЕНО",
     "verdict.signed": "ПОДПИСАНО",

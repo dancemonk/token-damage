@@ -26,6 +26,8 @@ export interface ReceiptView {
   /** Adjuster's note or aside; `\n` breaks lines. */
   note?: { text: string; lang: string };
   stamps: string[];
+  /** How far the total is into its damage class, 0–1, and the line under the stamp: "4% to UNINSURABLE". */
+  progress?: { share: number; text: string };
   achievements?: string[];
   /** Left part of the fine print: "SAMPLE · CUSTOMER 0041" or "SHARED RECEIPT". */
   who: string;
@@ -39,6 +41,31 @@ export const esc = (s: string) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+
+/** A class name as its i18n key: "ACT OF GOD" → "act-of-god". */
+export const classSlug = (name: string) =>
+  name.toLowerCase().replace(/ /g, "-");
+
+/**
+ * The class-progress line in the page language, rounded down like every bar. `next` is the next class's slug, null
+ * at the top of the scale. Takes core's numbers rather than importing core: build.mjs runs this file from dist/.
+ */
+export function progressView(
+  share: number,
+  next: string | null,
+  t: T,
+): ReceiptView["progress"] {
+  return {
+    share,
+    text: next
+      ? t("receipt.toNext", {
+          pct: Math.floor(share * 100),
+          // Non-breaking, so a narrow receipt wraps before the class name, never inside it.
+          name: t(`class.${next}`).replace(/ /g, "\u00a0"),
+        })
+      : t("receipt.topOfScale"),
+  };
+}
 
 /** The cashiers on duty, in the page language (`receipt.cashiers`, separated by "|"). */
 export const cashiers = (t: T): string[] => t("receipt.cashiers").split("|");
@@ -76,6 +103,15 @@ const rule = `<div class="rule"></div>`;
  * The paper down to the perforation. `count` is what the hero number shows (the count-up starts
  * it at 0); `slam` animates the first stamp in.
  */
+/** Ink on the dotted leader, as in the terminal: plain ink, never red, because it is a measured fact. */
+function progressLine(p: NonNullable<ReceiptView["progress"]>): string {
+  const fill =
+    p.share > 0
+      ? `<span class="r-fill" style="width:${Math.floor(p.share * 100)}%"></span>`
+      : "";
+  return `<div class="r-progress"><span class="r-track" aria-hidden="true">${fill}</span><span class="r-to">${esc(p.text)}</span></div>`;
+}
+
 export function receiptPaper(
   v: ReceiptView,
   t: T,
@@ -115,6 +151,7 @@ ${v.satire === undefined ? "" : `<p class="pool-satire">✶ ${esc(v.satire)}</p>
 </div>
 ${rule}
 <div class="r-verdict">${note}<div class="stamps">${stamps}</div></div>
+${v.progress ? progressLine(v.progress) : ""}
 ${v.achievements?.length ? `<div class="r-ach">${esc(t("receipt.achievements"))} · ${v.achievements.map(esc).join(" · ")}</div>` : ""}
 ${rule}
 <div class="r-foot">
@@ -163,6 +200,7 @@ export function sampleView(
     ram: f.satire(c.ram),
     note,
     stamps: [t(`class.${c.class}`)],
+    progress: progressView(c.progress, c.next, t),
     who: `${t("receipt.sample")} · ${t(`receipt.who.${c.trans}`)}`,
   };
 }

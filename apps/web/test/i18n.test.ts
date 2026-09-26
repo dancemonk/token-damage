@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Catalog, Message } from "../src/i18n.js";
 import { englishTemplate, NOTE_IDS, slotsRu } from "../src/notes.js";
 import { POOL_EN } from "@token-damage/core";
-import { render } from "@token-damage/core/web";
+import { classProgress, render } from "@token-damage/core/web";
 import fixed from "../src/fixed.json" with { type: "json" };
 import samples from "../../../packages/core/fixtures/samples.json" with { type: "json" };
 
@@ -145,6 +145,16 @@ describe("never-translated data", () => {
         words: c.words,
       })),
     ).toEqual(canon);
+  });
+
+  it("sample customers carry core's class progress", () => {
+    for (const c of fixed.samples) {
+      const { next, progress } = classProgress(c.tokens);
+      expect(c.progress, c.trans).toBeCloseTo(progress, 6);
+      expect(c.next, c.trans).toBe(
+        next && next.name.toLowerCase().replace(/ /g, "-"),
+      );
+    }
   });
 });
 

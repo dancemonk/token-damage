@@ -226,7 +226,7 @@ function kept(r: Receipt): string {
 }
 
 /** The 1080×1920 share card. Pure: same receipt, same SVG. */
-export function receiptSvg(r: Receipt): string {
+function draw(r: Receipt, progress: boolean): { svg: string; top: number } {
   const body: string[] = [];
   let y = 0;
   const rule = () => {
@@ -461,6 +461,31 @@ export function receiptSvg(r: Receipt): string {
   );
   y += boxH + 8 + 22;
 
+  if (progress) {
+    // Class progress: ink filling a dotted leader, rounded down, never red (docs/DESIGN.md §Terminal).
+    const dc = r.damageClass;
+    const to = dc.next
+      ? `${Math.floor(dc.progress * 100)}% to ${dc.next.name}`
+      : "top of the scale";
+    const trackW = INNER - to.length * 0.6 * 19 - 16;
+    const track = y + 16;
+    body.push(
+      `<line x1="${X0}" y1="${track}" x2="${(X0 + trackW).toFixed(2)}" y2="${track}" stroke="${C.dots}" stroke-width="2" stroke-dasharray="2 4"/>`,
+    );
+    if (dc.progress > 0)
+      body.push(
+        `<rect class="progress" x="${X0}" y="${track - 11}" width="${Math.max(3, (Math.floor(dc.progress * 100) / 100) * trackW).toFixed(2)}" height="10" fill="${C.ink}"/>`,
+      );
+    body.push(
+      text(X0 + INNER, baseline(y, 19), esc(to), {
+        size: 19,
+        color: C.ink,
+        anchor: "end",
+      }),
+    );
+    y += 1.3 * 19 + 22;
+  }
+
   // Adjuster's note
   if (r.note) {
     label("ADJUSTER'S NOTE");
@@ -574,7 +599,7 @@ export function receiptSvg(r: Receipt): string {
       d += `L${tx + 12} ${edge - dir * 12}L${Math.min(tx + 24, left + PAPER)} ${edge}`;
     return `<path d="${d}Z" fill="${C.paper}"/>`;
   };
-  return [
+  const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`,
     `<defs><filter id="shadow" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000" flood-opacity="0.45"/></filter></defs>`,
     `<rect width="${W}" height="${H}" fill="${C.bg}"/>`,
@@ -588,4 +613,11 @@ export function receiptSvg(r: Receipt): string {
     `</g>`,
     `</svg>`,
   ].join("\n");
+  return { svg, top };
+}
+
+/** The share card. The class-progress row goes first when a long note would leave under 16 px of canvas. */
+export function receiptSvg(r: Receipt): string {
+  const full = draw(r, true);
+  return full.top >= 16 ? full.svg : draw(r, false).svg;
 }

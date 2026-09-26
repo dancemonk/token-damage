@@ -195,6 +195,8 @@
     "class.water-damage": "WATER DAMAGE",
     "class.fender-bender": "FENDER BENDER",
     "class.paper-cut": "PAPER CUT",
+    "receipt.toNext": "{pct}% to {name}",
+    "receipt.topOfScale": "top of the scale",
     "verdict.denied": "DENIED",
     "verdict.approved": "APPROVED",
     "verdict.signed": "SIGNED",
