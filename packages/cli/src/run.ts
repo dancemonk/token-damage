@@ -3,16 +3,14 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { createInterface } from "node:readline/promises";
 import {
+  ADAPTERS,
+  AGENT_NAMES,
   aggregate,
   buildFacts,
   buildReceipt,
   createDeduper,
   dispute,
   disputeStamp,
-  emptyCodexStats,
-  emptyGeminiStats,
-  emptyOpenCodeStats,
-  emptyStats,
   EXCUSES,
   freshDeck,
   listPrice,
@@ -23,10 +21,6 @@ import {
   paint,
   receiptLines,
   saveState,
-  scanClaude,
-  scanCodex,
-  scanGemini,
-  scanOpenCode,
   type Excuse,
   type PromptEvent,
   type Receipt,
@@ -43,16 +37,12 @@ import { resolveDirs } from "./dirs.js";
 import { VERSION } from "./version.js";
 
 /**
- * Newest major.minor per agent the parser has fixtures for (docs/DATA-SOURCES.md §Tested versions).
- * Gemini CLI writes no version into its chats, so it is never flagged. OpenCode's is its session's.
+ * Newest major.minor per agent the parser has fixtures for (docs/DATA-SOURCES.md §Tested versions). An agent
+ * whose logs carry no version (Gemini CLI) has none and is never flagged. OpenCode's is its session's.
  */
-const TESTED: Partial<
-  Record<Source, { name: string; newest: [number, number] }>
-> = {
-  "claude-code": { name: "claude code", newest: [2, 1] },
-  codex: { name: "codex", newest: [0, 155] },
-  opencode: { name: "opencode", newest: [1, 17] },
-};
+const TESTED = new Map(
+  ADAPTERS.flatMap((a) => (a.tested ? [[a.id, a.tested] as const] : [])),
+);
 const DAY_MS = 86_400_000;
 
 interface Io {
@@ -103,11 +93,10 @@ function untested(usage: UsageEvent[]): string[] {
     const m = /^(\d+)\.(\d+)/.exec(e.version ?? "");
     if (!m) continue;
     const [major, minor] = [Number(m[1]), Number(m[2])];
-    const tested = TESTED[e.source];
-    if (!tested) continue;
-    const { name, newest } = tested;
+    const newest = TESTED.get(e.source);
+    if (!newest) continue;
     if (major > newest[0] || (major === newest[0] && minor > newest[1]))
-      found.add(`${name} ${major}.${minor}`);
+      found.add(`${AGENT_NAMES[e.source].toLowerCase()} ${major}.${minor}`);
   }
   return [...found].sort();
 }
@@ -206,17 +195,6 @@ async function shareLink(
 
 export async function run(options: Options, io: Io): Promise<number> {
   const dirs = resolveDirs(options);
-  const roots = dirs["claude-code"];
-  const homes = dirs.codex;
-  const geminiData = dirs.gemini;
-  const opencodeData = dirs.opencode;
-  // What each agent's scan reads, one line per agent.
-  const scanned = [
-    roots.map((r) => join(r, "projects")),
-    homes.flatMap((h) => [join(h, "sessions"), join(h, "archived_sessions")]),
-    geminiData,
-    opencodeData,
-  ];
   const p = period(options);
   if (!options.json) {
     io.out(`token-damage ${VERSION}`);
@@ -224,24 +202,17 @@ export async function run(options: Options, io: Io): Promise<number> {
       "reads agent logs on this machine · uploads nothing · no network calls",
     );
     io.out();
-    for (const dirs of scanned)
-      io.out(`scanning ${dirs.map(tilde).join(", ")} …`);
+    // What each agent's scan reads, one line per agent.
+    for (const a of ADAPTERS)
+      io.out(`scanning ${a.where(dirs[a.id]).map(tilde).join(", ")} …`);
   }
 
-  const claudeStats = { ...emptyStats(), files: 0, subagentFiles: 0 };
-  const codexStats = emptyCodexStats();
-  const geminiStats = emptyGeminiStats();
-  const opencodeStats = emptyOpenCodeStats();
+  const readers = new Map(ADAPTERS.map((a) => [a.id, a.reader(dirs[a.id])]));
   // One deduper for every agent: their dedupe keys never collide.
   const deduper = createDeduper();
   const earlier = new Map<string, Source>();
-  for (const scan of [
-    scanClaude(roots, claudeStats),
-    scanCodex(homes, codexStats),
-    scanGemini(geminiData, geminiStats),
-    scanOpenCode(opencodeData, opencodeStats),
-  ]) {
-    for await (const record of scan) {
+  for (const reader of readers.values()) {
+    for await (const record of reader.scan()) {
       if (record.ts >= p.from && record.ts < p.to) deduper.add(record);
       // A session typed into before the period still counts as typed; keep its id and agent, never the text.
       else if (record.kind === "prompt" && record.ts < p.from)
@@ -250,21 +221,18 @@ export async function run(options: Options, io: Io): Promise<number> {
   }
   const usage: UsageEvent[] = deduper.result();
   const prompts: PromptEvent[] = deduper.prompts();
-  if (opencodeStats.noSqlite > 0) {
-    const line = `! opencode needs node 22.13 or newer to read its database (this is ${process.versions.node}); skipped.`;
-    if (options.json) process.stderr.write(line + "\n");
-    else io.out(`  ${line}`);
-  }
-  const files =
-    claudeStats.files +
-    codexStats.files +
-    geminiStats.files +
-    opencodeStats.databases +
-    opencodeStats.files;
+  for (const reader of readers.values())
+    for (const warning of reader.warnings()) {
+      if (options.json) process.stderr.write(`! ${warning}\n`);
+      else io.out(`  ! ${warning}`);
+    }
+  let files = 0;
+  for (const reader of readers.values()) files += reader.found();
   if (files === 0 || usage.length === 0) {
+    const names = ADAPTERS.map((a) => AGENT_NAMES[a.id].toLowerCase());
     const lines = [
-      `no claude code, codex, gemini cli or opencode sessions found${files > 0 ? " in this period" : ""}.`,
-      `looked in: ${scanned.flat().join(", ")}`,
+      `no ${names.slice(0, -1).join(", ")} or ${names.at(-1)} sessions found${files > 0 ? " in this period" : ""}.`,
+      `looked in: ${ADAPTERS.flatMap((a) => a.where(dirs[a.id])).join(", ")}`,
       "claude code writes none when CLAUDE_CODE_SKIP_PROMPT_HISTORY is set or with `claude -p --no-session-persistence`.",
     ];
     if (options.json) process.stderr.write(lines.join("\n") + "\n");
@@ -289,7 +257,7 @@ export async function run(options: Options, io: Io): Promise<number> {
     ? loaded
     : { ...loaded, deck: options.fixtures ? newDeck(0) : freshDeck() };
   const observations = observe(facts, state, undefined, p.end.slice(0, 7));
-  const kept = await retention(roots);
+  const kept = await retention(dirs["claude-code"]);
   const receipt: Receipt = buildReceipt({
     trans: String(state.runs + 1).padStart(4, "0"),
     period: {
@@ -323,7 +291,7 @@ export async function run(options: Options, io: Io): Promise<number> {
   io.out(
     `  ✓ ${n(facts.calls)} model calls · ${n(facts.prompts)} prompts you actually typed`,
   );
-  if (kept.isDefault && claudeStats.files > 0) {
+  if (kept.isDefault && (readers.get("claude-code")?.found() ?? 0) > 0) {
     io.out(
       `  ! claude code already deleted everything older than ${kept.days} days.`,
     );
