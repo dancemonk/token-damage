@@ -178,6 +178,10 @@ Tokenizers and cache semantics differ. Show raw tokens per provider; compare in 
 
 ## Gemini CLI
 
+Google retired Gemini CLI for personal accounts on 2026-06-18 and replaced it with Antigravity CLI (`agy`, see
+§Antigravity); paid API keys and enterprise licences still run it. Its logs are read as before. `agy` does not import
+Gemini CLI's chats, so nothing is counted twice.
+
 Rules below match ccusage 20.0.24 (`rust/adapters/gemini/src/`), checked with `pnpm oracle --agent gemini`.
 Code: `packages/core/src/adapters/gemini/`. Fixtures: `packages/core/fixtures/gemini/tmp/` (a data dir).
 
