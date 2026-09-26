@@ -95,6 +95,58 @@ describe("liveLines", () => {
     expect(view(64, 30)[2]?.style).toBe("bold");
   });
 
+  it("lists only prompts you typed, and sums runs with no prompt into one row under the header", () => {
+    const quiet = buildSnapshot({
+      usage: [
+        usage({ ts: T0 - min(80), input: 1_000_000 }),
+        usage({ ts: T0 - min(70), sessionId: "b1", input: 100_000 }),
+        usage({ ts: T0 - min(69), sessionId: "b2", input: 100_000 }),
+        usage({ ts: T0 - min(68), sessionId: "b3", input: 100_000 }),
+        usage({ ts: T0 - min(60), input: 2_000_000 }),
+        usage({ ts: T0 - min(50), sessionId: "b4", input: 50_000 }),
+        usage({
+          ts: T0 - min(49),
+          sessionId: "c9",
+          source: "codex",
+          model: "gpt-5.6-sol",
+          input: 50_000,
+        }),
+        usage({ ts: T0 - min(45), input: 500_000 }),
+        usage({ ts: T0 - min(40), sessionId: "b5", input: 10_000 }),
+      ],
+      prompts: [
+        prompt({ ts: T0 - min(81), words: 12 }),
+        prompt({ ts: T0 - min(61), words: 5 }),
+        prompt({ ts: T0 - min(46), words: 9 }),
+        // A slash command: a prompt line, but the model never ran, so it read nothing and gets no row.
+        prompt({ ts: T0 - min(30), words: 0 }),
+      ],
+      now: T0,
+      timeZone: tz,
+    });
+    const lines = liveLines(quiet, [], { width: 64, height: 30, timeZone: tz });
+    const header = lines.findIndex((l) => l.text.startsWith("time"));
+    // Six runs nobody typed a prompt for: 300K + 50K + 50K + 10K tokens.
+    expect(lines[header + 1]).toEqual({
+      text: expect.stringMatching(
+        /^ {7}6 runs with no prompt today → 410\.0K +≡ \$[\d.]+$/,
+      ),
+      style: "muted",
+    });
+    // Only one session has typed prompts, so its rows carry no session number.
+    const rows = lines.filter((l) => /^\d\d:\d\d {2}/.test(l.text));
+    expect(rows.map((l) => l.text.split(" → ")[0])).toEqual([
+      "10:39  claude        12 words",
+      "10:59  claude         5 words",
+      "11:14  claude         9 words",
+    ]);
+    // The summary stays put when the list scrolls.
+    const short = liveLines(quiet, [], { width: 64, height: 12, timeZone: tz });
+    expect(
+      short.some((l) => l.text.includes("runs with no prompt today")),
+    ).toBe(true);
+  });
+
   it("prints the tape oldest to newest with an idle rule and events", () => {
     const lines = view(64, 30).map((l) => l.text);
     const header = lines.findIndex((l) => l.startsWith("time"));

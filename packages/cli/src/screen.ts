@@ -11,7 +11,9 @@ export function frame(
   for (let i = 0; i < rows; i++) {
     const line = next[i] ?? "";
     if (prev[i] === line && i < next.length) continue;
-    out += `\x1b[${i + 1};1H${line}\x1b[K`;
+    // Erase first: after a full-width row the cursor sits on the last column, and an erase sent after the
+    // text would wipe that column's character (a price's last digit, the % of a leader).
+    out += `\x1b[${i + 1};1H\x1b[2K${line}`;
   }
   return out;
 }

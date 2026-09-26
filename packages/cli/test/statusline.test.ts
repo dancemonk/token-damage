@@ -84,9 +84,9 @@ describe("token-damage statusline", () => {
     const r = status(["--clock", CLOCK], stdin);
     expect(r.status).toBe(0);
     const [one, two] = r.stdout.trimEnd().split("\n");
-    expect(one).toMatch(/^▸ 4 words → 6\.8M read ≡ \$[\d,.]+ · ctx ■■··· 41%$/);
+    expect(one).toMatch(/^▸ 4 words → 6\.8M read ≡ \$[\d,.]+ · ctx 41%$/);
     expect(two).toMatch(
-      /^FENDER BENDER · today 6\.8M ≡ \$[\d,.]+ · 5h ■■··· 58% resets 16:00$/,
+      /^FENDER BENDER · today 6\.8M ≡ \$[\d,.]+ · 5h 58% resets 16:00$/,
     );
   });
 

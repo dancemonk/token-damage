@@ -76,6 +76,27 @@ function priceOf(byModel: Record<string, TokenSums>): string {
 
 export const turnPrice = (t: Turn): string => priceOf(t.byModel);
 
+/** Token sums per model across several turns, so a folded row is priced like any other. */
+function mergedModels(turns: readonly Turn[]): Record<string, TokenSums> {
+  const out: Record<string, TokenSums> = {};
+  for (const t of turns)
+    for (const [key, v] of Object.entries(t.byModel)) {
+      const sums = (out[key] ??= {
+        input: 0,
+        cacheWrite: 0,
+        cacheWrite1h: 0,
+        cacheRead: 0,
+        output: 0,
+      });
+      sums.input += v.input;
+      sums.cacheWrite += v.cacheWrite;
+      sums.cacheWrite1h += v.cacheWrite1h;
+      sums.cacheRead += v.cacheRead;
+      sums.output += v.output;
+    }
+  return out;
+}
+
 const threshold = (at: number) => (at >= 1e9 ? `${at / 1e9}B` : `${at / 1e6}M`);
 
 export function clock(ts: number, timeZone?: string): string {
@@ -108,7 +129,10 @@ function resetLabel(ts: number, now: number, timeZone?: string): string {
 }
 
 function who(t: Turn, s: LiveSnapshot): string {
-  const multi = Object.keys(s.badges).length > 1;
+  // Session numbers tell your own windows apart; runs nobody typed a prompt for don't count.
+  const multi =
+    new Set(s.turns.filter((x) => x.words !== null).map((x) => x.sessionId))
+      .size > 1;
   const badge =
     multi && s.badges[t.sessionId] !== undefined
       ? `·${s.badges[t.sessionId]}`
@@ -238,13 +262,28 @@ function tape(
 ): Line[] {
   const w = o.width;
   const items: Item[] = [];
-  for (const t of s.turns) {
-    if (t.open) continue;
-    const left = `${clock(t.start, o.timeZone)}  ${who(t, s).padEnd(10)} ${words(t).padStart(11)} → ${compactTokens(t.read).padStart(6)}`;
+  const row = (
+    at: number,
+    name: string,
+    did: string,
+    read: number,
+    price: string,
+  ) =>
+    fit(
+      `${clock(at, o.timeZone)}  ${name.padEnd(10)} ${did.padStart(11)} → ${compactTokens(read).padStart(6)}`,
+      cols.price ? price : "",
+      w,
+    );
+  // Only prompts someone typed; runs with no prompt are summed in one row under the header (quietRow).
+  for (const t of [...s.turns].sort((a, b) => a.start - b.start)) {
+    // A prompt the model never ran on (a slash command, an interrupt) read nothing: no row.
+    if (t.open || t.words === null || t.calls === 0) continue;
     items.push({
       ts: t.start,
       end: t.end,
-      lines: [{ text: fit(left, cols.price ? turnPrice(t) : "", w) }],
+      lines: [
+        { text: row(t.start, who(t, s), words(t), t.read, turnPrice(t)) },
+      ],
     });
   }
   for (const e of events) {
@@ -306,6 +345,24 @@ function tape(
   return out;
 }
 
+/**
+ * Today's runs nobody typed a prompt for (Agent SDK scripts, or a session carried over from yesterday), summed in
+ * one muted row so the list stays about what you typed and the money still adds up; null when there are none.
+ */
+function quietRow(s: LiveSnapshot, o: ViewOptions, cols: Cols): Line | null {
+  const quiet = s.turns.filter((t) => !t.open && t.words === null);
+  if (quiet.length === 0) return null;
+  const read = quiet.reduce((sum, t) => sum + t.read, 0);
+  return {
+    text: fit(
+      `       ${quiet.length} ${quiet.length === 1 ? "run" : "runs"} with no prompt today → ${compactTokens(read)}`,
+      cols.price ? priceOf(mergedModels(quiet)) : "",
+      o.width,
+    ),
+    style: "muted",
+  };
+}
+
 /** The pane: docs/LIVE.md §Surface 1. */
 export function liveLines(
   s: LiveSnapshot,
@@ -335,12 +392,21 @@ export function liveLines(
     ),
     style: "muted",
   };
-  const room = Math.max(0, o.height - top.length - 3);
+  const quiet = quietRow(s, o, cols);
+  const room = Math.max(0, o.height - top.length - 3 - (quiet ? 1 : 0));
   const rows = tape(s, events, o, cols).slice(-room);
   const blank = Array.from({ length: room - rows.length }, (): Line => ({
     text: "",
   }));
-  return [...top, rule, header, ...blank, ...rows, footer];
+  return [
+    ...top,
+    rule,
+    header,
+    ...(quiet ? [quiet] : []),
+    ...blank,
+    ...rows,
+    footer,
+  ];
 }
 
 export { sparkline };

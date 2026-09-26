@@ -64,9 +64,14 @@ const join = (parts: (string | false | null | undefined)[]) =>
   parts.filter(Boolean).join(" · ");
 const wordsOf = (t: Turn) => `${t.words === null ? "—" : n(t.words)} words`;
 
-/** `5h 58%`, or with `bars` a 5-glyph bar before the number: `5h ■■··· 58%`. */
-const pctOf = (label: string, pct: number, bars: boolean) =>
-  `${label} ${bars ? `${bar(pct / 100, 5)} ` : ""}${Math.round(pct)}%`;
+/** Bars appear from here: below it the number is enough, and a bar that is always there is noise. */
+const BAR_FROM = 70;
+
+/** `5h 58%`; from 70% (as printed), with `bars`, a 5-glyph bar before the number: `5h ■■■·· 74%`. */
+const pctOf = (label: string, pct: number, bars: boolean) => {
+  const shown = Math.round(pct);
+  return `${label} ${bars && shown >= BAR_FROM ? `${bar(pct / 100, 5)} ` : ""}${shown}%`;
+};
 
 function sessionRow(
   s: LiveSnapshot,

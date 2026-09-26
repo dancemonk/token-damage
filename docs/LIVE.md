@@ -82,7 +82,11 @@ Turn rows: `HH:MM  agent[·s][+N]  W words → T read  ≡ $P`. `agent·2` is a 
 when more than one session was active today (never a project name or path). `+N` = interns (distinct
 subagent sessions in the turn). Marks carry over from the receipt: `*` estimated model, `not priced`, and a
 trailing `+` on any price that leaves unpriced tokens out. Compact numbers (`3.1M`); exact numbers in `--json`.
-`— words` when the turn's prompt is unknown (session started before midnight). Never `0`.
+The list holds only prompts someone typed. Turns with no typed prompt (Agent SDK scripts, often one after every
+prompt; or a session started before midnight) are summed in one muted row pinned under the header,
+`       18 runs with no prompt today → 3.1M   ≡ $5.20`, so the money still adds up. Totals are unchanged. Session
+numbers (`claude·2`) appear only when more than one session has typed prompts. A prompt the model never ran on
+(a slash command, an interrupt) read nothing and gets no row.
 
 Width: below 50 columns drop the price column, then the sparkline; below 40, a one-line "widen me".
 
@@ -104,19 +108,20 @@ anywhere), `context_window.used_percentage`, `rate_limits` and `model`. We print
 Default two rows, capped at 80 columns:
 
 ```
-▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx ■■··· 41%
-WATER DAMAGE · today 38.2M ≡ $41.20 · 5h ■■··· 58% resets 16:00 · 7d 21%
+▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx 41%
+WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
 ```
 
 - Row 1 — **this session**: its open turn (words → read, list price, interns) and `ctx`, the context window
   percent as Claude reports it. Idle: `▸ idle 14 min · last turn ≡ $0.90`.
 - Row 2 — **today, all agents**: class, tokens, list price, plan limits from Claude's own `rate_limits`
   (only when present).
-- `--rows 1`: `WATER DAMAGE · ▸ 4 words → 9.8M ≡ $7.10 · 5h ■■··· 58%`.
+- `--rows 1`: `WATER DAMAGE · ▸ 4 words → 9.8M ≡ $7.10 · 5h 58%`.
 - `--rows 3`: adds the last adjuster line, persistent until the next event. Claude's docs warn that multi-row
   output with escape codes gets flaky, so 2 is the default.
-- `ctx` and `5h` carry a 5-glyph bar (`■■··· 58%`); `7d` stays text. A row whose bars would pass the width prints
-  without them, never with a bar cut off.
+- From 70% (as printed), `ctx` and `5h` carry a 5-glyph bar (`ctx ■■■·· 74%`); below that the number alone, since a
+  bar that is always there is noise. `7d` stays text. A row whose bars would pass the width prints without them,
+  never with a bar cut off.
 - `--width N` overrides the 80-column cap. `NO_COLOR` honored; red only on `✶`.
 
 **Speed budget:** under 100 ms typical on a warm cache (Node itself is ~50 ms). The first run of a day reads
@@ -184,7 +189,8 @@ CPU is negligible.
   Interns = distinct subagent sessions in the window.
 - **Open turn** = the latest turn with a usage event in the last 5 minutes and no later prompt. The pane's
   `now` row shows the most recently active open turn; the status line shows its own session's (`session_id`).
-- A session that started before local midnight shows `— words` for its first turn today.
+- A session that started before local midnight has no prompt for its first turn today; it counts in the pane's
+  "runs with no prompt today" row.
 - All four agents emit prompt events, so turns work for all four.
 
 ### Time
