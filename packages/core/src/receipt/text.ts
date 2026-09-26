@@ -1,5 +1,6 @@
 import { formatRange, formatUsd, sig2 } from "../metrics/format.js";
 import type { Value } from "../types.js";
+import { bar, sparkline } from "./glyphs.js";
 import { AGENT_NAMES, type PriceRow, type Receipt } from "./model.js";
 
 export const WIDTH = 48;
@@ -90,15 +91,62 @@ function rowName(name: string, estModel?: true): string {
   return (name.length > room ? `${name.slice(0, room - 1)}…` : name) + mark;
 }
 
+// A split of one row needs no bar: it is the whole.
 function table(heading: string, rows: [string, PriceRow][]): Line[] {
+  const sum = rows.reduce((s, [, row]) => s + row.tokens.value, 0);
   return [
     {
       text: `${heading.padEnd(24)}${"TOKENS".padStart(6)}${"LIST PRICE".padStart(18)}`,
     },
-    ...rows.map(([name, row]) => ({
-      text: `${`  ${rowName(name, row.estModel)}`.padEnd(24)}${compactTokens(row.tokens.value).padStart(6)}${(row.notPriced ? "not priced" : priced(row.listPrice, row.partlyPriced)).padStart(18)}`,
-    })),
+    ...rows.flatMap(([name, row]): Line[] => {
+      const share = sum > 0 ? row.tokens.value / sum : 0;
+      return [
+        {
+          text: `${`  ${rowName(name, row.estModel)}`.padEnd(24)}${compactTokens(row.tokens.value).padStart(6)}${(row.notPriced ? "not priced" : priced(row.listPrice, row.partlyPriced)).padStart(18)}`,
+        },
+        ...(rows.length > 1
+          ? [
+              {
+                text: `  ${bar(share, 40)}${`${Math.round(share * 100)}%`.padStart(5)}`,
+              },
+            ]
+          : []),
+      ];
+    }),
   ];
+}
+
+/** Daily tokens as one mark per `k` days, grouped from the newest day back so only the oldest mark is partial. */
+function byDay(r: Receipt): Line[] {
+  const daily = r.measured.daily;
+  if (daily.length < 2) return [];
+  const k = Math.ceil(daily.length / 44);
+  const marks: number[] = [];
+  for (let end = daily.length; end > 0; end -= k)
+    marks.unshift(
+      daily
+        .slice(Math.max(0, end - k), end)
+        .reduce((sum, d) => sum + d.tokens.value, 0),
+    );
+  const out: Line[] = [
+    {
+      text: leader("BY DAY", k === 1 ? "1 day = 1 mark" : `${k} days = 1 mark`),
+    },
+    { text: `  ${sparkline(marks, { zero: "·" })}` },
+  ];
+  const busiest = r.priced.mostExpensiveDay;
+  const i = busiest ? daily.findIndex((d) => d.day === busiest.day) : -1;
+  if (busiest && i >= 0) {
+    const col = 2 + marks.length - 1 - Math.floor((daily.length - 1 - i) / k);
+    const label = monthDay(busiest.day);
+    out.push({
+      text:
+        col + 2 + label.length <= WIDTH
+          ? `${" ".repeat(col)}▲ ${label}`
+          : `${" ".repeat(col - label.length - 1)}${label} ▲`,
+    });
+  }
+  return out;
 }
 
 /** The 48-column customer copy (docs/CLI.md §The receipt). */
@@ -124,6 +172,9 @@ export function receiptLines(r: Receipt): Line[] {
         `${(m.cacheReadShare.value * 100).toFixed(1)}%`,
       ),
     },
+    ...(m.tokensRead.value > 0
+      ? [{ text: `  ${bar(m.cacheReadShare.value, 44)}` }]
+      : []),
     { text: leader("TOKENS WRITTEN BY AGENTS", n(m.tokensWritten.value)) },
     rule("-"),
     // One agent needs no split: its totals are the lines above.
@@ -234,13 +285,21 @@ export function receiptLines(r: Receipt): Line[] {
       ),
     });
 
+  out.push(...byDay(r));
+
   const stamp = `   ${spaced(r.damageClass.name)}   `;
+  const dc = r.damageClass;
   out.push(
     rule("-"),
     { text: "DAMAGE CLASS" },
     { text: center(`┏${"━".repeat(stamp.length)}┓`), style: "stamp" },
     { text: center(`┃${stamp}┃`), style: "stamp" },
     { text: center(`┗${"━".repeat(stamp.length)}┛`), style: "stamp" },
+    {
+      text: dc.next
+        ? `  ${bar(dc.progress, 24)}  ${Math.floor(dc.progress * 100)}% to ${dc.next.name}`
+        : `  ${bar(1, 24)}  top of the scale`,
+    },
   );
   if (r.note) {
     out.push(

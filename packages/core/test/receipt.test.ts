@@ -42,18 +42,23 @@ const reviewCall = codex({
 });
 const unknownCall = codex({ model: "o9-preview" });
 
-function receipt(usage: UsageEvent[]): Receipt {
+const days = (start: string, end: string, count: number) => ({
+  start,
+  end,
+  days: count,
+  retentionDays: 30,
+  retentionIsDefault: true,
+});
+
+function receipt(
+  usage: UsageEvent[],
+  period: Receipt["period"] = days("2026-08-25", "2026-09-23", 30),
+): Receipt {
   const agg = aggregate({ usage }, { timeZone: "UTC" });
   const facts = buildFacts({ aggregate: agg, usage, timeZone: "UTC" });
   return buildReceipt({
     trans: "0001",
-    period: {
-      start: "2026-08-25",
-      end: "2026-09-23",
-      days: 30,
-      retentionDays: 30,
-      retentionIsDefault: true,
-    },
+    period,
     aggregate: agg,
     facts,
     observations: observe(facts),
@@ -76,7 +81,8 @@ describe("receipt for several agents", () => {
   it("prints a BY AGENT block above BY MODEL, only when there are several agents", () => {
     const lines = text(both);
     const at = lines.findIndex((l) => l.startsWith("BY AGENT"));
-    expect(lines.slice(at, at + 3).map((l) => l.slice(0, 24).trim())).toEqual([
+    const rows = lines.slice(at, at + 5).filter((l) => !/^ {2}[■▪·]/.test(l));
+    expect(rows.map((l) => l.slice(0, 24).trim())).toEqual([
       "BY AGENT",
       "codex*",
       "claude code",
@@ -209,5 +215,106 @@ describe("receipt facts for bars", () => {
       next: null,
       progress: 1,
     });
+  });
+});
+
+describe("bars", () => {
+  const on = (day: string, over: Partial<UsageEvent> = {}) =>
+    call({ ts: Date.parse(`${day}T12:00:00Z`), ...over });
+  const after = (lines: string[], start: string) =>
+    lines[
+      lines.findIndex((l) => l.trimStart().startsWith(start.trimStart())) + 1
+    ];
+  const barRow = /^ {2}[■▪·]{40} +\d+%$/;
+
+  it("never prints past 48 columns", () => {
+    for (const r of [
+      receipt([claudeCall, solCall, reviewCall, unknownCall]),
+      receipt([call({ cacheRead: 6e9 })]),
+      receipt(
+        [on("2026-08-11"), on("2026-09-23")],
+        days("2026-08-11", "2026-09-23", 44),
+      ),
+    ])
+      for (const line of text(r))
+        expect([...line].length).toBeLessThanOrEqual(48);
+  });
+
+  it("draws the cache share under its percentage, rounded down", () => {
+    // 9,000 of 10,500 tokens re-read: 85.7% of 44 squares is 37.7, printed as 37.
+    expect(after(text(receipt([claudeCall])), "  re-read from cache")).toBe(
+      `  ${"■".repeat(37)}${"·".repeat(7)}`,
+    );
+    const empty = text(receipt([call({ input: 0, cacheRead: 0, output: 0 })]));
+    expect(after(empty, "  re-read from cache")).toMatch(/^TOKENS WRITTEN/);
+  });
+
+  it("gives each row of a split its share of the tokens", () => {
+    const lines = text(receipt([claudeCall, solCall]));
+    expect(lines.filter((l) => barRow.test(l))).toHaveLength(4);
+    // opus 10,500 of 22,000 tokens: 47.7%, 19 of 40 squares.
+    expect(after(lines, "  opus")).toBe(
+      `  ${"■".repeat(19)}${"·".repeat(21)}  48%`,
+    );
+    expect(text(receipt([claudeCall])).filter((l) => barRow.test(l))).toEqual(
+      [],
+    );
+  });
+
+  it("shows how far the total is into its damage class", () => {
+    expect(after(text(receipt([claudeCall])), "┗")).toBe(
+      `  ▪${"·".repeat(23)}  1% to FENDER BENDER`,
+    );
+    expect(after(text(receipt([call({ cacheRead: 6e9 })])), "┗")).toBe(
+      `  ${"■".repeat(24)}  top of the scale`,
+    );
+  });
+
+  it("draws one mark per day, a dot for a quiet day, and points at the busiest", () => {
+    const lines = text(receipt([claudeCall]));
+    expect(lines).toContain("BY DAY .......................... 1 day = 1 mark");
+    expect(after(lines, "BY DAY")).toBe(`  ${"·".repeat(26)}█${"·".repeat(3)}`);
+    expect(lines[lines.findIndex((l) => l.startsWith("BY DAY")) + 2]).toBe(
+      `${" ".repeat(28)}▲ sep 20`,
+    );
+  });
+
+  it("puts the busiest day's label on the left when the right would run off", () => {
+    const lines = text(
+      receipt(
+        [on("2026-08-11"), on("2026-09-23", { cacheRead: 90_000 })],
+        days("2026-08-11", "2026-09-23", 44),
+      ),
+    );
+    expect(lines[lines.findIndex((l) => l.startsWith("BY DAY")) + 2]).toBe(
+      `${" ".repeat(38)}sep 23 ▲`,
+    );
+  });
+
+  it("groups long periods from the newest day back, so only the oldest mark is partial", () => {
+    const lines = text(
+      receipt(
+        [on("2026-09-21", { cacheRead: 90_000 }), on("2026-09-23")],
+        days("2026-06-16", "2026-09-23", 100),
+      ),
+    );
+    expect(lines).toContain("BY DAY ......................... 3 days = 1 mark");
+    // 100 days in 3s from the newest: 33 whole marks and a 1-day one at the start. Sep 21–23 share the last mark.
+    expect(after(lines, "BY DAY")).toBe(`  ${"·".repeat(33)}█`);
+  });
+
+  it("leaves out the day chart for a one-day receipt", () => {
+    const lines = text(
+      receipt([claudeCall], days("2026-09-20", "2026-09-20", 1)),
+    );
+    expect(lines.some((l) => l.startsWith("BY DAY"))).toBe(false);
+  });
+
+  it("prints every bar in plain ink", () => {
+    const bars = /^ {2}[■▪·▁▂▃▄▅▆▇█]{8,}|^ +(▲ [a-z]{3} \d+|[a-z]{3} \d+ ▲)$/;
+    const lines = receiptLines(receipt([claudeCall, solCall]));
+    const drawn = lines.filter((l) => bars.test(l.text));
+    expect(drawn.length).toBeGreaterThanOrEqual(8);
+    for (const line of drawn) expect(line.style, line.text).toBeUndefined();
   });
 });
