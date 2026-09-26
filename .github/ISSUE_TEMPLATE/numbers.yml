@@ -11,7 +11,7 @@ body:
     attributes:
       label: Token Damage version
       description: Output of `npx token-damage --version`.
-      placeholder: token-damage 0.4.3
+      placeholder: token-damage 0.4.4
     validations:
       required: true
   - type: dropdown
