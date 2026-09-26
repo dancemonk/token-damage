@@ -10,6 +10,9 @@ import fixed from "../src/fixed.json" with { type: "json" };
 // A v1 link as the CLI prints it. Links like this are already in chats and posts: it must decode forever.
 const FROZEN_V1 =
   "https://tokendamage.com/r#v1.eyJzdGFydCI6IjIwMjYtMDgtMjYiLCJlbmQiOiIyMDI2LTA5LTI0IiwidG9rZW5zIjpbMjEwMDAsNDQxMDAwMDAsMTEzODQwMDAwMCw5MzUwMDBdLCJjYWxscyI6NzQ4MCwic2Vzc2lvbnMiOjk0LCJkYXlzIjoyNiwic3ViYWdlbnRzIjoyMTIsIndvcmRzIjoxNDY5MCwibGlzdCI6ODA5LjY1LCJzYXZlZCI6NDM4My44NSwicGxhbiI6NCwia3doIjpbMjYsMTIwXSwiY2xhc3MiOiJBQ1QgT0YgR09EIiwiYWNoIjpbIm9uZS1sYXN0LWZpeCIsImNhY2hlLWxvcmQiXSwiZGlzcHV0ZSI6WyJyZXNlYXJjaCIsIkRFTklFRCJdLCJub3RlIjoiaWNlYmVyZy4wIiwibGFzdCI6IjAzOjQwIn0";
+// The same receipt from a CLI that names its agents and marks a partly priced total. Also frozen.
+const FROZEN_V1_AGENTS =
+  "https://tokendamage.com/r#v1.eyJzdGFydCI6IjIwMjYtMDgtMjYiLCJlbmQiOiIyMDI2LTA5LTI0IiwidG9rZW5zIjpbMjEwMDAsNDQxMDAwMDAsMTEzODQwMDAwMCw5MzUwMDBdLCJjYWxscyI6NzQ4MCwic2Vzc2lvbnMiOjk0LCJkYXlzIjoyNiwic3ViYWdlbnRzIjoyMTIsIndvcmRzIjoxNDY5MCwibGlzdCI6ODA5LjY1LCJzYXZlZCI6NDM4My44NSwicGxhbiI6NCwia3doIjpbMjYsMTIwXSwiY2xhc3MiOiJBQ1QgT0YgR09EIiwiYWNoIjpbIm9uZS1sYXN0LWZpeCIsImNhY2hlLWxvcmQiXSwiZGlzcHV0ZSI6WyJyZXNlYXJjaCIsIkRFTklFRCJdLCJub3RlIjoiaWNlYmVyZy4wIiwibGFzdCI6IjAzOjQwIiwiYWdlbnRzIjpbImNsYXVkZS1jb2RlIiwiY29kZXgiXSwicGFydGx5Ijp0cnVlfQ";
 
 const hashOf = (url: string) => url.slice(url.indexOf("#"));
 const catalog = (lang: string) =>
@@ -21,13 +24,20 @@ const LANGS = ["en", "ru"];
 // What each language prints for the frozen link's class, verdict and achievements.
 const EXPECT: Record<
   string,
-  { stamps: string[]; ach: string[]; progress: string; top: string }
+  {
+    stamps: string[];
+    ach: string[];
+    progress: string;
+    top: string;
+    partly: string;
+  }
 > = {
   en: {
     stamps: ["ACT OF GOD", "DENIED"],
     ach: ["ONE LAST FIX", "CACHE LORD"],
     progress: "4% to UNINSURABLE",
     top: "top of the scale",
+    partly: "+ at least: models with no list price are left out",
   },
   ru: {
     stamps: ["ФОРС-МАЖОР", "ОТКАЗАНО"],
@@ -35,6 +45,7 @@ const EXPECT: Record<
     // Non-breaking spaces keep the class name on one line when the row wraps on a phone.
     progress: "4% до класса «НЕ\u00a0ПОДЛЕЖИТ\u00a0СТРАХОВАНИЮ»",
     top: "выше некуда",
+    partly: "+ не меньше: модели без цены в прайсе не считали",
   },
 };
 
@@ -55,6 +66,35 @@ describe.each(LANGS)("share links on /%s", (lang) => {
     expect(v.note?.lang).toBe(lang);
     expect(v.note?.text).toMatch(/Gatsby|Гэтсби/);
     expect(v.days).toBe(30);
+  });
+
+  it("names the agents and marks a partly priced total from the newer frozen link", () => {
+    const p = readShare(hashOf(FROZEN_V1_AGENTS));
+    expect(p).not.toBeNull();
+    expect(readShare(hashOf(shareUrl(p!)))).toEqual(p);
+    const v = view(p!);
+    expect(v.agents).toBe("CLAUDE CODE + CODEX");
+    expect(v.price.endsWith("+")).toBe(true);
+    expect(v.partly).toBe(EXPECT[lang]!.partly);
+    const html = receiptPaper(v, t);
+    expect(html).toContain(" · CLAUDE CODE + CODEX</div>");
+    expect(html).toContain(`<p class="r-partly">${EXPECT[lang]!.partly}</p>`);
+    const old = view(readShare(hashOf(FROZEN_V1))!);
+    expect(old.agents).toBeUndefined();
+    expect(old.partly).toBeUndefined();
+    expect(old.price.endsWith("+")).toBe(false);
+  });
+
+  it("leaves out agents it does not know, and never prints them", () => {
+    const base = readShare(hashOf(FROZEN_V1_AGENTS))!;
+    const open = (agents: string[]) =>
+      readShare(hashOf(shareUrl({ ...base, agents })));
+    expect(view(open(["cursor", "codex"])!).agents).toBe("CODEX");
+    for (const odd of [["<b>x</b>"], ["constructor"], ["__proto__"]]) {
+      const v = view(open(odd)!);
+      expect(v.agents, odd[0]).toBeUndefined();
+      expect(receiptPaper(v, t)).not.toContain("<b>x");
+    }
   });
 
   it("shows how far the link's total is into its class, from the tokens it already carries", () => {
@@ -130,6 +170,13 @@ describe.each(LANGS)("share links on /%s", (lang) => {
       { words: 1e16 },
       { ach: [{}] },
       { dispute: [1, 2] },
+      { agents: "codex" },
+      { agents: [] },
+      { agents: ["codex", "codex"] },
+      { agents: ["claude-code", "codex", "gemini", "opencode", "cursor"] },
+      { agents: [1] },
+      { partly: false },
+      { partly: "yes" },
     ];
     for (const change of bad) {
       const url = shareUrl({ ...base, ...change } as typeof base);

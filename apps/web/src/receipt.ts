@@ -13,8 +13,12 @@ export interface ReceiptView {
   tokens: number;
   tokensText: string;
   days: number;
+  /** Agents that did the work, e.g. "CLAUDE CODE + CODEX"; shared receipts only. */
+  agents?: string;
   price: string;
   saved: string;
+  /** Fine print under the price rows when models with no list price are left out of the total. */
+  partly?: string;
   kwh: string;
   ram: string;
   /** A ✶ pool line with the share filled in, printed red under RAM-X (docs/ROASTS.md §Pool). */
@@ -138,12 +142,13 @@ ${rule}
 <div class="r-hero">
 <div class="r-typed">${esc(t("receipt.typed"))} <b>${esc(v.wordsText)} ${esc(t("receipt.words", {}, v.words))}</b></div>
 <div class="r-n" data-count="${v.tokens}">${esc(count)}</div>
-<div class="r-sub">${esc(t("receipt.tokensRead"))} · ${v.days} ${esc(t("receipt.days", {}, v.days))}</div>
+<div class="r-sub">${esc(t("receipt.tokensRead"))} · ${v.days} ${esc(t("receipt.days", {}, v.days))}${v.agents === undefined ? "" : ` · ${esc(v.agents)}`}</div>
 </div>
 ${rule}
 <div class="r-lines">
 ${line(t("receipt.price"), v.price)}
 ${line(t("receipt.saved"), v.saved)}
+${v.partly === undefined ? "" : `<p class="r-partly">${esc(v.partly)}</p>`}
 ${(v.rows ?? []).map((r) => line(r.label, r.value)).join("\n")}
 ${line(t("receipt.electricity"), v.kwh, "estimate")}
 ${line(t("receipt.ram"), v.ram, "satire")}

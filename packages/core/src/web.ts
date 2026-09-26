@@ -27,6 +27,7 @@ export {
 } from "./roasts/slots.js";
 export { ACHIEVEMENT_NAMES } from "./roasts/achievements.js";
 export { AGENT_NAMES } from "./agents.js";
+export type { Source } from "./types.js";
 export { classProgress, damageClass } from "./roasts/classes.js";
 export {
   draw,
