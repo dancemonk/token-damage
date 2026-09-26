@@ -76,6 +76,27 @@ function priceOf(byModel: Record<string, TokenSums>): string {
 
 export const turnPrice = (t: Turn): string => priceOf(t.byModel);
 
+/** Token sums per model across several turns, so a folded row is priced like any other. */
+function mergedModels(turns: readonly Turn[]): Record<string, TokenSums> {
+  const out: Record<string, TokenSums> = {};
+  for (const t of turns)
+    for (const [key, v] of Object.entries(t.byModel)) {
+      const sums = (out[key] ??= {
+        input: 0,
+        cacheWrite: 0,
+        cacheWrite1h: 0,
+        cacheRead: 0,
+        output: 0,
+      });
+      sums.input += v.input;
+      sums.cacheWrite += v.cacheWrite;
+      sums.cacheWrite1h += v.cacheWrite1h;
+      sums.cacheRead += v.cacheRead;
+      sums.output += v.output;
+    }
+  return out;
+}
+
 const threshold = (at: number) => (at >= 1e9 ? `${at / 1e9}B` : `${at / 1e6}M`);
 
 export function clock(ts: number, timeZone?: string): string {
@@ -238,15 +259,59 @@ function tape(
 ): Line[] {
   const w = o.width;
   const items: Item[] = [];
-  for (const t of s.turns) {
+  const row = (
+    at: number,
+    name: string,
+    did: string,
+    read: number,
+    price: string,
+  ) =>
+    fit(
+      `${clock(at, o.timeZone)}  ${name.padEnd(10)} ${did.padStart(11)} → ${compactTokens(read).padStart(6)}`,
+      cols.price ? price : "",
+      w,
+    );
+  // Runs nobody typed a prompt for (SDK scripts, or a session carried over from yesterday) fold into one
+  // quiet row per stretch: the money still adds up, the list stays about what you typed.
+  let quiet: Turn[] = [];
+  const fold = () => {
+    if (quiet.length === 0) return;
+    const sources = new Set(quiet.map((t) => t.source));
+    const name = sources.size === 1 ? AGENT_SHORT[quiet[0]!.source] : "agents";
+    items.push({
+      ts: quiet[0]!.start,
+      end: Math.max(...quiet.map((t) => t.end)),
+      lines: [
+        {
+          text: row(
+            quiet[0]!.start,
+            quiet.length > 1 ? `${name} ×${quiet.length}` : name,
+            "no prompt",
+            quiet.reduce((sum, t) => sum + t.read, 0),
+            priceOf(mergedModels(quiet)),
+          ),
+          style: "muted",
+        },
+      ],
+    });
+    quiet = [];
+  };
+  for (const t of [...s.turns].sort((a, b) => a.start - b.start)) {
     if (t.open) continue;
-    const left = `${clock(t.start, o.timeZone)}  ${who(t, s).padEnd(10)} ${words(t).padStart(11)} → ${compactTokens(t.read).padStart(6)}`;
+    if (t.words === null) {
+      quiet.push(t);
+      continue;
+    }
+    fold();
     items.push({
       ts: t.start,
       end: t.end,
-      lines: [{ text: fit(left, cols.price ? turnPrice(t) : "", w) }],
+      lines: [
+        { text: row(t.start, who(t, s), words(t), t.read, turnPrice(t)) },
+      ],
     });
   }
+  fold();
   for (const e of events) {
     if (e.kind === "stamped") {
       const head = `${clock(e.ts, o.timeZone)}  ━━ stamped ${e.name} `;

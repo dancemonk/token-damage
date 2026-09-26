@@ -95,6 +95,57 @@ describe("liveLines", () => {
     expect(view(64, 30)[2]?.style).toBe("bold");
   });
 
+  it("folds runs with no typed prompt into one quiet row, typed rows untouched", () => {
+    const quiet = buildSnapshot({
+      usage: [
+        usage({ ts: T0 - min(80), input: 1_000_000 }),
+        usage({ ts: T0 - min(70), sessionId: "b1", input: 100_000 }),
+        usage({ ts: T0 - min(69), sessionId: "b2", input: 100_000 }),
+        usage({ ts: T0 - min(68), sessionId: "b3", input: 100_000 }),
+        usage({ ts: T0 - min(60), input: 2_000_000 }),
+        usage({ ts: T0 - min(50), sessionId: "b4", input: 50_000 }),
+        usage({
+          ts: T0 - min(49),
+          sessionId: "c9",
+          source: "codex",
+          model: "gpt-5.6-sol",
+          input: 50_000,
+        }),
+        usage({ ts: T0 - min(45), input: 500_000 }),
+        usage({ ts: T0 - min(40), sessionId: "b5", input: 10_000 }),
+      ],
+      prompts: [
+        prompt({ ts: T0 - min(81), words: 12 }),
+        prompt({ ts: T0 - min(61), words: 5 }),
+        prompt({ ts: T0 - min(46), words: 9 }),
+      ],
+      now: T0,
+      timeZone: tz,
+    });
+    const rows = liveLines(quiet, [], {
+      width: 64,
+      height: 30,
+      timeZone: tz,
+    }).filter((l) => /^\d\d:\d\d {2}/.test(l.text));
+    expect(rows.map((l) => l.text.split(" → ")[0])).toEqual([
+      "10:39  claude·1      12 words",
+      "10:50  claude ×3    no prompt",
+      "10:59  claude·1       5 words",
+      "11:10  agents ×2    no prompt",
+      "11:14  claude·1       9 words",
+      "11:20  claude       no prompt",
+    ]);
+    expect(rows[1]!.text).toMatch(/ → 300\.0K +≡ \$[\d.]+$/);
+    expect(rows.map((l) => l.style)).toEqual([
+      undefined,
+      "muted",
+      undefined,
+      "muted",
+      undefined,
+      "muted",
+    ]);
+  });
+
   it("prints the tape oldest to newest with an idle rule and events", () => {
     const lines = view(64, 30).map((l) => l.text);
     const header = lines.findIndex((l) => l.startsWith("time"));
