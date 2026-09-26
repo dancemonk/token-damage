@@ -2,7 +2,7 @@
 
 <h1 align="center">Token Damage</h1>
 
-<p align="center">The receipt your AI agent never gave you. 🧾</p>
+<p align="center">The receipt your AI agent never gave you.</p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/token-damage"><img src="https://img.shields.io/npm/v/token-damage?label=npm&labelColor=17160f&color=6d685e" alt="npm version"></a>
@@ -12,15 +12,22 @@
 
 <p align="center"><a href="https://tokendamage.com">tokendamage.com</a></p>
 
+You typed a paragraph. It read a library.
+
 ```
 npx token-damage
 ```
 
-Works with **Claude Code**, **Codex**, **Antigravity**, **Grok Build**, **OpenCode** and **Gemini CLI**. Runs on your machine; nothing is uploaded.
+<p align="center"><img src="docs/assets/share-card.png" width="300" alt="Share card for a sample month: 1,183,400,000 tokens, damage class ACT OF GOD"></p>
 
-You typed a paragraph. It read a library.
+<p align="center"><sub>A sample month, not yours. Yours is one command away.</sub></p>
+
+Works with **Claude Code**, **Codex**, **Antigravity**, **Grok Build**, **OpenCode** and **Gemini CLI** (API-key users). Runs on your machine; nothing is uploaded.
 
 Token Damage reads the logs your agents already keep and prints an itemized receipt: the words you typed, the tokens they read, what that would cost at API list price, an electricity estimate, and a note from a tired insurance adjuster.
+
+<details>
+<summary>The same sample month as the terminal prints it</summary>
 
 ```
 ================================================
@@ -74,7 +81,7 @@ ADJUSTER'S NOTE
    ≡ list-price equiv · ≈ estimate · ✶ satire
 ```
 
-<sub>A sample month, not yours. Yours is one command away.</sub>
+</details>
 
 ## Watch it live
 
@@ -82,7 +89,10 @@ ADJUSTER'S NOTE
 npx token-damage live
 ```
 
-A calm pane to keep next to your agent. The top rows are today; the one that counts up is the prompt running right now.
+A calm pane to keep next to your agent. The top rows are today; the one that counts up is the prompt running right now. `q` quits. `--json` streams snapshots as JSON lines instead, for tmux bars and scripts.
+
+<details>
+<summary>What the pane looks like</summary>
 
 ```
  WATER DAMAGE   next STRUCTURAL at 100M ■■···· 38%
@@ -96,7 +106,7 @@ A calm pane to keep next to your agent. The top rows are today; the one that cou
  ✶ four words in. a library out. the usual.
 ```
 
-`q` quits. `--json` streams snapshots as JSON lines instead, for tmux bars and scripts.
+</details>
 
 To see the same numbers in Claude Code's own status line, install it once and run the setup. It shows the `settings.json` change and asks before writing:
 
@@ -112,9 +122,7 @@ WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
 
 ## Share it
 
-After the receipt, `c` saves a 1080×1920 card and `s` makes a share link. Both show you every field first. A friend who opens the link has to guess your number before they see it.
-
-<p align="center"><img src="docs/assets/share-card.png" width="300" alt="Share card for a sample month: 1,183,400,000 tokens, damage class ACT OF GOD"></p>
+After the receipt, `c` saves a 1080×1920 card like the one above and `s` makes a share link. Both show you every field first. A friend who opens the link has to guess your number before they see it.
 
 ## Receipt options
 
@@ -137,11 +145,11 @@ After the receipt, `c` saves a 1080×1920 card and `s` makes a share link. Both 
 
 ## Privacy
 
-It reads Claude Code's transcripts and retention setting, Codex's session logs, Antigravity's conversation databases (read-only) and prompt history, Grok Build's session logs, OpenCode's message database (read-only) and Gemini CLI's chats (Gemini CLI now serves API-key and enterprise users; Antigravity replaced it for everyone else), and nothing else. Your prompts are counted, never stored. The live view keeps one file, `~/.token-damage/today.json`, with numbers and hashed file names only. More at [tokendamage.com/privacy](https://tokendamage.com/privacy).
+It reads the usage logs your agents already keep, read-only, and nothing else. Your prompts are counted, never stored. The live view keeps one file, `~/.token-damage/today.json`, with numbers and hashed file names only. What it reads for each agent is at [tokendamage.com/privacy](https://tokendamage.com/privacy).
 
 ## How the numbers work
 
-Prices come from Anthropic's, OpenAI's and Google's public price lists, and every receipt prints the date they were checked. Electricity is always a range, because nobody publishes the real figure. Satire is printed in red and says so, and never carries a real number. The method is at [tokendamage.com/method](https://tokendamage.com/method); the details are in [docs/METRICS.md](docs/METRICS.md), [docs/DATA-SOURCES.md](docs/DATA-SOURCES.md) and [docs/LIVE.md](docs/LIVE.md).
+Prices come from Anthropic's, OpenAI's, Google's and xAI's public price lists, and every receipt prints the date they were checked. Electricity is always a range, because nobody publishes the real figure. Satire is printed in red and says so, and never carries a real number. The method is at [tokendamage.com/method](https://tokendamage.com/method); the details are in [docs/METRICS.md](docs/METRICS.md), [docs/DATA-SOURCES.md](docs/DATA-SOURCES.md) and [docs/LIVE.md](docs/LIVE.md).
 
 ## Contributing
 
@@ -152,4 +160,4 @@ pnpm check
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). The one rule: a wrong number is worse than a boring one.
 
-MIT. Not affiliated with Anthropic, OpenAI or Google. No refunds: tokens cannot be un-read.
+MIT. Not affiliated with Anthropic, OpenAI, Google, xAI or the makers of OpenCode. No refunds: tokens cannot be un-read.
