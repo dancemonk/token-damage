@@ -192,6 +192,13 @@ describe("share card", () => {
     expect(top).toContain(">top of the scale<");
   });
 
+  it("fills nothing red: red is for the stamp and the satire, never a fact", () => {
+    const paper = receiptSvg(receipt([claudeCall, solCall]));
+    expect(paper).not.toMatch(/<rect [^>]*fill="#b3261e"/);
+    // Agents writing: paper inside the bar's ink border, and a hollow square in the legend.
+    expect(paper).toMatch(/<rect [^>]*fill="#f3efe6" stroke="#1f1d1a"/);
+  });
+
   it("drops the progress row rather than let a long note push the paper off the card", () => {
     const r = receipt([claudeCall]);
     const drawn: boolean[] = [];

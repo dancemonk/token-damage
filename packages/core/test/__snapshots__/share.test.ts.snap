@@ -23,14 +23,14 @@ exports[`share card SVG > layout is frozen 1`] = `
 <text x="196" y="482.07" font-family="IBM Plex Mono" font-size="15" fill="#6b665c" letter-spacing="3">WHO DID THE READING</text>
 <rect x="198.00" y="502.2" width="657.87" height="40" fill="#1f1d1a"/>
 <rect x="855.87" y="502.2" width="23.41" height="40" fill="#8c8578"/>
-<rect x="879.28" y="502.2" width="2.72" height="40" fill="#b3261e"/>
+<rect x="879.28" y="502.2" width="2.72" height="40" fill="#f3efe6"/>
 <rect x="197" y="501.2" width="686" height="42" fill="none" stroke="#1f1d1a" stroke-width="2"/>
 <rect x="882" y="490.2" width="2" height="64" fill="#7a5a12"/>
 <rect x="196" y="561.25" width="16" height="16" fill="#1f1d1a"/>
 <text x="222" y="575.63" font-family="IBM Plex Mono" font-size="17" fill="#1f1d1a">agents re-reading notes · 96.2%</text>
 <rect x="552" y="561.25" width="16" height="16" fill="#8c8578"/>
 <text x="578" y="575.63" font-family="IBM Plex Mono" font-size="17" fill="#1f1d1a">fresh context · 3.4%</text>
-<rect x="196" y="591.35" width="16" height="16" fill="#b3261e"/>
+<rect x="197" y="592.35" width="14" height="14" fill="#f3efe6" stroke="#1f1d1a" stroke-width="2"/>
 <text x="222" y="605.73" font-family="IBM Plex Mono" font-size="17" fill="#1f1d1a">agents writing · 0.4%</text>
 <rect x="552" y="590.35" width="3" height="18" fill="#7a5a12"/>
 <text x="565" y="605.73" font-family="IBM Plex Mono" font-size="17" fill="#7a5a12">you typing · ~0.002%*</text>

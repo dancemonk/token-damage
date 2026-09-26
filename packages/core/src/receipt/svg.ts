@@ -300,7 +300,8 @@ function draw(r: Receipt, progress: boolean): { svg: string; top: number } {
   const shares = [
     [m.cacheReadShare.value, C.ink],
     [m.freshShare.value, C.gray],
-    [m.outputShare.value, C.red],
+    // Paper, not red: red is for the stamp and the satire, never a fact (docs/DESIGN.md).
+    [m.outputShare.value, C.paper],
   ] as const;
   let bx = X0 + 2;
   for (const [share, color] of shares) {
@@ -321,7 +322,7 @@ function draw(r: Receipt, progress: boolean): { svg: string; top: number } {
   const legend: [string, string, boolean][] = [
     [`agents re-reading notes · ${pct1(m.cacheReadShare.value)}`, C.ink, false],
     [`fresh context · ${pct1(m.freshShare.value)}`, C.gray, false],
-    [`agents writing · ${pct1(m.outputShare.value)}`, C.red, false],
+    [`agents writing · ${pct1(m.outputShare.value)}`, C.paper, false],
     [`you typing · ~${sig1(typing.value * 100)}%*`, C.ochre, true],
   ];
   const colW = (INNER - 24) / 2;
@@ -331,7 +332,9 @@ function draw(r: Receipt, progress: boolean): { svg: string; top: number } {
     body.push(
       line
         ? `<rect x="${cx}" y="${(top + 2.05).toFixed(2)}" width="3" height="18" fill="${color}"/>`
-        : `<rect x="${cx}" y="${(top + 3.05).toFixed(2)}" width="16" height="16" fill="${color}"/>`,
+        : color === C.paper
+          ? `<rect x="${cx + 1}" y="${(top + 4.05).toFixed(2)}" width="14" height="14" fill="${color}" stroke="${C.ink}" stroke-width="2"/>`
+          : `<rect x="${cx}" y="${(top + 3.05).toFixed(2)}" width="16" height="16" fill="${color}"/>`,
     );
     body.push(
       text(cx + (line ? 3 : 16) + 10, baseline(top, 17), esc(content), {
