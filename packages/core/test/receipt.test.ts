@@ -217,6 +217,48 @@ describe("share card", () => {
   });
 });
 
+describe("achievements on the receipt", () => {
+  const withAch = (list: Receipt["achievements"]) => ({
+    ...receipt([claudeCall]),
+    achievements: list,
+  });
+  const lastFix = {
+    id: "one-last-fix",
+    name: "ONE LAST FIX",
+    trigger: "Last model call at 3:47 AM",
+    hidden: false,
+  };
+  const bilingual = {
+    id: "bilingual",
+    name: "BILINGUAL",
+    trigger: "Codex and Claude Code within one hour",
+    hidden: false,
+  };
+
+  it("prints them under the stamp, a leader when it fits and two lines when it doesn't", () => {
+    const lines = text(withAch([lastFix, bilingual]));
+    const at = lines.indexOf("ACHIEVEMENTS");
+    expect(at).toBeGreaterThan(lines.findIndex((l) => l.includes("┗")));
+    expect(lines.slice(at, at + 4)).toEqual([
+      "ACHIEVEMENTS",
+      "  ONE LAST FIX ...... last model call at 3:47 am",
+      "  BILINGUAL",
+      "    codex and claude code within one hour",
+    ]);
+    for (const l of lines) expect([...l].length).toBeLessThanOrEqual(48);
+  });
+
+  it("prints no block when nothing was earned", () => {
+    expect(text(withAch([]))).not.toContain("ACHIEVEMENTS");
+  });
+
+  it("puts their names on the share card in one compact row", () => {
+    const svg = receiptSvg(withAch([lastFix, bilingual]));
+    expect(svg).toContain(">ACHIEVEMENTS<");
+    expect(svg).toContain(">ONE LAST FIX · BILINGUAL<");
+  });
+});
+
 describe("receipt facts for bars", () => {
   it("lists every day of the period, oldest first, with zero for quiet days", () => {
     const r = receipt([claudeCall, solCall]);

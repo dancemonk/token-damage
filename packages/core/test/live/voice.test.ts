@@ -133,6 +133,72 @@ describe("detect", () => {
     ).not.toContain("quiet");
   });
 
+  it("speedrun: a turn that closed within two minutes of its prompt, a million tokens read", () => {
+    const p = [prompt({ ts: T0 - 90_000, words: 40 })];
+    const calls = (gap: number) =>
+      [0, 1, 2].map((i) =>
+        usage({ ts: T0 - 90_000 + 5_000 + i * gap, cacheRead: 400_000 }),
+      );
+    // prev: the turn is still open; next: five quiet minutes later it has closed.
+    const fired = (u: ReturnType<typeof usage>[], later: number) =>
+      families(
+        detect(snap(u, p, T0), snap(u, p, T0 + later), { timeZone: tz }),
+      );
+    expect(fired(calls(40_000), min(6))).toContain("speedrun");
+    expect(fired(calls(40_000), min(1))).not.toContain("speedrun");
+    expect(fired(calls(70_000), min(6))).not.toContain("speedrun");
+  });
+
+  it("snob: a closed flagship turn that read a lot and wrote almost nothing", () => {
+    const p = [prompt({ ts: T0 - min(3), words: 40 })];
+    const calls = (model: string) =>
+      [0, 1, 2].map((i) =>
+        usage({
+          ts: T0 - min(2) + i * 10_000,
+          cacheRead: 400_000,
+          output: 10,
+          model,
+        }),
+      );
+    const fired = (u: ReturnType<typeof usage>[], later: number) =>
+      families(
+        detect(snap(u, p, T0), snap(u, p, T0 + later), { timeZone: tz }),
+      );
+    expect(fired(calls("claude-opus-4-7"), min(6))).toContain("snob");
+    expect(fired(calls("claude-opus-4-7"), min(1))).not.toContain("snob");
+    expect(fired(calls("claude-sonnet-4-6"), min(6))).not.toContain("snob");
+  });
+
+  it("second-opinion: a second agent working within the hour", () => {
+    const claude = [prompt({ ts: T0 - min(40) }), usage({ ts: T0 - min(39) })];
+    const codex = (at: number) => [
+      prompt({ ts: at - 30_000, sessionId: "c1", source: "codex" }),
+      usage({ ts: at, sessionId: "c1", source: "codex", model: "gpt-5.6-sol" }),
+    ];
+    const fired = (
+      all: (ReturnType<typeof usage> | ReturnType<typeof prompt>)[],
+      now: number,
+    ) => {
+      const u = all.filter((e) => e.kind === "usage") as ReturnType<
+        typeof usage
+      >[];
+      const q = all.filter((e) => e.kind === "prompt") as ReturnType<
+        typeof prompt
+      >[];
+      return families(
+        detect(snap(u.slice(0, -1), q, now - min(2)), snap(u, q, now), {
+          timeZone: tz,
+        }),
+      );
+    };
+    expect(fired([...claude, ...codex(T0 - min(1))], T0)).toContain(
+      "second-opinion",
+    );
+    expect(
+      fired([...claude, ...codex(T0 + min(90))], T0 + min(91)),
+    ).not.toContain("second-opinion");
+  });
+
   it("does not replay the day's history when the pane opens", () => {
     const p = [prompt({ ts: T0 - min(120), words: 2 })];
     const u = [usage({ ts: T0 - min(119), input: 9e6 })];

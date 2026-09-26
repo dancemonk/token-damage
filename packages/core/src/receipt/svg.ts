@@ -226,7 +226,9 @@ function kept(r: Receipt): string {
 }
 
 /** The 1080×1920 share card. Pure: same receipt, same SVG. */
-function draw(r: Receipt, progress: boolean): { svg: string; top: number } {
+/** 2: progress and achievements, 1: progress only, 0: neither (receiptSvg picks the richest that fits). */
+function draw(r: Receipt, level: 0 | 1 | 2): { svg: string; top: number } {
+  const progress = level >= 1;
   const body: string[] = [];
   let y = 0;
   const rule = () => {
@@ -489,6 +491,30 @@ function draw(r: Receipt, progress: boolean): { svg: string; top: number } {
     y += 1.3 * 19 + 22;
   }
 
+  // Achievements: the names in one compact row, wrapped when many; the reasons live on the terminal receipt.
+  if (level >= 2 && r.achievements.length > 0) {
+    const labelW = "ACHIEVEMENTS".length * (0.6 * 15 + 3) + 18;
+    const perLine = Math.floor((INNER - labelW) / (0.6 * 17));
+    const lines = wrap(r.achievements.map((a) => a.name).join(" · "), perLine);
+    body.push(
+      text(X0, baseline(y, 17), "ACHIEVEMENTS", {
+        size: 15,
+        color: C.muted,
+        spacing: 3,
+      }),
+    );
+    for (const line of lines) {
+      body.push(
+        text(X0 + labelW, baseline(y, 17), esc(line), {
+          size: 17,
+          weight: 700,
+        }),
+      );
+      y += 1.3 * 17;
+    }
+    y += 16;
+  }
+
   // Adjuster's note
   if (r.note) {
     label("ADJUSTER'S NOTE");
@@ -619,8 +645,14 @@ function draw(r: Receipt, progress: boolean): { svg: string; top: number } {
   return { svg, top };
 }
 
-/** The share card. The class-progress row goes first when a long note would leave under 16 px of canvas. */
+/**
+ * The share card. When a long note would leave under 16 px of canvas, the achievements go first, then the
+ * class-progress row.
+ */
 export function receiptSvg(r: Receipt): string {
-  const full = draw(r, true);
-  return full.top >= 16 ? full.svg : draw(r, false).svg;
+  for (const level of [2, 1] as const) {
+    const card = draw(r, level);
+    if (card.top >= 16) return card.svg;
+  }
+  return draw(r, 0).svg;
 }

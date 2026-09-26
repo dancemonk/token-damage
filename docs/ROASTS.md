@@ -24,11 +24,23 @@ Built (`packages/core/src/roasts/`): 13 families with 5 variants each, bands and
 uninsurable, few/zero commits, restraint, iceberg (incl. the tagline and Gatsby ratio), late night, long session,
 plan multiple, subagent swarm, output share, weekend, cache hit, quiet period, energy. Score = weight × (0.5 + 0.5 ×
 depth into band) × confidence (measured 1, priced 0.9, estimated 0.6) × 0.5 if used on either of the last two
-receipts. Variant 0 is the canonical line; later receipts rotate. Waiting for data: cache invalidation,
-compactions, session churn (needs per-project grouping), personal records and quiet week vs history (needs
-`history.json`), flagship tiny output and speedrun burn (need per-session tokens), revert, commit subjects,
-two agents (V1). Commits are an optional input until the V1 git reader exists. Callbacks (§Architecture 4) are not
-built yet.
+receipts. Variant 0 is the canonical line; later receipts rotate.
+
+Session shapes (`roasts/detectors.ts`, built 0.5.0, six more families, all measured from raw events): model snob
+(a typed session on flagship models only, ≥ 5 calls, ≥ 2M read, < 500 written), speedrun (≥ 3 calls and ≥ 1M
+tokens within 10–120 s of the first prompt), churn (≥ 6 typed sessions started inside 40 minutes), two agents
+(≥ 2 agents with calls inside one hour), cache rebuild (≥ 3 calls that wrote ≥ 100K of a cache the previous call in
+the same conversation read ≥ 100K of, ≤ 4 minutes earlier, reading under half of it), unprompted (≥ 25% of tokens in
+sessions with no typed prompt). Weights ≤ 0.6, so they rarely beat the headline notes.
+
+Known limit: a share link carries the note's id, and the site re-renders the line from the link's own numbers.
+Session-shape facts are not in the link, so `/r` shows no adjuster's note for these six families (as already for
+the commit-based ones). Follow-up: when the receipt's note can't be rendered from a link, share the best candidate
+that can.
+
+Waiting for data: compactions (rare in real logs), personal records and quiet week vs history (needs
+`history.json`), revert and commit subjects (need the git reader). Commits are an optional input until then.
+Callbacks (§Architecture 4) are not built yet.
 
 ## Adjuster's notes (starter set; each needs ≥5 variants)
 1. Huge tokens, few commits: "183 million tokens went in. Six commits came out. Claude isn't your assistant; you're its project manager."
@@ -65,15 +77,16 @@ built yet.
 | 1B | ACT OF GOD | Your insurer has stopped returning calls. |
 | 5B+ | UNINSURABLE | You are now the reason the policy exists. |
 
-## Achievements (all true, trigger printed on the card; ~⅓ hidden)
+## Achievements (all true, trigger printed on the receipt, names on the card; ~⅓ hidden)
 - ONE LAST FIX — last model call after 3:00 AM
 - TOUCH GRASS — 7 consecutive AI-free days (the only streak we track; celebrated loudly)
 - CACHE LORD — >95% of input from cache for a week
-- CACHE ARSON (hidden) — cache-write spike with no idle gap
-- MIDDLE MANAGER — 5+ concurrent subagents
+- CACHE ARSON (hidden) — 5+ cache rebuilds with no idle gap (built)
+- MIDDLE MANAGER — 5+ subagents in one day (built)
 - SIX COMMITS — >100M tokens in a day with ≤6 commits (V1, local git)
-- BILINGUAL — Claude Code and Codex in the same hour (V1)
-- MODEL SNOB (hidden) — flagship model, <500 output tokens in a session
+- BILINGUAL — two agents with calls inside one hour (built)
+- SPEEDRUN — ≥ 1M tokens in a session over within two minutes of its prompt (built)
+- MODEL SNOB (hidden) — flagship models only, ≥ 2M read, <500 output tokens in a session (built)
 - THE LONG GOODBYE — one session spanning 3 calendar days
 - COMPACTION ARTIST — 5+ compactions in a session
 - RECEIPT HOARDER — 12 statements archived (rewards the tool, not AI use)
@@ -87,6 +100,10 @@ Prompt: "dispute this charge?" Options and verdicts (verdicts must quote the use
 | It was one last fix | DENIED. {sessionsAfterMidnight} sessions started after midnight. That's not one. |
 | I was learning | APPROVED. Learning is allowed. Damage reduced by $0.00. |
 | Everyone does it | DENIED. True, but only you are on this receipt. |
+| The docs were wrong | re-read share > 90%: DENIED. {cacheShare} of the reading was re-reading. The docs didn't change; the questions did. Else APPROVED. |
+| It was a demo | ≤ 2 sessions: APPROVED. {Sessions} sessions. A demo. Sure. Else DENIED. {sessions} sessions. Demos end. |
+| I was refactoring | output < 5%: DENIED. Output was {outputShare} of the total. Refactoring usually changes something. Else APPROVED. |
+| The machines did it | unprompted ≥ 50%: APPROVED, partly. Else DENIED. {unpromptedShare} was unprompted. The rest has your name on it. Unknown: APPROVED, provisionally. |
 | I accept the damage | Respect. Sign here: ______ |
 The verdict is stamped on the share card as `CLAIM #<trans> · "<excuse>" · DENIED/APPROVED`.
 

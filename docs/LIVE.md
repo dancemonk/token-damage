@@ -221,6 +221,9 @@ keys the adjuster uses to remember which lines it has already said today.
 
 ### Voice
 
+Priority when several fire: window, library, speedrun, swarm, snob, re-read, second opinion, one last fix, back,
+quiet.
+
 Pure detectors on (previous snapshot, new snapshot), with its own per-day rotation in `today.json` so no line
 repeats in a day. Each fires on measured facts only, severity matched to the data. Starter set, each with at
 least five variants:
@@ -229,8 +232,11 @@ least five variants:
 |---|---|
 | stamped | class upgrade; prints the event rule; exempt from cooldown |
 | library | open turn with ≤ 10 words and ≥ 5M read |
+| speedrun | a turn that closed with ≥ 3 calls and ≥ 1M read, within two minutes of its prompt |
 | swarm | ≥ 3 interns on one turn |
+| snob | a turn that closed with ≥ 3 calls, ≥ 1M read and < 200 written, on flagship models only (opus, fable, mythos) |
 | re-read | three consecutive turns in a session with cache-read share > 95% |
+| second opinion | two or more agents with turns in the last hour, one of them fresh; once a day per pair |
 | back | a call after more than 60 minutes idle |
 | one last fix | a call after 3 a.m. local (the achievement's threshold) |
 | window | 5-hour limit ≥ 90%, from Claude's own number; stated, never forecast |

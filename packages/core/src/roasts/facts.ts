@@ -6,10 +6,11 @@ import {
   PRICES,
   type PriceTable,
 } from "../metrics/pricing.js";
-import type { UsageEvent } from "../types.js";
+import type { PromptEvent, UsageEvent } from "../types.js";
+import { detect, type Detected, type EarlierPrompt } from "./detectors.js";
 
 /** Measured, priced and estimated facts the observation engine may cite. Aggregates only, never text. */
-export interface Facts {
+export interface Facts extends Detected {
   tokens: number;
   input: number;
   cacheWrite: number;
@@ -51,6 +52,10 @@ export interface Facts {
 export interface FactsInput {
   aggregate: Aggregate;
   usage: readonly UsageEvent[];
+  /** Typed prompts; without them the facts that need to know who typed what stay unknown. */
+  prompts?: readonly PromptEvent[];
+  /** Prompts from before the period (session and agent only), so carried-over sessions count as typed. */
+  earlierPrompts?: readonly EarlierPrompt[];
   timeZone?: string;
   planUsd?: number;
   commits?: number;
@@ -90,6 +95,8 @@ export function clockLabel(hour: number, minute: number): string {
 export function buildFacts({
   aggregate,
   usage,
+  prompts,
+  earlierPrompts,
   timeZone,
   planUsd,
   commits,
@@ -184,6 +191,7 @@ export function buildFacts({
     planUsd: planUsd ?? null,
     kwh: kwh && { low: kwh.low ?? kwh.value, high: kwh.high ?? kwh.value },
     commits: commits ?? null,
+    ...detect(usage, prompts, earlierPrompts),
   };
 }
 
@@ -218,5 +226,14 @@ export function metricsOf(f: Facts): Record<string, number | null> {
       f.periodDays > 0 ? (f.tokens / Math.max(f.periodDays, 7)) * 7 : null,
     allSessionsEndBeforeNoon: f.allSessionsEndBeforeNoon ? 1 : 0,
     kwhHigh: f.kwh?.high ?? null,
+    // `?? null`: facts built before these existed (sample customers, old callers) leave them unknown.
+    snobOutput: f.snobSession?.output ?? null,
+    snobRead: f.snobSession?.read ?? null,
+    speedrunTokens: f.speedrun?.tokens ?? null,
+    speedrunSeconds: f.speedrun?.seconds ?? null,
+    burstSessions: f.burstSessions ?? null,
+    agentsInOneHour: f.agentsInOneHour ?? null,
+    cacheRebuilds: f.cacheRebuilds ?? null,
+    unpromptedShare: f.unpromptedShare ?? null,
   };
 }

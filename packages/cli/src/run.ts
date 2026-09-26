@@ -234,6 +234,7 @@ export async function run(options: Options, io: Io): Promise<number> {
   const opencodeStats = emptyOpenCodeStats();
   // One deduper for every agent: their dedupe keys never collide.
   const deduper = createDeduper();
+  const earlier = new Map<string, Source>();
   for (const scan of [
     scanClaude(roots, claudeStats),
     scanCodex(homes, codexStats),
@@ -242,6 +243,9 @@ export async function run(options: Options, io: Io): Promise<number> {
   ]) {
     for await (const record of scan) {
       if (record.ts >= p.from && record.ts < p.to) deduper.add(record);
+      // A session typed into before the period still counts as typed; keep its id and agent, never the text.
+      else if (record.kind === "prompt" && record.ts < p.from)
+        earlier.set(record.sessionId, record.source);
     }
   }
   const usage: UsageEvent[] = deduper.result();
@@ -269,7 +273,16 @@ export async function run(options: Options, io: Io): Promise<number> {
   }
 
   const agg = aggregate({ usage, prompts });
-  const facts = buildFacts({ aggregate: agg, usage, planUsd: options.planUsd });
+  const facts = buildFacts({
+    aggregate: agg,
+    usage,
+    prompts,
+    earlierPrompts: [...earlier].map(([sessionId, source]) => ({
+      sessionId,
+      source,
+    })),
+    planUsd: options.planUsd,
+  });
   const loaded = await loadState();
   // The first run shuffles the pool with a random seed; fixture runs stay reproducible.
   const state = loaded.deck
@@ -357,8 +370,14 @@ export async function run(options: Options, io: Io): Promise<number> {
     io.out("dispute this charge?");
     const label = (i: number) =>
       `[${i + 1}] ${(EXCUSES[i] ?? "").toLowerCase()}`;
-    io.out(` ${label(0).padEnd(19)}${label(1).padEnd(33)}${label(2)}`);
-    io.out(` ${label(3).padEnd(19)}${label(4).padEnd(33)}${label(5)}`);
+    // Two columns, filled row by row, so the menu stays well inside 80 columns however many excuses there are.
+    const left =
+      Math.max(...EXCUSES.map((_, i) => (i % 2 === 0 ? label(i).length : 0))) +
+      3;
+    for (let i = 0; i < EXCUSES.length; i += 2)
+      io.out(
+        ` ${label(i).padEnd(left)}${i + 1 < EXCUSES.length ? label(i + 1) : ""}`.trimEnd(),
+      );
     let disputed: { excuse: Excuse; verdict: Verdict } | undefined;
     const excuse = EXCUSES[Number(await ask("› ")) - 1] as Excuse | undefined;
     if (excuse) {

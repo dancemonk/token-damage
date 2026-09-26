@@ -27,8 +27,11 @@ you guessed 20,000,000. actual: 1,183,400,000.
 you were off by 59×.
 
 dispute this charge?
- [1] it was research   [2] the agent did it by itself   [3] it was one last fix
- [4] i was learning    [5] everyone does it             [6] i accept the damage
+ [1] it was research       [2] the agent did it by itself
+ [3] it was one last fix   [4] i was learning
+ [5] everyone does it      [6] the docs were wrong
+ [7] it was a demo         [8] i was refactoring
+ [9] the machines did it   [10] i accept the damage
 › 3
 CLAIM #0041 · "it was one last fix" · DENIED
 11 sessions started after midnight. that's not one.
@@ -98,6 +101,12 @@ DAMAGE CLASS
           ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
   ■·······················  4% to UNINSURABLE
 ------------------------------------------------
+ACHIEVEMENTS
+  ONE LAST FIX ...... last model call at 3:47 am
+  CACHE LORD
+    over 95% of input from cache for a week
+  MIDDLE MANAGER ....... 12 subagents in one day
+------------------------------------------------
 ADJUSTER'S NOTE
   for every word you typed, the machine read
   80,558 tokens. that's the great gatsby,
@@ -129,6 +138,9 @@ day, or per `k` days so it fits 44 marks, grouped from the newest day back; `·`
 names the tallest mark (its day, or its days), by tokens like the chart, not by price. Under the stamp: how far the total is into its class, 24 wide, and the class above,
 or `top of the scale`. `--json` carries the same facts as `measured.daily` and `damageClass.next` /
 `damageClass.progress`.
+
+ACHIEVEMENTS lists what the period earned, each with its true reason: a dotted leader when it fits, otherwise
+the reason on its own lines under the name. The share card prints the names only, in one row.
 
 The "YOUR PLAN" block appears only with `--plan` or a configured plan. With more than one agent in the period, a
 BY AGENT block (same columns, most tokens first) sits above BY MODEL. Model rows follow the name people pick:

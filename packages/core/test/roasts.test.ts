@@ -4,6 +4,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  type Excuse,
+  type Detected,
   aggregate,
   buildFacts,
   damageClass,
@@ -113,6 +115,33 @@ function randomFacts(next: () => number): Facts {
       next() < 0.5 ? null : ([20, 100, 200][Math.floor(next() * 3)] ?? 200),
     kwh: next() < 0.1 ? null : { low, high: low * 5 },
     commits: next() < 0.5 ? null : Math.floor(next() * 40),
+    ...randomDetected(next, logUniform),
+  };
+}
+
+function randomDetected(
+  next: () => number,
+  logUniform: (lo: number, hi: number) => number,
+): Detected {
+  const agentsInOneHour = Math.floor(next() * 5);
+  return {
+    snobSession:
+      next() < 0.7
+        ? null
+        : {
+            output: Math.floor(next() * 1000),
+            read: logUniform(1e5, 1e8),
+            calls: logUniform(1, 200),
+          },
+    speedrun:
+      next() < 0.7
+        ? null
+        : { tokens: logUniform(1e5, 1e8), seconds: Math.floor(next() * 300) },
+    burstSessions: next() < 0.2 ? null : Math.floor(next() * 20),
+    agentsInOneHour,
+    agentPair: agentsInOneHour >= 2 ? ["claude-code", "codex"] : null,
+    cacheRebuilds: Math.floor(next() * 20),
+    unpromptedShare: next() < 0.2 ? null : next(),
   };
 }
 
@@ -192,7 +221,17 @@ describe("severity bands", () => {
 });
 
 describe("templates", () => {
-  const full = { ...(customers[0]?.facts as Facts), commits: 3 };
+  const full: Facts = {
+    ...(customers[0]?.facts as Facts),
+    commits: 3,
+    snobSession: { output: 212, read: 3_000_000, calls: 7 },
+    speedrun: { tokens: 1_300_000, seconds: 94 },
+    burstSessions: 11,
+    agentsInOneHour: 2,
+    agentPair: ["claude-code", "codex"],
+    cacheRebuilds: 4,
+    unpromptedShare: 0.41,
+  };
 
   it("every family has at least 5 variants and every variant renders", () => {
     for (const family of FAMILIES) {
@@ -207,6 +246,66 @@ describe("templates", () => {
       expect(v.text).not.toMatch(/!/);
       expect(v.text).not.toMatch(/\p{Extended_Pictographic}/u);
     }
+  });
+});
+
+describe("observations from session shapes", () => {
+  const base = customers[2]?.facts as Facts;
+  const families = (over: Partial<Facts>) =>
+    observe({ ...base, ...over }).candidates.map((c) => c.family);
+
+  it.each([
+    [
+      "model-snob",
+      { snobSession: { output: 212, read: 3e6, calls: 7 } },
+      { snobSession: { output: 212, read: 1.9e6, calls: 7 } },
+    ],
+    [
+      "speedrun",
+      { speedrun: { tokens: 1.3e6, seconds: 94 } },
+      { speedrun: { tokens: 1.3e6, seconds: 5 } },
+    ],
+    ["churn", { burstSessions: 6 }, { burstSessions: 5 }],
+    [
+      "two-agents",
+      { agentsInOneHour: 2, agentPair: ["claude-code", "codex"] },
+      { agentsInOneHour: 1, agentPair: null },
+    ],
+    ["cache-rebuild", { cacheRebuilds: 3 }, { cacheRebuilds: 2 }],
+    ["unprompted", { unpromptedShare: 0.25 }, { unpromptedShare: 0.24 }],
+  ] as [string, Partial<Facts>, Partial<Facts>][])(
+    "%s fires on data that earns it, and not just below",
+    (id, hit, miss) => {
+      expect(families(hit)).toContain(id);
+      expect(families(miss)).not.toContain(id);
+    },
+  );
+
+  it("names the two agents in plain words", () => {
+    const note = observe({
+      ...base,
+      agentsInOneHour: 2,
+      agentPair: ["claude-code", "codex"],
+    }).candidates.find((c) => c.family === "two-agents");
+    expect(note?.text).toMatch(/^Claude Code and Codex/);
+  });
+});
+
+describe("session-shape copy claims only what was measured", () => {
+  const texts = (id: string) =>
+    FAMILIES.find((f) => f.id === id)!.variants.map((v) => v.text);
+
+  it("model snob knows the flagship family, not the most expensive model", () => {
+    for (const t of texts("model-snob"))
+      expect(t).not.toMatch(/most expensive/i);
+  });
+
+  it("two agents share an hour; nothing says they overlapped", () => {
+    for (const t of texts("two-agents")) expect(t).not.toMatch(/overlap/i);
+  });
+
+  it("a speedrun session may hold more than one prompt", () => {
+    for (const t of texts("speedrun")) expect(t).not.toMatch(/a prompt,/);
   });
 });
 
@@ -273,6 +372,58 @@ describe("dispute", () => {
   it("does not deny what the logs don't show", () => {
     expect(dispute("It was one last fix", c41.facts).status).toBe("DENIED");
     expect(dispute("It was one last fix", c43.facts).status).toBe("APPROVED");
+  });
+
+  it("rules on the new excuses with the period's own numbers", () => {
+    const f = c41.facts as Facts;
+    const v = (excuse: Excuse, over: Partial<Facts> = {}) =>
+      dispute(excuse, { ...f, ...over });
+    // cacheShare = cacheRead / (input + cacheWrite + cacheRead)
+    expect(
+      v("The docs were wrong", { input: 0, cacheWrite: 50, cacheRead: 950 }),
+    ).toEqual({
+      status: "DENIED",
+      text: "DENIED. 95% of the reading was re-reading. The docs didn't change; the questions did.",
+    });
+    expect(
+      v("The docs were wrong", { input: 0, cacheWrite: 500, cacheRead: 500 })
+        .status,
+    ).toBe("APPROVED");
+    expect(v("It was a demo", { sessions: 1 })).toEqual({
+      status: "APPROVED",
+      text: "APPROVED. One session. A demo. Sure.",
+    });
+    expect(v("It was a demo", { sessions: 94 })).toEqual({
+      status: "DENIED",
+      text: "DENIED. 94 sessions. Demos end.",
+    });
+    expect(v("I was refactoring", { tokens: 1000, output: 4 }).text).toBe(
+      "DENIED. Output was 0.4% of the total. Refactoring usually changes something.",
+    );
+    expect(v("I was refactoring", { tokens: 1000, output: 300 }).status).toBe(
+      "APPROVED",
+    );
+    expect(v("The machines did it", { unpromptedShare: 0.6 })).toEqual({
+      status: "APPROVED",
+      text: "APPROVED, partly. 60% of the tokens were read in sessions you never typed into. The rest were you.",
+    });
+    expect(v("The machines did it", { unpromptedShare: 0.1 })).toEqual({
+      status: "DENIED",
+      text: "DENIED. 10% was unprompted. The rest has your name on it.",
+    });
+    // Without prompt data the logs can't say who typed what, so no denial.
+    expect(v("The machines did it", { unpromptedShare: null }).status).toBe(
+      "APPROVED",
+    );
+  });
+
+  it("never prints NaN or undefined, even for facts built before a field existed", () => {
+    for (const c of customers)
+      for (const excuse of EXCUSES)
+        expect(
+          dispute(excuse, c.facts as Facts).text,
+          `${c.trans} ${excuse}`,
+        ).not.toMatch(/NaN|undefined|Infinity/);
   });
 
   it("stamps the claim", () => {
