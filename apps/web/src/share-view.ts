@@ -4,6 +4,7 @@ import {
   classProgress,
   damageClass,
   decodeShare,
+  MAX_LINK_AGENTS,
   ramX,
   SHARE_BASE,
   type SharePayload,
@@ -61,7 +62,7 @@ function valid(p: SharePayload): boolean {
     (p.agents === undefined ||
       (strings(p.agents) &&
         p.agents.length >= 1 &&
-        p.agents.length <= 16 &&
+        p.agents.length <= MAX_LINK_AGENTS &&
         new Set(p.agents).size === p.agents.length)) &&
     (p.partly === undefined || p.partly === true)
   );

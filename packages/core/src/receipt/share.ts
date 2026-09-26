@@ -4,6 +4,9 @@ import { AGENT_NAMES, type Receipt } from "./model.js";
 
 export const SHARE_BASE = "https://tokendamage.com/r#v1.";
 
+/** The most agent ids a link carries (most tokens first); the site rejects a longer list. */
+export const MAX_LINK_AGENTS = 16;
+
 /**
  * Everything a share link may carry. Aggregates only: no text, no paths, no project
  * names, no time zone. A key outside this list is a bug; `decodeShare` rejects it.
@@ -123,7 +126,9 @@ export function sharePayload(
     }),
     ...(r.note && { note: `${r.note.family}.${r.note.variant}` }),
     ...(last && { last }),
-    ...(r.byAgent.length > 0 && { agents: r.byAgent.map((a) => a.agent) }),
+    ...(r.byAgent.length > 0 && {
+      agents: r.byAgent.slice(0, MAX_LINK_AGENTS).map((a) => a.agent),
+    }),
     ...(r.priced.partlyPriced && { partly: true as const }),
   };
 }

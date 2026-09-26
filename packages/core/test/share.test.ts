@@ -11,6 +11,7 @@ import {
   decodeShare,
   dispute,
   emptyStats,
+  MAX_LINK_AGENTS,
   observe,
   receiptSvg,
   scanClaude,
@@ -20,6 +21,7 @@ import {
   sharePreview,
   shareUrl,
   type Receipt,
+  type Source,
 } from "../src/index.js";
 import { writeSampleMonth } from "../scripts/sample-month.js";
 
@@ -189,6 +191,19 @@ describe("share link", () => {
     expect(preview).toContain("agents: codex, claude-code");
     expect(preview).toContain(
       "prices: partly (some models have no list price)",
+    );
+  });
+
+  it("names at most MAX_LINK_AGENTS agents, the ones with the most tokens", () => {
+    const many: Receipt = {
+      ...receipt,
+      byAgent: Array.from({ length: MAX_LINK_AGENTS + 1 }, (_, i) => ({
+        ...receipt.byAgent[0]!,
+        agent: `a${i}` as Source,
+      })),
+    };
+    expect(sharePayload(many).agents).toEqual(
+      Array.from({ length: MAX_LINK_AGENTS }, (_, i) => `a${i}`),
     );
   });
 });
