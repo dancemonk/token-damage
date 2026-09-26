@@ -44,6 +44,20 @@ export function damageFloor(tokens: number): number {
     (CLASSES.at(-1) as [number, DamageClass]))[0];
 }
 
+/** The next class and how far through the current one `tokens` is, 0–1; progress is 1 at the top of the scale. */
+export function classProgress(tokens: number): {
+  next: { name: string; at: number } | null;
+  progress: number;
+} {
+  const next = nextDamageClass(tokens);
+  if (!next) return { next, progress: 1 };
+  const floor = damageFloor(tokens);
+  return {
+    next,
+    progress: Math.min(1, Math.max(0, (tokens - floor) / (next.at - floor))),
+  };
+}
+
 /** The token count where the named class starts; 0 (PAPER CUT's floor) for a name not in the table. */
 export function floorOf(name: string): number {
   return (CLASSES.find(([, c]) => c.name === name) ??

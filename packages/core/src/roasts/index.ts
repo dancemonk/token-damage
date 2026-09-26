@@ -4,6 +4,7 @@ export {
   type Achievement,
 } from "./achievements.js";
 export {
+  classProgress,
   damageClass,
   damageFloor,
   nextDamageClass,

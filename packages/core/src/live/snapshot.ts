@@ -1,10 +1,6 @@
 import { aggregate } from "../aggregate/index.js";
 import { listPrice, priceFor } from "../metrics/pricing.js";
-import {
-  damageClass,
-  damageFloor,
-  nextDamageClass,
-} from "../roasts/classes.js";
+import { classProgress, damageClass } from "../roasts/classes.js";
 import type { PromptEvent, TokenSums, UsageEvent, Value } from "../types.js";
 import { localDay } from "./day.js";
 import { buildTurns, type Turn } from "./turns.js";
@@ -83,12 +79,9 @@ export function buildSnapshot({
   const notPriced = matches.length > 0 && matches.every((m) => !m);
   const partlyPriced = matches.some((m) => m) && matches.some((m) => !m);
 
-  const next = nextDamageClass(total);
+  const { next, progress } = classProgress(total);
   const current = damageClass(total);
-  const floor = damageFloor(total);
-  const pct = next
-    ? Math.min(100, Math.max(0, ((total - floor) / (next.at - floor)) * 100))
-    : 100;
+  const pct = progress * 100;
 
   const buckets = new Array<number>(RATE_BUCKETS).fill(0);
   const windowStart = now - RATE_WINDOW_MS;
