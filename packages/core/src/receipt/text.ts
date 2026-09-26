@@ -116,29 +116,48 @@ function table(heading: string, rows: [string, PriceRow][]): Line[] {
   ];
 }
 
-/** Daily tokens as one mark per `k` days, grouped from the newest day back so only the oldest mark is partial. */
+/**
+ * Daily tokens as one mark per `k` days, grouped from the newest day back so only the oldest mark is partial. `▲`
+ * names the tallest mark (the newest on a tie): a token fact, like the chart, never the priced busiest day.
+ */
 function byDay(r: Receipt): Line[] {
   const daily = r.measured.daily;
   if (daily.length < 2) return [];
   const k = Math.ceil(daily.length / 44);
-  const marks: number[] = [];
-  for (let end = daily.length; end > 0; end -= k)
-    marks.unshift(
-      daily
-        .slice(Math.max(0, end - k), end)
-        .reduce((sum, d) => sum + d.tokens.value, 0),
-    );
+  const marks: { tokens: number; first: string; last: string }[] = [];
+  for (let end = daily.length; end > 0; end -= k) {
+    const span = daily.slice(Math.max(0, end - k), end);
+    marks.unshift({
+      tokens: span.reduce((sum, d) => sum + d.tokens.value, 0),
+      first: span[0]!.day,
+      last: span.at(-1)!.day,
+    });
+  }
   const out: Line[] = [
     {
       text: leader("BY DAY", k === 1 ? "1 day = 1 mark" : `${k} days = 1 mark`),
     },
-    { text: `  ${sparkline(marks, { zero: "·" })}` },
+    {
+      text: `  ${sparkline(
+        marks.map((m) => m.tokens),
+        { zero: "·" },
+      )}`,
+    },
   ];
-  const busiest = r.priced.mostExpensiveDay;
-  const i = busiest ? daily.findIndex((d) => d.day === busiest.day) : -1;
-  if (busiest && i >= 0) {
-    const col = 2 + marks.length - 1 - Math.floor((daily.length - 1 - i) / k);
-    const label = monthDay(busiest.day);
+  const top = marks.reduce(
+    (best, m, i) =>
+      m.tokens > 0 && m.tokens >= marks[best]!.tokens ? i : best,
+    0,
+  );
+  const tallest = marks[top]!;
+  if (tallest.tokens > 0) {
+    const col = 2 + top;
+    const label =
+      tallest.first === tallest.last
+        ? monthDay(tallest.first)
+        : tallest.first.slice(0, 7) === tallest.last.slice(0, 7)
+          ? `${monthDay(tallest.first)}–${Number(tallest.last.slice(8, 10))}`
+          : `${monthDay(tallest.first)}–${monthDay(tallest.last)}`;
     out.push({
       text:
         col + 2 + label.length <= WIDTH

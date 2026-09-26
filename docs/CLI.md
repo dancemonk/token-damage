@@ -126,7 +126,7 @@ empty, `▪` a share too small for one square; every bar rounds down, so only a 
 `re-read from cache`: the cache share, 44 wide. Under each BY AGENT and BY MODEL row, when there are two or more:
 that row's share of the tokens, 40 wide, then the rounded percentage. BY DAY (periods of 2+ days): one mark per
 day, or per `k` days so it fits 44 marks, grouped from the newest day back; `·` is a day with no calls and `▲`
-points at MOST EXPENSIVE DAY. Under the stamp: how far the total is into its class, 24 wide, and the class above,
+names the tallest mark (its day, or its days), by tokens like the chart, not by price. Under the stamp: how far the total is into its class, 24 wide, and the class above,
 or `top of the scale`. `--json` carries the same facts as `measured.daily` and `damageClass.next` /
 `damageClass.progress`.
 

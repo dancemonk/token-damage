@@ -303,6 +303,31 @@ describe("bars", () => {
     expect(after(lines, "BY DAY")).toBe(`  ${"·".repeat(33)}█`);
   });
 
+  it("points at the day with the most tokens, not the most expensive one", () => {
+    // Sep 10 reads 200k cached tokens (cheap); Sep 20 writes 50k output tokens (dear).
+    const r = receipt([
+      on("2026-09-10", { cacheRead: 200_000 }),
+      on("2026-09-20", { output: 50_000 }),
+    ]);
+    expect(r.priced.mostExpensiveDay?.day).toBe("2026-09-20");
+    const lines = text(r);
+    expect(lines[lines.findIndex((l) => l.startsWith("BY DAY")) + 2]).toBe(
+      `${" ".repeat(18)}▲ sep 10`,
+    );
+  });
+
+  it("names the days a long period's tallest mark covers", () => {
+    const lines = text(
+      receipt(
+        [on("2026-09-21", { cacheRead: 90_000 }), on("2026-09-23")],
+        days("2026-06-16", "2026-09-23", 100),
+      ),
+    );
+    expect(lines[lines.findIndex((l) => l.startsWith("BY DAY")) + 2]).toBe(
+      `${" ".repeat(35)}▲ sep 21–23`,
+    );
+  });
+
   it("leaves out the day chart for a one-day receipt", () => {
     const lines = text(
       receipt([claudeCall], days("2026-09-20", "2026-09-20", 1)),
