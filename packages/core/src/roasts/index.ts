@@ -63,3 +63,4 @@ export {
   type Deck,
 } from "./deck.js";
 export { POOL_EN, type PoolKind, type PoolLine } from "./pool.js";
+export type { Detected } from "./detectors.js";

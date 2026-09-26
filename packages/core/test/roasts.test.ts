@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  type Detected,
   aggregate,
   buildFacts,
   damageClass,
@@ -113,6 +114,33 @@ function randomFacts(next: () => number): Facts {
       next() < 0.5 ? null : ([20, 100, 200][Math.floor(next() * 3)] ?? 200),
     kwh: next() < 0.1 ? null : { low, high: low * 5 },
     commits: next() < 0.5 ? null : Math.floor(next() * 40),
+    ...randomDetected(next, logUniform),
+  };
+}
+
+function randomDetected(
+  next: () => number,
+  logUniform: (lo: number, hi: number) => number,
+): Detected {
+  const agentsInOneHour = Math.floor(next() * 5);
+  return {
+    snobSession:
+      next() < 0.7
+        ? null
+        : {
+            output: Math.floor(next() * 1000),
+            read: logUniform(1e5, 1e8),
+            calls: logUniform(1, 200),
+          },
+    speedrun:
+      next() < 0.7
+        ? null
+        : { tokens: logUniform(1e5, 1e8), seconds: Math.floor(next() * 300) },
+    burstSessions: next() < 0.2 ? null : Math.floor(next() * 20),
+    agentsInOneHour,
+    agentPair: agentsInOneHour >= 2 ? ["claude-code", "codex"] : null,
+    cacheRebuilds: Math.floor(next() * 20),
+    unpromptedShare: next() < 0.2 ? null : next(),
   };
 }
 

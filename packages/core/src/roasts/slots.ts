@@ -1,6 +1,7 @@
 import { sig2 } from "../metrics/format.js";
 import type { Facts } from "./facts.js";
 import { metricsOf } from "./facts.js";
+import { AGENT_NAMES } from "../agents.js";
 
 const WORDS = [
   "zero",
@@ -114,6 +115,19 @@ export function slotsOf(f: Facts): Record<string, string> {
     s.fridge = range(f.kwh.low / 33, f.kwh.high / 33);
     s.phone = range((f.kwh.low * 1000) / 15, (f.kwh.high * 1000) / 15);
   }
+  if (f.snobSession) {
+    s.snobOutput = f.snobSession.output.toLocaleString("en-US");
+    s.snobRead = tokenWords(f.snobSession.read);
+  }
+  if (f.speedrun) {
+    s.speedrunTokens = tokenWords(f.speedrun.tokens);
+    s.speedrunSeconds = String(f.speedrun.seconds);
+  }
+  if (f.burstSessions) s.BurstSessions = cap(numberWord(f.burstSessions));
+  if (f.agentPair)
+    s.agentPair = `${AGENT_NAMES[f.agentPair[0]]} and ${AGENT_NAMES[f.agentPair[1]]}`;
+  if (f.cacheRebuilds) s.cacheRebuilds = numberWord(f.cacheRebuilds);
+  if (f.unpromptedShare) s.unpromptedShare = pct(f.unpromptedShare);
   return s;
 }
 

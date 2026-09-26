@@ -269,7 +269,12 @@ export async function run(options: Options, io: Io): Promise<number> {
   }
 
   const agg = aggregate({ usage, prompts });
-  const facts = buildFacts({ aggregate: agg, usage, planUsd: options.planUsd });
+  const facts = buildFacts({
+    aggregate: agg,
+    usage,
+    prompts,
+    planUsd: options.planUsd,
+  });
   const loaded = await loadState();
   // The first run shuffles the pool with a random seed; fixture runs stay reproducible.
   const state = loaded.deck
