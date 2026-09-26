@@ -100,6 +100,11 @@ describe("agent flags", () => {
       parseLiveOptions(["--fixtures", "/f", "--codex-home", "/c"]).dirs.codex,
     ).toBe("/f");
   });
+  it("says Gemini CLI is for API-key users now that Antigravity replaced it", () => {
+    expect(USAGE).toContain(
+      "Gemini CLI data dir, API-key and enterprise users",
+    );
+  });
   it("lists every agent's flag in both help texts", () => {
     for (const a of ADAPTERS) {
       expect(USAGE).toContain(`  --${a.flag} <path>`);

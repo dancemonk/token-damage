@@ -6,7 +6,8 @@ import { emptyGeminiStats } from "./parse.js";
 export const geminiAdapter: Adapter = {
   id: "gemini",
   flag: "gemini-dir",
-  help: "Gemini CLI data dir (default ~/.gemini/tmp, or GEMINI_DATA_DIR)",
+  // Retired for personal accounts on 2026-06-18 (replaced by Antigravity CLI); API keys and enterprise still run it.
+  help: "Gemini CLI data dir, API-key and enterprise users (default ~/.gemini/tmp, or GEMINI_DATA_DIR)",
   fixtureDir: "tmp",
   env: "GEMINI_DATA_DIR",
   roots: geminiDirs,

@@ -169,7 +169,8 @@ The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 `schema/receipt.schema.json`; tiers included on every value), `--fixtures <dir>` (a Claude Code config dir, a
 Codex home, a Gemini CLI home, an OpenCode data dir and an Antigravity data dir in one: `projects/`, `sessions/`,
 `tmp/`, `opencode/`, `antigravity/`), `--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>`
-(same as `CODEX_HOME`), `--gemini-dir <path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as
+(same as `CODEX_HOME`), `--gemini-dir <path>` (same as `GEMINI_DATA_DIR`; Gemini CLI is for API-key and enterprise users since
+June 2026, when Antigravity replaced it), `--opencode-dir <path>` (same as
 `OPENCODE_DATA_DIR`), `--antigravity-dir <path>` (same as `ANTIGRAVITY_DATA_DIR`).
 
 Colour: on in a terminal, off in a pipe. `FORCE_COLOR=1` colours a pipe too; `FORCE_COLOR=0`, `NO_COLOR` or
