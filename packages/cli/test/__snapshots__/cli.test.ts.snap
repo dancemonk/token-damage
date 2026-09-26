@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`token-damage --fixtures sample-month --no-anim --plan 200 > prints the receipt in docs/CLI.md exactly 1`] = `
-"token-damage 0.4.2
+"token-damage 0.4.3
 reads agent logs on this machine · uploads nothing · no network calls
 
 scanning <dir>/sample-month/projects …
