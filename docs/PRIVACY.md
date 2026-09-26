@@ -2,9 +2,11 @@
 
 ## Promise (public page text)
 Token Damage runs on your computer. It reads the usage records Claude Code already keeps in `~/.claude`
-(and Codex in `~/.codex`, Gemini CLI in `~/.gemini/tmp`, OpenCode in `~/.local/share/opencode`), counts tokens,
-calls, times and the number of words you typed, and prints a receipt. OpenCode's database is opened read-only;
-the account and credential tables in it are never queried.
+(and Codex in `~/.codex`, Antigravity in `~/.gemini/antigravity-cli`, Grok Build in `~/.grok`, OpenCode in
+`~/.local/share/opencode`, Gemini CLI in `~/.gemini/tmp`), counts tokens, calls, times and the number of words you
+typed, and prints a receipt. OpenCode's and Antigravity's databases are opened read-only; OpenCode's account and
+credential tables are never queried, and in Antigravity's only the usage numbers, ids, model names and times are
+decoded.
 
 It never reads your code. It never keeps your prompts: words are counted in memory and the text is discarded.
 It never stores project names, folder paths, branch names or file names. It makes no network requests.
@@ -51,5 +53,5 @@ It writes files of its own — `~/.token-damage/state.json`, and, if you use `li
   per-launch token in the URL, Host-header check, strict CSP, no CORS.
 
 ## Not affiliated
-Token Damage is not affiliated with Anthropic, OpenAI, Google or the makers of OpenCode. Product names are used
+Token Damage is not affiliated with Anthropic, OpenAI, Google, xAI or the makers of OpenCode. Product names are used
 to describe compatibility.

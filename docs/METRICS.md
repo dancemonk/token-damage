@@ -52,7 +52,13 @@ not charged. A Gemini model Google no longer lists is priced as the nearest vers
 `flash`, `pro`: `gemini-3-pro-preview` → `gemini-3.1-pro-preview`), marked `est. model`. `gemini-3.6-flash`,
 `-3.7-flash` and `-3.8-flash` are promotional prices through 2026-12-31; they double on 2027-01-01.
 
-OpenCode runs models from any provider. Its calls are priced by model name from the same table (Claude models at
+xAI rows (Grok Build) are the list prices from docs.x.ai. xAI bills a request whose prompt reaches 200K tokens at
+the long-context rate, but Grok Build records a turn, not a request: a turn sums several requests, so the boundary
+is lost and no long-context tier is applied (the owner's real turn prices at exactly what Grok recorded it cost).
+xAI lists no cache-write price, so cache writes cost the input price. Grok Build's `-build` model alias is priced
+as its base model. Grok's own `costUsdTicks` is not used.
+
+OpenCode and Antigravity run models from any provider. Their calls are priced by model name from the same table (Claude models at
 Anthropic's price, `gpt-*` at OpenAI's, `gemini-*` at Google's, with those providers' long-context rules). The
 `cost` OpenCode stores is not used. A model with no row here (e.g. `glm-5.2`, `kimi-k2.7-code`) is "not priced".
 Totals that leave out unpriced tokens say so: `≡ $1.56+` means at least that much (`partlyPriced` in the JSON).

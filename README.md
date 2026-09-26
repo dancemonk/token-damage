@@ -16,7 +16,7 @@
 npx token-damage
 ```
 
-Works with **Claude Code**, **Codex**, **Gemini CLI** and **OpenCode**. Runs on your machine; nothing is uploaded.
+Works with **Claude Code**, **Codex**, **Antigravity**, **Grok Build**, **OpenCode** and **Gemini CLI**. Runs on your machine; nothing is uploaded.
 
 You typed a paragraph. It read a library.
 
@@ -125,7 +125,7 @@ After the receipt, `c` saves a 1080×1920 card and `s` makes a share link. Both 
 --no-anim      print it all at once
 ```
 
-`npx token-damage --help` lists the rest. Needs Node 22 or newer (22.13 or newer to read OpenCode).
+`npx token-damage --help` lists the rest. Needs Node 22 or newer (22.13 or newer to read OpenCode and Antigravity).
 
 ## FAQ
 
@@ -137,7 +137,7 @@ After the receipt, `c` saves a 1080×1920 card and `s` makes a share link. Both 
 
 ## Privacy
 
-It reads Claude Code's transcripts and retention setting, Codex's session logs, Gemini CLI's chats and OpenCode's message database (read-only), and nothing else. Your prompts are counted, never stored. The live view keeps one file, `~/.token-damage/today.json`, with numbers and hashed file names only. More at [tokendamage.com/privacy](https://tokendamage.com/privacy).
+It reads Claude Code's transcripts and retention setting, Codex's session logs, Antigravity's conversation databases (read-only) and prompt history, Grok Build's session logs, OpenCode's message database (read-only) and Gemini CLI's chats (Gemini CLI now serves API-key and enterprise users; Antigravity replaced it for everyone else), and nothing else. Your prompts are counted, never stored. The live view keeps one file, `~/.token-damage/today.json`, with numbers and hashed file names only. More at [tokendamage.com/privacy](https://tokendamage.com/privacy).
 
 ## How the numbers work
 
