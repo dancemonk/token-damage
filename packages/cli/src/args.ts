@@ -31,10 +31,40 @@ function dirFlags(values: { readonly [key: string]: unknown }): DirFlags {
   return { dirs, fixtures: f !== undefined };
 }
 
-/** The agents' flag lines in `--help`, descriptions aligned with the other options. */
-const DIR_HELP = ADAPTERS.map(
-  (a) => `${`  --${a.flag} <path>`.padEnd(23)} ${a.help}`,
-).join("\n");
+/**
+ * The agents' flag lines in `--help`, descriptions at column 24 like the other options; a flag too long for
+ * that gutter gets its description on the next line.
+ */
+export function flagLines(
+  adapters: readonly { flag: string; help: string }[],
+): string {
+  return adapters
+    .map((a) => {
+      const left = `  --${a.flag} <path>`;
+      return left.length <= 23
+        ? `${left.padEnd(23)} ${a.help}`
+        : `${left}\n${" ".repeat(24)}${a.help}`;
+    })
+    .join("\n");
+}
+
+/** The agents' flags on `live --help`, comma-separated, wrapped at 80 columns. */
+export function flagList(adapters: readonly { flag: string }[]): string {
+  const lines: string[] = [];
+  let line = " ";
+  adapters.forEach((a, i) => {
+    const word = ` --${a.flag}${i < adapters.length - 1 ? "," : " <path>"}`;
+    if (line.length + word.length > 80) {
+      lines.push(line);
+      line = " ";
+    }
+    line += word;
+  });
+  lines.push(line);
+  return lines.join("\n");
+}
+
+const DIR_HELP = flagLines(ADAPTERS);
 
 function clockFlag(value: string | undefined): number | undefined {
   if (value === undefined) return undefined;
@@ -70,7 +100,7 @@ export const LIVE_USAGE = `token-damage live: today's damage as it happens
   --once             print one JSON snapshot and exit
   --fixtures <dir>   read a fixture corpus instead of your logs (nothing is cached)
   --clock <iso>      pretend it is this time (demos, screenshots)
-  ${ADAPTERS.map((a) => `--${a.flag}`).join(", ")} <path>
+${flagList(ADAPTERS)}
 
 q quits.`;
 

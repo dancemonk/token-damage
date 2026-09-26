@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { ADAPTERS, codexHomes } from "@token-damage/core";
 import {
   command,
+  flagLines,
+  flagList,
   LIVE_USAGE,
   parseLiveOptions,
   parseStatuslineOptions,
@@ -103,5 +105,41 @@ describe("agent flags", () => {
       expect(USAGE).toContain(`  --${a.flag} <path>`);
       expect(LIVE_USAGE).toContain(`--${a.flag}`);
     }
+  });
+});
+
+describe("agent flag help", () => {
+  it("aligns short flags and moves a long flag's description to the next line", () => {
+    expect(
+      flagLines([
+        { flag: "codex-home", help: "Codex home" },
+        { flag: "antigravity-dir", help: "Antigravity data dir" },
+      ]),
+    ).toBe(
+      [
+        "  --codex-home <path>   Codex home",
+        "  --antigravity-dir <path>",
+        "                        Antigravity data dir",
+      ].join("\n"),
+    );
+  });
+  it("wraps the live flag list at 80 columns", () => {
+    const flags = [
+      "config-dir",
+      "codex-home",
+      "gemini-dir",
+      "opencode-dir",
+      "antigravity-dir",
+      "grok-home",
+    ];
+    const text = flagList(flags.map((flag) => ({ flag })));
+    for (const line of text.split("\n"))
+      expect(line.length).toBeLessThanOrEqual(80);
+    expect(text.replace(/\s+/g, " ").trim()).toBe(
+      "--config-dir, --codex-home, --gemini-dir, --opencode-dir, --antigravity-dir, --grok-home <path>",
+    );
+    expect(flagList(flags.slice(0, 4).map((flag) => ({ flag })))).toBe(
+      "  --config-dir, --codex-home, --gemini-dir, --opencode-dir <path>",
+    );
   });
 });
