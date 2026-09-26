@@ -1,0 +1,158 @@
+{
+  "timeZone": "UTC",
+  "totals": {
+    "tokens": {
+      "input": 280623,
+      "cacheWrite": 50,
+      "cacheWrite1h": 0,
+      "cacheRead": 463030,
+      "output": 4034
+    },
+    "byModel": {
+      "grok-4.7": {
+        "input": 280273,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 462930,
+        "output": 4014
+      },
+      "grok-4.5": {
+        "input": 350,
+        "cacheWrite": 50,
+        "cacheWrite1h": 0,
+        "cacheRead": 100,
+        "output": 20
+      }
+    },
+    "bySource": {
+      "grok": {
+        "grok-4.7": {
+          "input": 280273,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 462930,
+          "output": 4014
+        },
+        "grok-4.5": {
+          "input": 350,
+          "cacheWrite": 50,
+          "cacheWrite1h": 0,
+          "cacheRead": 100,
+          "output": 20
+        }
+      }
+    },
+    "calls": 20,
+    "sessions": 2,
+    "activeDays": 2,
+    "subagents": 0,
+    "prompts": 4,
+    "wordsTyped": 7,
+    "firstCall": "2026-09-22T01:01:38.598Z",
+    "lastCall": "2026-09-23T10:01:30.000Z",
+    "longestSession": {
+      "start": "2026-09-23T10:01:00.000Z",
+      "end": "2026-09-23T10:01:30.000Z"
+    }
+  },
+  "daily": [
+    {
+      "day": "2026-09-22",
+      "byModel": {
+        "grok-4.7": {
+          "input": 279623,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 462080,
+          "output": 3962
+        }
+      },
+      "bySource": {
+        "grok": {
+          "grok-4.7": {
+            "input": 279623,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 462080,
+            "output": 3962
+          }
+        }
+      },
+      "calls": 13,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 3,
+      "wordsTyped": 3,
+      "firstCall": "2026-09-22T01:01:38.598Z",
+      "lastCall": "2026-09-22T01:01:38.598Z"
+    },
+    {
+      "day": "2026-09-23",
+      "byModel": {
+        "grok-4.5": {
+          "input": 350,
+          "cacheWrite": 50,
+          "cacheWrite1h": 0,
+          "cacheRead": 100,
+          "output": 20
+        },
+        "grok-4.7": {
+          "input": 650,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 850,
+          "output": 52
+        }
+      },
+      "bySource": {
+        "grok": {
+          "grok-4.5": {
+            "input": 350,
+            "cacheWrite": 50,
+            "cacheWrite1h": 0,
+            "cacheRead": 100,
+            "output": 20
+          },
+          "grok-4.7": {
+            "input": 650,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 850,
+            "output": 52
+          }
+        }
+      },
+      "calls": 7,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 1,
+      "wordsTyped": 4,
+      "firstCall": "2026-09-23T10:01:00.000Z",
+      "lastCall": "2026-09-23T10:01:30.000Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "01a0c69c-e334-7072-aaa7-b240f9a90892",
+      "start": "2026-09-22T01:01:38.598Z",
+      "end": "2026-09-22T01:01:38.598Z",
+      "calls": 13,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-09-22T01:01:38.598Z",
+        "end": "2026-09-22T01:01:38.598Z"
+      }
+    },
+    {
+      "sessionId": "trap-a",
+      "start": "2026-09-23T10:01:00.000Z",
+      "end": "2026-09-23T10:01:30.000Z",
+      "calls": 7,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-09-23T10:01:00.000Z",
+        "end": "2026-09-23T10:01:30.000Z"
+      }
+    }
+  ]
+}

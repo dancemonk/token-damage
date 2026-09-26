@@ -1,5 +1,5 @@
 export type Source =
-  "claude-code" | "codex" | "gemini" | "opencode" | "antigravity";
+  "claude-code" | "codex" | "gemini" | "opencode" | "antigravity" | "grok";
 
 /** Truth tiers (docs/METRICS.md): plain, ≡, ≈ (always a range), ✶ (always red, always "made up"). */
 export type Tier = "measured" | "priced" | "estimated" | "satire";

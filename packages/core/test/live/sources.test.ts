@@ -297,6 +297,7 @@ describe("LiveSources", () => {
       join(empty, "tmp"),
       join(empty, "opencode"),
       join(empty, "antigravity"),
+      join(empty, "grok", "sessions"),
     ]);
   });
 
