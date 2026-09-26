@@ -18,6 +18,7 @@ import type { LiveOptions } from "./args.js";
 import { resolveDirs } from "./dirs.js";
 import { ENTER, frame, LEAVE } from "./screen.js";
 import { watchRoots } from "./watch.js";
+import { wantColor } from "./color.js";
 
 const TICK_MS = 2_000;
 const RECONCILE_MS = 5 * 60_000;
@@ -50,7 +51,7 @@ export async function runLive(o: LiveOptions): Promise<number> {
     process.stderr.write("live needs a terminal; pipe `--json` instead.\n");
     return 1;
   }
-  const color = tty && !process.env.NO_COLOR && process.env.TERM !== "dumb";
+  const color = wantColor(tty);
   const dirs = resolveDirs(o);
   const probe = new LiveEngine({ now });
   const cache = o.fixtures ? null : await loadCache(probe.day);

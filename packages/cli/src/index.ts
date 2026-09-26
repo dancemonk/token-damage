@@ -7,6 +7,7 @@ import {
   parseOptions,
   USAGE,
 } from "./args.js";
+import { wantColor } from "./color.js";
 import { runLive } from "./live.js";
 import { run } from "./run.js";
 import { runStatusline } from "./statusline.js";
@@ -36,7 +37,7 @@ try {
       { ...options, anim: options.anim && tty },
       {
         out: (line = "") => process.stdout.write(line + "\n"),
-        color: tty && !process.env.NO_COLOR && process.env.TERM !== "dumb",
+        color: wantColor(tty),
         interactive: tty && Boolean(process.stdin.isTTY) && !options.json,
         sleep: (ms) => sleep(ms),
       },

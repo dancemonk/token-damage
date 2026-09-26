@@ -158,6 +158,9 @@ Codex home, a Gemini CLI home and an OpenCode data dir in one: `projects/`, `ses
 `--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>` (same as `CODEX_HOME`), `--gemini-dir
 <path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as `OPENCODE_DATA_DIR`).
 
+Colour: on in a terminal, off in a pipe. `FORCE_COLOR=1` colours a pipe too; `FORCE_COLOR=0`, `NO_COLOR` or
+`TERM=dumb` turn it off everywhere.
+
 Not built yet: `--keep-history 3650` (would offer to set `cleanupPeriodDays`; would ask first), `--audit`
 (would print every file read and every field stored) and `--forget` (would delete `~/.token-damage`).
 `--daily` was never built either; `token-damage live --once` covers it.

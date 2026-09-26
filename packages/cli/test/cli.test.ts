@@ -82,6 +82,24 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
     expect(run.stdout.replaceAll(dir, "<dir>")).toMatchSnapshot();
   });
 
+  it("colours piped output when FORCE_COLOR asks for it", () => {
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      TZ: "UTC",
+      HOME: join(dir, "home"),
+      TOKEN_DAMAGE_NOW: "2026-09-23T12:00:00Z",
+      FORCE_COLOR: "1",
+    };
+    delete env.NO_COLOR;
+    const run = spawnSync(
+      process.execPath,
+      [CLI, "--fixtures", join(dir, "sample-month"), "--no-anim"],
+      { encoding: "utf8", env },
+    );
+    expect(run.status, run.stderr).toBe(0);
+    expect(run.stdout).toContain("\x1b[");
+  });
+
   it("prints the banner and scan lines from docs/CLI.md", () => {
     const flow = spec("## Flow").split("\n");
     const out = cli(
