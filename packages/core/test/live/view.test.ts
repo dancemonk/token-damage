@@ -95,7 +95,7 @@ describe("liveLines", () => {
     expect(view(64, 30)[2]?.style).toBe("bold");
   });
 
-  it("folds runs with no typed prompt into one quiet row, typed rows untouched", () => {
+  it("lists only prompts you typed, and sums runs with no prompt into one row under the header", () => {
     const quiet = buildSnapshot({
       usage: [
         usage({ ts: T0 - min(80), input: 1_000_000 }),
@@ -118,32 +118,33 @@ describe("liveLines", () => {
         prompt({ ts: T0 - min(81), words: 12 }),
         prompt({ ts: T0 - min(61), words: 5 }),
         prompt({ ts: T0 - min(46), words: 9 }),
+        // A slash command: a prompt line, but the model never ran, so it read nothing and gets no row.
+        prompt({ ts: T0 - min(30), words: 0 }),
       ],
       now: T0,
       timeZone: tz,
     });
-    const rows = liveLines(quiet, [], {
-      width: 64,
-      height: 30,
-      timeZone: tz,
-    }).filter((l) => /^\d\d:\d\d {2}/.test(l.text));
+    const lines = liveLines(quiet, [], { width: 64, height: 30, timeZone: tz });
+    const header = lines.findIndex((l) => l.text.startsWith("time"));
+    // Six runs nobody typed a prompt for: 300K + 50K + 50K + 10K tokens.
+    expect(lines[header + 1]).toEqual({
+      text: expect.stringMatching(
+        /^ {7}6 runs with no prompt today → 410\.0K +≡ \$[\d.]+$/,
+      ),
+      style: "muted",
+    });
+    // Only one session has typed prompts, so its rows carry no session number.
+    const rows = lines.filter((l) => /^\d\d:\d\d {2}/.test(l.text));
     expect(rows.map((l) => l.text.split(" → ")[0])).toEqual([
-      "10:39  claude·1      12 words",
-      "10:50  claude ×3    no prompt",
-      "10:59  claude·1       5 words",
-      "11:10  agents ×2    no prompt",
-      "11:14  claude·1       9 words",
-      "11:20  claude       no prompt",
+      "10:39  claude        12 words",
+      "10:59  claude         5 words",
+      "11:14  claude         9 words",
     ]);
-    expect(rows[1]!.text).toMatch(/ → 300\.0K +≡ \$[\d.]+$/);
-    expect(rows.map((l) => l.style)).toEqual([
-      undefined,
-      "muted",
-      undefined,
-      "muted",
-      undefined,
-      "muted",
-    ]);
+    // The summary stays put when the list scrolls.
+    const short = liveLines(quiet, [], { width: 64, height: 12, timeZone: tz });
+    expect(
+      short.some((l) => l.text.includes("runs with no prompt today")),
+    ).toBe(true);
   });
 
   it("prints the tape oldest to newest with an idle rule and events", () => {

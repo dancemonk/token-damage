@@ -129,7 +129,10 @@ function resetLabel(ts: number, now: number, timeZone?: string): string {
 }
 
 function who(t: Turn, s: LiveSnapshot): string {
-  const multi = Object.keys(s.badges).length > 1;
+  // Session numbers tell your own windows apart; runs nobody typed a prompt for don't count.
+  const multi =
+    new Set(s.turns.filter((x) => x.words !== null).map((x) => x.sessionId))
+      .size > 1;
   const badge =
     multi && s.badges[t.sessionId] !== undefined
       ? `·${s.badges[t.sessionId]}`
@@ -271,38 +274,10 @@ function tape(
       cols.price ? price : "",
       w,
     );
-  // Runs nobody typed a prompt for (SDK scripts, or a session carried over from yesterday) fold into one
-  // quiet row per stretch: the money still adds up, the list stays about what you typed.
-  let quiet: Turn[] = [];
-  const fold = () => {
-    if (quiet.length === 0) return;
-    const sources = new Set(quiet.map((t) => t.source));
-    const name = sources.size === 1 ? AGENT_SHORT[quiet[0]!.source] : "agents";
-    items.push({
-      ts: quiet[0]!.start,
-      end: Math.max(...quiet.map((t) => t.end)),
-      lines: [
-        {
-          text: row(
-            quiet[0]!.start,
-            quiet.length > 1 ? `${name} ×${quiet.length}` : name,
-            "no prompt",
-            quiet.reduce((sum, t) => sum + t.read, 0),
-            priceOf(mergedModels(quiet)),
-          ),
-          style: "muted",
-        },
-      ],
-    });
-    quiet = [];
-  };
+  // Only prompts someone typed; runs with no prompt are summed in one row under the header (quietRow).
   for (const t of [...s.turns].sort((a, b) => a.start - b.start)) {
-    if (t.open) continue;
-    if (t.words === null) {
-      quiet.push(t);
-      continue;
-    }
-    fold();
+    // A prompt the model never ran on (a slash command, an interrupt) read nothing: no row.
+    if (t.open || t.words === null || t.calls === 0) continue;
     items.push({
       ts: t.start,
       end: t.end,
@@ -311,7 +286,6 @@ function tape(
       ],
     });
   }
-  fold();
   for (const e of events) {
     if (e.kind === "stamped") {
       const head = `${clock(e.ts, o.timeZone)}  ━━ stamped ${e.name} `;
@@ -371,6 +345,24 @@ function tape(
   return out;
 }
 
+/**
+ * Today's runs nobody typed a prompt for (Agent SDK scripts, or a session carried over from yesterday), summed in
+ * one muted row so the list stays about what you typed and the money still adds up; null when there are none.
+ */
+function quietRow(s: LiveSnapshot, o: ViewOptions, cols: Cols): Line | null {
+  const quiet = s.turns.filter((t) => !t.open && t.words === null);
+  if (quiet.length === 0) return null;
+  const read = quiet.reduce((sum, t) => sum + t.read, 0);
+  return {
+    text: fit(
+      `       ${quiet.length} ${quiet.length === 1 ? "run" : "runs"} with no prompt today → ${compactTokens(read)}`,
+      cols.price ? priceOf(mergedModels(quiet)) : "",
+      o.width,
+    ),
+    style: "muted",
+  };
+}
+
 /** The pane: docs/LIVE.md §Surface 1. */
 export function liveLines(
   s: LiveSnapshot,
@@ -400,12 +392,21 @@ export function liveLines(
     ),
     style: "muted",
   };
-  const room = Math.max(0, o.height - top.length - 3);
+  const quiet = quietRow(s, o, cols);
+  const room = Math.max(0, o.height - top.length - 3 - (quiet ? 1 : 0));
   const rows = tape(s, events, o, cols).slice(-room);
   const blank = Array.from({ length: room - rows.length }, (): Line => ({
     text: "",
   }));
-  return [...top, rule, header, ...blank, ...rows, footer];
+  return [
+    ...top,
+    rule,
+    header,
+    ...(quiet ? [quiet] : []),
+    ...blank,
+    ...rows,
+    footer,
+  ];
 }
 
 export { sparkline };

@@ -82,9 +82,11 @@ Turn rows: `HH:MM  agent[·s][+N]  W words → T read  ≡ $P`. `agent·2` is a 
 when more than one session was active today (never a project name or path). `+N` = interns (distinct
 subagent sessions in the turn). Marks carry over from the receipt: `*` estimated model, `not priced`, and a
 trailing `+` on any price that leaves unpriced tokens out. Compact numbers (`3.1M`); exact numbers in `--json`.
-`— words` never appears on its own: turns with no typed prompt (Agent SDK scripts, or a session started before
-midnight) fold, one stretch at a time, into a muted row, `21:29  claude ×4   no prompt →  853.1K  ≡ $1.40` (a single
-run shows just the agent; mixed agents show `agents ×N`). Tokens and price are summed; totals are unchanged. Never `0`.
+The list holds only prompts someone typed. Turns with no typed prompt (Agent SDK scripts, often one after every
+prompt; or a session started before midnight) are summed in one muted row pinned under the header,
+`       18 runs with no prompt today → 3.1M   ≡ $5.20`, so the money still adds up. Totals are unchanged. Session
+numbers (`claude·2`) appear only when more than one session has typed prompts. A prompt the model never ran on
+(a slash command, an interrupt) read nothing and gets no row.
 
 Width: below 50 columns drop the price column, then the sparkline; below 40, a one-line "widen me".
 
@@ -187,8 +189,8 @@ CPU is negligible.
   Interns = distinct subagent sessions in the window.
 - **Open turn** = the latest turn with a usage event in the last 5 minutes and no later prompt. The pane's
   `now` row shows the most recently active open turn; the status line shows its own session's (`session_id`).
-- A session that started before local midnight has no prompt for its first turn today; the tape folds it with other
-  no-prompt runs.
+- A session that started before local midnight has no prompt for its first turn today; it counts in the pane's
+  "runs with no prompt today" row.
 - All four agents emit prompt events, so turns work for all four.
 
 ### Time
