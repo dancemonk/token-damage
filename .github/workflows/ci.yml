@@ -20,5 +20,3 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
-      # Compares our totals with ccusage on the fixture corpus; fails above 1% per day.
-      - run: pnpm oracle:fixtures

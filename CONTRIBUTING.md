@@ -22,7 +22,7 @@ Node 22.12 or newer for development. The repo is a pnpm workspace:
 1. **Nothing leaves the machine.** No network calls in the CLI, no telemetry.
 2. **Never store prompt text.** Prompts are reduced to a word count while parsing. No prompts, file paths, project names or code in any output or file.
 3. **Every number wears its label.** Plain is measured, `≡` is list price, `≈` is an estimate shown as a range, `✶` is satire (red, and never a real number).
-4. **A wrong number is worse than a boring one.** Token totals must match [ccusage](https://github.com/ryoppippi/ccusage): `pnpm oracle` checks your own logs, `pnpm oracle:fixtures` the fixture corpora (it runs in CI).
+4. **A wrong number is worse than a boring one.** Every fixture corpus has a hand-derived `expected.json` (totals, per day, sessions) that `aggregate.test.ts` asserts exactly; a parser change that moves a number must explain the new one there. Before each release, `pnpm oracle` cross-checks your own logs against [ccusage](https://github.com/ryoppippi/ccusage).
 
 ## When an agent's log format changes
 

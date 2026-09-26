@@ -29,7 +29,8 @@ change: `pnpm -F core opencode-fixture <opencode.db>`.
 
 ## `expected.json`
 
-Aggregate of the deduped corpus in UTC. `pnpm oracle:fixtures` checks the same per-day totals against ccusage.
+Aggregate of the deduped corpus in UTC, asserted exactly by `aggregate.test.ts`. `node scripts/oracle.mjs --fixtures
+--agent opencode` cross-checks the same per-day totals against ccusage (optional, not in CI).
 - 147 calls (136 real, 8 constructed in `message`, 2 in `session_message`, 1 legacy file), 9,054,733 tokens.
   Per day: 2026-07-08 1,238,597; 2026-07-10 235,095 (1,000 + 400 + 15 + 20 + 13,800 + 4,620 + 211,000 + 780
   + 3,460); 2026-07-11 1,416 (1,350 + 66); 2026-07-12 7,579,625.

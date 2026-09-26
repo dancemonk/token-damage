@@ -18,7 +18,8 @@ sanitized.
 
 ## `expected.json`
 
-Aggregate of the deduped corpus in UTC. `pnpm oracle:fixtures` checks the same per-day totals against ccusage.
+Aggregate of the deduped corpus in UTC, asserted exactly by `aggregate.test.ts`. `node scripts/oracle.mjs --fixtures
+--agent gemini` cross-checks the same per-day totals against ccusage (optional, not in CI).
 - 26 calls, 555,226 tokens. Per day: 2025-10-02 256,300; 2025-10-03 7,100 (3,170 + 1,500 + 800 + 700 + 600 + 330);
   2026-04-28 42,464; 2026-05-18 76,429; 2026-05-30 172,933 (160,433 + the subagent's 12,500).
 - 5 sessions, 1 subagent, 8 prompts, 11 words.

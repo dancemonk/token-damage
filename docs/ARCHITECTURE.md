@@ -23,7 +23,7 @@ token-damage/
     src/                   page scripts (TS → native ESM), receipt markup, fixed.json (never translated)
     scripts/build.mjs      node scripts/build.mjs --langs en,ru → dist/, dist/ru/
   schema/receipt.schema.json
-  scripts/oracle.mjs       compares daily totals with ccusage, per agent
+  scripts/oracle.mjs       release-time second opinion: daily totals vs ccusage, per agent
   docs/                    how it works: data sources, metrics, roasts, CLI, privacy
 ```
 
@@ -125,7 +125,10 @@ own the cache's read/write cadence. All computation is in `core`.
   data dir each; versions listed in their READMEs). OpenCode's fixture is a SQLite file built by
   `scripts/opencode-fixture.ts`; a test checks its payloads are sanitized. A regression test per known breakage in
   `DATA-SOURCES.md`.
-- `scripts/oracle.mjs` compares daily totals with `ccusage <claude|codex|gemini|opencode> daily --json --offline`; CI fails above 1%.
+- Each fixture corpus has a hand-derived `expected.json` (totals, per day, sessions); `aggregate.test.ts` asserts it exactly.
+  That is the CI check. `scripts/oracle.mjs` compares daily totals with
+  `ccusage <claude|codex|gemini|opencode> daily --json --offline` on real logs as a second opinion before each release
+  (`pnpm oracle`); it is not run in CI.
 - Snapshot tests for the 48-column receipt and the SVG for each sample customer.
 - A test asserts the share payload and the PNG's text contain no key/value outside the whitelist and none of:
   paths, `cwd`, project names, prompt text.
