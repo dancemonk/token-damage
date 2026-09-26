@@ -11,6 +11,8 @@ token-damage/
     src/adapters/gemini/   discovery, chat parser (JSONL and older JSON)
     src/adapters/opencode/ discovery, SQLite reader (node:sqlite), legacy message files
     src/adapters/antigravity/ discovery, protobuf reader, SQLite rows, id merge, prompt history
+    src/adapters/grok/     discovery, turn usage per model (with its call count), prompt runs
+    src/adapters/names.ts  only model-shaped names from logs reach the receipt
     src/adapters/sqlite.ts the shared read-only SQLite helper
     src/aggregate/         events → daily totals, sessions
     src/metrics/           prices.json, pricing, energy, satire
