@@ -87,10 +87,7 @@ export async function runLive(o: LiveOptions): Promise<number> {
     process.stderr.write(`${describeReadError(error)}\n`);
     return 1;
   }
-  if (sources.noSqlite)
-    process.stderr.write(
-      `opencode needs node 22.13 or newer to read its database (this is ${process.versions.node}); skipped.\n`,
-    );
+  for (const line of sources.warnings()) process.stderr.write(`${line}\n`);
   if (o.once) {
     process.stdout.write(
       `${JSON.stringify(publicSnapshot(engine.snapshot()))}\n`,

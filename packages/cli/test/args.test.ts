@@ -83,8 +83,8 @@ describe("resolveDirs", () => {
       {},
       "/h",
     );
-    expect(d.claudeRoots).toEqual(["/c"]);
-    expect(d.opencodeDirs).toEqual(["/o"]);
-    expect(d.codexHomes).toEqual(codexHomes({}, "/h"));
+    expect(d["claude-code"]).toEqual(["/c"]);
+    expect(d.opencode).toEqual(["/o"]);
+    expect(d.codex).toEqual(codexHomes({}, "/h"));
   });
 });

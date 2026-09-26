@@ -14,11 +14,9 @@ export function resolveDirs(
   home: string = homedir(),
 ): SourceDirs {
   return {
-    claudeRoots: flags.configDir ? [flags.configDir] : claudeRoots(env, home),
-    codexHomes: flags.codexHome ? [flags.codexHome] : codexHomes(env, home),
-    geminiDirs: flags.geminiDir ? [flags.geminiDir] : geminiDirs(env, home),
-    opencodeDirs: flags.opencodeDir
-      ? [flags.opencodeDir]
-      : opencodeDirs(env, home),
+    "claude-code": flags.configDir ? [flags.configDir] : claudeRoots(env, home),
+    codex: flags.codexHome ? [flags.codexHome] : codexHomes(env, home),
+    gemini: flags.geminiDir ? [flags.geminiDir] : geminiDirs(env, home),
+    opencode: flags.opencodeDir ? [flags.opencodeDir] : opencodeDirs(env, home),
   };
 }

@@ -206,10 +206,10 @@ async function shareLink(
 
 export async function run(options: Options, io: Io): Promise<number> {
   const dirs = resolveDirs(options);
-  const roots = dirs.claudeRoots;
-  const homes = dirs.codexHomes;
-  const geminiData = dirs.geminiDirs;
-  const opencodeData = dirs.opencodeDirs;
+  const roots = dirs["claude-code"];
+  const homes = dirs.codex;
+  const geminiData = dirs.gemini;
+  const opencodeData = dirs.opencode;
   // What each agent's scan reads, one line per agent.
   const scanned = [
     roots.map((r) => join(r, "projects")),

@@ -1,34 +1,18 @@
 import { stat } from "node:fs/promises";
-import { join } from "node:path";
-import {
-  emptyCodexStats,
-  findRollouts,
-  scanCodex,
-} from "../adapters/codex/index.js";
 import { findTranscripts, subagentOf } from "../adapters/claude/discover.js";
 import { parseLine } from "../adapters/claude/parse.js";
-import {
-  emptyGeminiStats,
-  findChats,
-  scanGemini,
-} from "../adapters/gemini/index.js";
-import {
-  emptyOpenCodeStats,
-  findDatabase,
-  scanOpenCode,
-} from "../adapters/opencode/index.js";
+import type { SourceDirs } from "../adapters/contract.js";
+import { ADAPTERS } from "../adapters/registry.js";
 import type { PromptEvent, Source, UsageEvent } from "../types.js";
-import { DAY_MS } from "./day.js";
 import { readAppended, type TailState } from "./tail.js";
 
 export type LiveRecord = UsageEvent | PromptEvent;
+export type { SourceDirs };
 
-export interface SourceDirs {
-  claudeRoots: string[];
-  codexHomes: string[];
-  geminiDirs: string[];
-  opencodeDirs: string[];
-}
+// Every agent but Claude Code, whose transcripts are tailed: rescanned for today when one of its files moves.
+const POOLED = ADAPTERS.flatMap((adapter) =>
+  adapter.live === "tail" ? [] : [{ adapter, live: adapter.live }],
+);
 
 export interface SourcesState {
   tails: Record<string, TailState>;
@@ -50,14 +34,15 @@ async function mtimeOf(path: string): Promise<number | undefined> {
   }
 }
 
-/** Today's records from the four agents: a full scan, or only what changed since the last poll. */
+/** Today's records from every agent: a full scan, or only what changed since the last poll. */
 export class LiveSources {
-  noSqlite = false;
   #dirs: SourceDirs;
   #from: number;
   #hash: (path: string) => string;
   #state: SourcesState;
   #old: Set<string>;
+  // The latest scan's warnings per agent, e.g. OpenCode's database skipped on an old Node.
+  #warnings = new Map<Source, string[]>();
 
   constructor(
     dirs: SourceDirs,
@@ -78,16 +63,13 @@ export class LiveSources {
     return { ...this.#state, old: [...this.#old] };
   }
 
+  /** Lines for the user from each agent's latest scan. */
+  warnings(): string[] {
+    return [...this.#warnings.values()].flat();
+  }
+
   watchRoots(): string[] {
-    return [
-      ...this.#dirs.claudeRoots.map((r) => join(r, "projects")),
-      ...this.#dirs.codexHomes.flatMap((h) => [
-        join(h, "sessions"),
-        join(h, "archived_sessions"),
-      ]),
-      ...this.#dirs.geminiDirs,
-      ...this.#dirs.opencodeDirs,
-    ];
+    return ADAPTERS.flatMap((a) => a.where(this.#dirs[a.id]));
   }
 
   /** The snapshot path: every record in the window, through the same scanners the receipt uses. */
@@ -98,7 +80,7 @@ export class LiveSources {
     // Claude: a file whose mtime predates the window cannot hold a today record; remember it as old,
     // exactly as poll() would once it noticed. Every other file is read in full and becomes a tail so
     // the next poll continues from its end.
-    for (const file of await findTranscripts(this.#dirs.claudeRoots)) {
+    for (const file of await findTranscripts(this.#dirs["claude-code"])) {
       const key = this.#hash(file.path);
       const mtime = await mtimeOf(file.path);
       if (mtime !== undefined && mtime < this.#from) {
@@ -110,42 +92,28 @@ export class LiveSources {
       for (const line of lines) this.#parseClaude(line, file.subagent, keep);
     }
 
-    // Codex: only rollouts recent enough to be today's or a fork parent of one; `keep` still filters
-    // every record by timestamp, `recent` only limits which files scanCodex opens.
-    const codexPaths = await findRollouts(this.#dirs.codexHomes);
-    const codexRecent = await this.#recent(codexPaths, this.#from - 2 * DAY_MS);
-    const codexStats = emptyCodexStats();
-    for await (const r of scanCodex(
-      this.#dirs.codexHomes,
-      codexStats,
-      codexRecent,
-    ))
-      keep(r);
-
-    // Gemini: only chats modified today or later.
-    const chats = (await findChats(this.#dirs.geminiDirs)).map((c) => c.path);
-    const geminiRecent = await this.#recent(chats, this.#from);
-    const geminiStats = emptyGeminiStats();
-    for await (const r of scanGemini(
-      this.#dirs.geminiDirs,
-      geminiStats,
-      geminiRecent,
-    ))
-      keep(r);
-
-    const ocStats = emptyOpenCodeStats();
-    for await (const r of scanOpenCode(this.#dirs.opencodeDirs, ocStats))
-      keep(r);
-    this.noSqlite = ocStats.noSqlite > 0;
-
-    await this.#rememberMtimes(codexPaths, chats);
+    // The rest: only files recent enough to hold today's records (or a Codex fork parent of one); `keep` still
+    // filters every record by timestamp, `only` just limits which files a scan opens. Every file found is
+    // remembered, so the next poll rescans an agent only when one of its files moves.
+    for (const { adapter, live } of POOLED) {
+      const roots = this.#dirs[adapter.id];
+      const files = await live.files(roots);
+      const only =
+        live.lookbackMs === null
+          ? undefined
+          : await this.#recent(files, this.#from - live.lookbackMs);
+      const reader = adapter.reader(roots);
+      for await (const r of reader.scan(only)) keep(r);
+      this.#warnings.set(adapter.id, reader.warnings());
+      await this.#remember(files);
+    }
     return out;
   }
 
   /**
    * The delta path: Claude tails accumulate; an agent whose files changed is rescanned whole for today.
-   * `newFiles` is true only for a newly seen Codex rollout — a fork parent can already hold today's
-   * usage, which is why the engine forces a full reconcile on it. A new Claude transcript already
+   * `newFiles` is true only for a newly seen file of an agent whose adapter asks for it (Codex) — a fork
+   * parent can already hold today's usage, which is why the engine forces a full reconcile on it. A new Claude transcript already
    * starts its own tail from byte 0, and a new Gemini chat is folded into its pool's rescan regardless,
    * so neither needs to force one too (a subagent swarm would otherwise cost a full rescan per file).
    */
@@ -159,7 +127,7 @@ export class LiveSources {
     let newFiles = false;
     const today = (r: LiveRecord) => r.ts >= this.#from;
 
-    for (const file of await findTranscripts(this.#dirs.claudeRoots)) {
+    for (const file of await findTranscripts(this.#dirs["claude-code"])) {
       const key = this.#hash(file.path);
       if (this.#old.has(key)) continue;
       const prev = this.#state.tails[key];
@@ -180,48 +148,23 @@ export class LiveSources {
         );
     }
 
-    const codex = await this.#changed(
-      await findRollouts(this.#dirs.codexHomes),
-      this.#from - 2 * DAY_MS,
-    );
-    if (codex.changed.length) {
-      newFiles ||= codex.fresh;
-      // Every recent rollout, so fork parents are present and the pool is complete for today.
+    for (const { adapter, live } of POOLED) {
+      const roots = this.#dirs[adapter.id];
+      const found = await this.#changed(
+        await live.files(roots),
+        live.lookbackMs === null ? 0 : this.#from - live.lookbackMs,
+      );
+      if (!found.changed.length) continue;
+      if (live.newFileForcesReconcile) newFiles ||= found.fresh;
+      // Every recent file, not only the changed ones, so fork parents are present and the pool is complete.
+      const reader = adapter.reader(roots);
       const pool: LiveRecord[] = [];
-      for await (const r of scanCodex(
-        this.#dirs.codexHomes,
-        emptyCodexStats(),
-        codex.recent,
+      for await (const r of reader.scan(
+        live.lookbackMs === null ? undefined : found.recent,
       ))
         if (today(r)) pool.push(r);
-      pools.codex = pool;
-    }
-    const chats = (await findChats(this.#dirs.geminiDirs)).map((c) => c.path);
-    const gemini = await this.#changed(chats, this.#from);
-    if (gemini.changed.length) {
-      // Every chat file modified today, not only the changed one: the pool must be complete.
-      const pool: LiveRecord[] = [];
-      for await (const r of scanGemini(
-        this.#dirs.geminiDirs,
-        emptyGeminiStats(),
-        gemini.recent,
-      ))
-        if (today(r)) pool.push(r);
-      pools.gemini = pool;
-    }
-    const dbs: string[] = [];
-    for (const d of this.#dirs.opencodeDirs) {
-      const db = await findDatabase(d);
-      if (db) dbs.push(db, `${db}-wal`);
-    }
-    const opencode = await this.#changed(dbs, 0);
-    if (opencode.changed.length) {
-      const ocStats = emptyOpenCodeStats();
-      const pool: LiveRecord[] = [];
-      for await (const r of scanOpenCode(this.#dirs.opencodeDirs, ocStats))
-        if (today(r)) pool.push(r);
-      this.noSqlite = ocStats.noSqlite > 0;
-      pools.opencode = pool;
+      this.#warnings.set(adapter.id, reader.warnings());
+      pools[adapter.id] = pool;
     }
     return { records: appended, pools, newFiles };
   }
@@ -274,13 +217,8 @@ export class LiveSources {
     return out;
   }
 
-  /** `codexPaths` and `chats` are reused from the caller's own scan, so nothing is listed twice. */
-  async #rememberMtimes(codexPaths: string[], chats: string[]): Promise<void> {
-    const paths = [...codexPaths, ...chats];
-    for (const d of this.#dirs.opencodeDirs) {
-      const db = await findDatabase(d);
-      if (db) paths.push(db, `${db}-wal`);
-    }
+  /** Each file's mtime now, so the next poll sees only what moved after this scan. */
+  async #remember(paths: string[]): Promise<void> {
     for (const path of paths) {
       const mtime = await mtimeOf(path);
       if (mtime !== undefined) this.#state.seen[this.#hash(path)] = mtime;
