@@ -11,7 +11,7 @@ token-damage/
     src/aggregate/         events → daily totals, sessions
     src/metrics/           prices.json, pricing, energy, satire
     src/roasts/            facts, note families, scoring, achievements, disputes
-    src/receipt/           receipt model → 48-column text, share card SVG, share link
+    src/receipt/           receipt model → 48-column text, share card SVG, share link; glyphs.ts: bars, sparkline
     src/live/              live engine: watching, tailing, turns, cache, voice; pane and status line share it
     src/web.ts             browser-safe entry (@token-damage/core/web): share codec, formats, note templates
     fixtures/              sanitized transcript lines + expected totals
@@ -62,8 +62,10 @@ interface Totals { tokens: TokenSums; byModel: Record<string, TokenSums>; bySour
   firstCall: number | null; lastCall: number | null; longestSession: Span | null }
 type Tier = "measured" | "priced" | "estimated" | "satire";
 interface Value<T = number> { value: T; tier: Tier; low?: number; high?: number; note?: string }
-interface Receipt { period: {start: string; end: string}; measured: {...}; priced: {...}; estimated: {...};
-  satire: {...}; damageClass: string; note: {id: string; text: string}; achievements: string[]; dispute?: {...} }
+interface Receipt { period: {start: string; end: string}; measured: {...; daily: {day: string; tokens: Value}[]};
+  priced: {...}; estimated: {...}; satire: {...};
+  damageClass: {name: string; finePrint: string; next: {name: string; at: number} | null; progress: number};
+  note: {id: string; text: string}; achievements: string[]; dispute?: {...} }
 ```
 The receipt model is the single source for all outputs; renderers never compute.
 
