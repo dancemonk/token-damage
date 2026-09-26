@@ -1,5 +1,6 @@
 // tokendamage.com on Cloudflare Workers: static files only, no Worker code. The dashboard's build runs
-// `pnpm build:site`, then `npx wrangler deploy` publishes apps/web/dist with these rules.
+// `pnpm build:site`, then `npx wrangler deploy` publishes apps/web/dist with these rules. Branch builds run
+// `npx wrangler preview`, which needs the `previews` block below (empty: assets and settings stay at the top level).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   // Must match the Worker's name in the Cloudflare dashboard.
@@ -12,4 +13,5 @@
     // /quiz serves quiz.html; /quiz.html redirects to /quiz.
     "html_handling": "auto-trailing-slash",
   },
+  "previews": {},
 }
