@@ -16,6 +16,7 @@ export const AGENTS: Record<Source, AgentInfo> = {
   gemini: { name: "Gemini CLI", short: "gemini" },
   opencode: { name: "OpenCode", short: "opencode", anyProvider: true },
   antigravity: { name: "Antigravity", short: "agy", anyProvider: true },
+  grok: { name: "Grok Build", short: "grok" },
 };
 
 const each = <T>(pick: (a: AgentInfo) => T): Record<Source, T> =>

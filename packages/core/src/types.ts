@@ -1,5 +1,5 @@
 export type Source =
-  "claude-code" | "codex" | "gemini" | "opencode" | "antigravity";
+  "claude-code" | "codex" | "gemini" | "opencode" | "antigravity" | "grok";
 
 /** Truth tiers (docs/METRICS.md): plain, ≡, ≈ (always a range), ✶ (always red, always "made up"). */
 export type Tier = "measured" | "priced" | "estimated" | "satire";
@@ -39,6 +39,8 @@ export interface UsageEvent {
   serviceTier?: "standard" | "fast";
   /** Version of the tool that wrote the line. */
   version?: string;
+  /** Model calls this record stands for, when more than one (Grok records a turn); absent means 1. */
+  calls?: number;
 }
 
 /** A prompt the user wrote. Only its word count survives ingest; the text is never kept. */

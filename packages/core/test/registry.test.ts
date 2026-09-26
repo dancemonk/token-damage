@@ -26,6 +26,7 @@ describe("ADAPTERS", () => {
       ["gemini-dir", "GEMINI_DATA_DIR", "tmp"],
       ["opencode-dir", "OPENCODE_DATA_DIR", "opencode"],
       ["antigravity-dir", "ANTIGRAVITY_DATA_DIR", "antigravity"],
+      ["grok-home", "GROK_HOME", "grok"],
     ]);
   });
 
@@ -43,6 +44,7 @@ describe("ADAPTERS", () => {
       gemini: ["/r"],
       opencode: ["/r"],
       antigravity: ["/r"],
+      grok: ["/r/sessions"],
     });
   });
 

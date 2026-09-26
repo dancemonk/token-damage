@@ -3,6 +3,15 @@ import { buildTurns } from "../../src/live/turns.js";
 import { T0, min, prompt, usage } from "./support.js";
 
 describe("buildTurns", () => {
+  it("counts a record's model calls, not the record", () => {
+    const turns = buildTurns(
+      [usage({ ts: T0 + min(1), calls: 13 })],
+      [prompt({ ts: T0, words: 3 })],
+      T0 + min(12),
+    );
+    expect(turns[0]?.calls).toBe(13);
+  });
+
   it("attributes usage to the latest prompt in the session", () => {
     const prompts = [
       prompt({ ts: T0, words: 12 }),

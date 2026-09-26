@@ -14,6 +14,9 @@ const INVENTED_TEXT = new Set([
   "gemini/tmp/p3/chats/session-2025-10-03T10-00-7a0c0de2.jsonl",
   // Filler prose; its privacy is pinned by test/antigravity/fixture.test.ts.
   "antigravity/antigravity/history.jsonl",
+  // Invented Grok traps (fixtures/grok/README.md).
+  "grok/grok/sessions/p/trap-a/updates.jsonl",
+  "grok/grok/sessions/p/trap-b/updates.jsonl",
 ]);
 const files = readdirSync(root, { recursive: true, encoding: "utf8" }).filter(
   (f) =>

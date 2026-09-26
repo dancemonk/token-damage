@@ -24,6 +24,9 @@ const MIN_MS = 60_000;
 const rootOf = (e: UsageEvent) => e.parentSessionId ?? e.sessionId;
 const readOf = (e: UsageEvent) => e.input + e.cacheWrite + e.cacheRead;
 const tokensOf = (e: UsageEvent) => readOf(e) + e.output;
+// Model calls, not records: a Grok record is a whole turn.
+const callsOf = (events: readonly UsageEvent[]) =>
+  events.reduce((n, e) => n + (e.calls ?? 1), 0);
 
 function groupBy<T>(
   items: readonly T[],
@@ -45,7 +48,7 @@ function snob(
 ): Detected["snobSession"] {
   let best: Detected["snobSession"] = null;
   for (const [root, events] of roots) {
-    if (!typed.has(root) || events.length < 5) continue;
+    if (!typed.has(root) || callsOf(events) < 5) continue;
     if (!events.every((e) => FLAGSHIP.test(e.model))) continue;
     const read = events.reduce((s, e) => s + readOf(e), 0);
     const output = events.reduce((s, e) => s + e.output, 0);
@@ -55,7 +58,7 @@ function snob(
       output < best.output ||
       (output === best.output && read > best.read)
     )
-      best = { output, read, calls: events.length };
+      best = { output, read, calls: callsOf(events) };
   }
   return best;
 }
@@ -67,7 +70,7 @@ function speedrun(
   let best: Detected["speedrun"] = null;
   for (const [root, events] of roots) {
     const prompted = firstPrompt.get(root);
-    if (prompted === undefined || events.length < 3) continue;
+    if (prompted === undefined || callsOf(events) < 3) continue;
     // Loops, not Math.max(...times): one long session can hold more calls than a spread may pass.
     let tokens = 0;
     let first = prompted;

@@ -206,7 +206,8 @@
               "codex",
               "gemini",
               "opencode",
-              "antigravity"
+              "antigravity",
+              "grok"
             ]
           },
           "tokens": {

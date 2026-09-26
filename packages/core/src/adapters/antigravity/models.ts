@@ -2,6 +2,8 @@
 // names and Antigravity's placeholders. Keep in step with it; the oracle compares tokens, not names. Claude ids
 // take Anthropic's names (ccusage writes `claude-4.5-sonnet`), so they match the price table exactly.
 
+import { modelName } from "../names.js";
+
 const BY_ID: Record<number, string> = {
   246: "gemini-2.5-pro",
   312: "gemini-2.5-flash",
@@ -121,7 +123,8 @@ export function normalizeModel(raw: string): string | undefined {
   const known = NAMES[base];
   if (known) return known;
   const dashed = base.replaceAll(" ", "-");
-  return /^(gemini|claude|gpt)-/.test(dashed) ? dashed : trimmed;
+  // ccusage keeps any other text as it is; we keep it only when it looks like a model id (adapters/names.ts).
+  return modelName(/^(gemini|claude|gpt)-/.test(dashed) ? dashed : trimmed);
 }
 
 /** A Gemini thinking level does not change its per-token price: `gemini-3.8-flash-high` → gemini-3.8-flash. */

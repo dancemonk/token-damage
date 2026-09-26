@@ -332,6 +332,49 @@ WAL kept their mtime and size is not decoded again (the owner's 111 MB decode in
 Retry copies, the same call in a step and a generation, copies across databases, zero-byte databases (skipped),
 malformed blobs (the row is skipped and counted), placeholder model ids.
 
+## Grok Build
+
+Rules below match ccusage 20.0.24 (`rust/adapters/grok/src/`), checked with `pnpm oracle --agent grok`.
+Code: `packages/core/src/adapters/grok/`. Fixtures: `packages/core/fixtures/grok/grok/` (a Grok home). Checked on
+little real data (one completed turn, 2026-09-21/22, CLI 1.0.40); the fixture's traps stand in for the rest.
+
+### Where
+`$GROK_HOME` when it holds a path, else `~/.grok`. Every `sessions/<encoded project>/<session>/updates.jsonl`, with the
+sibling `summary.json` (`info.id`: the session id; `current_model_id`: the model a turn without per-model usage ran
+on). `events.jsonl`, `chat_history.jsonl`, `logs/unified.jsonl` (a debug log) and the rest are not read.
+
+### Structure
+JSON-RPC lines: `{method, timestamp (Unix s), params: {sessionId, update: {sessionUpdate, …}, _meta: {eventId,
+agentTimestampMs}}}`. `sessionUpdate` kinds seen: `user_message_chunk` (`content: {type, text}`),
+`agent_message_chunk`, `agent_thought_chunk`, `tool_call`, `tool_call_update`, `hook_execution`, `retry_state`,
+`turn_completed`.
+
+### Per-turn usage
+- Usage exists only on `turn_completed` lines with `usage`, summed over the turn's model calls:
+  `{inputTokens, cachedReadTokens, cacheCreationTokens, outputTokens, reasoningTokens, totalTokens, modelCalls,
+  costUsdTicks, modelUsage: {<model>: {…same…}}}`. A cancelled turn has no `usage`.
+- One event per `modelUsage` entry (a model switch inside a turn gives two), else one for the summary's model
+  (`unknown` without one). `calls` = that entry's `modelCalls`: the receipt counts model calls, not turns.
+- `inputTokens` includes cache reads: input = inputTokens − cachedReadTokens; cache write = cacheCreationTokens,
+  taken out of the rest. `totalTokens` = input + output, so reasoning is already inside `outputTokens`.
+- Time: `_meta.agentTimestampMs`, else `timestamp` × 1000. Session: `params.sessionId`, else the summary's id.
+- Dedupe: `eventId|model` across files (a resumed session copies turns); a turn without an event id is keyed by
+  its numbers within its file, as ccusage.
+- Model names: `[grok] ` and Grok Build's `-build` alias are dropped (same price). Prices come from our table;
+  Grok's own `costUsdTicks` is not used. xAI bills a request at the long-context rate from 200K prompt tokens,
+  but a turn sums several requests, so no long-context tier is applied.
+
+### Words typed and sessions
+A run of `user_message_chunk` text lines is one prompt (their words summed, timed by the first); agent activity
+(`agent_*`, `tool_call*`, `turn_completed`) ends the run, hooks do not.
+
+### Live reading
+Session files changed today are rescanned whole when one moves (like Gemini CLI's chats).
+
+### Traps
+Resumed copies, two models in one turn, turns without `modelUsage`, cancelled turns, turns without an event id,
+prompts split into chunks.
+
 ## Tested versions
 | Tool | Versions | Fixtures |
 | --- | --- | --- |
@@ -340,6 +383,7 @@ malformed blobs (the row is skipped and counted), placeholder model ids.
 | Gemini CLI | 0.42.0 (13 real chats; chats carry no version, so no check) | `packages/core/fixtures/gemini/` |
 | OpenCode | 1.17.15, 1.17.18 (one real database, 6 sessions, 152 messages) | `packages/core/fixtures/opencode/` |
 | Antigravity | CLI conversations 2026-07-03 – 09-22 (10 real databases; no version in the data, so no check) | `packages/core/fixtures/antigravity/` |
+| Grok Build | CLI 1.0.40 (3 real sessions, one completed turn; no version in the data, so no check) | `packages/core/fixtures/grok/` |
 
 ## Later sources
 Copilot CLI (ccusage parses it), Cursor (SQLite; needs a cloud token → opt-in only), ChatGPT/Claude.ai exports (no token counts; tokenize locally and label `≈`).
@@ -379,6 +423,12 @@ and so did 7 days of real logs (519,227,745 tokens) in every field, with reasoni
 (as for Gemini CLI). Differences by design, none present in real logs: a malformed blob skips its row and a
 zero-byte database is skipped (ccusage fails its whole Antigravity report on either); a Gemini thinking level is
 dropped from the model name (ccusage keeps `gemini-3.8-flash-high`); prompts come from `history.jsonl`, which
+ccusage does not read.
+
+Grok Build (`ccusage grok daily`, 2026-09-26): the fixture corpus matches exactly (747,737 tokens, 2 days), and so
+did the one real day (745,665 tokens) in every field. List price: ccusage uses Grok's recorded `costUsdTicks`
+because a turn sums requests and hides the long-context boundary; we use our table with no long-context tier. On
+the real turn both give $0.814058 (no request reached 200K). Prompts come from `user_message_chunk` lines, which
 ccusage does not read.
 
 Not compared, because ccusage does not report them: words typed and prompts. A day with prompts but no model

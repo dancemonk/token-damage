@@ -24,6 +24,7 @@
     "sanitize-fixture": "node --experimental-strip-types scripts/sanitize-fixture.ts",
     "opencode-fixture": "node --experimental-strip-types scripts/opencode-fixture.ts",
     "antigravity-fixture": "node --experimental-strip-types scripts/antigravity-fixture.ts",
+    "grok-fixture": "node --experimental-strip-types scripts/grok-fixture.ts",
     "sample-month": "node --experimental-strip-types scripts/sample-month.ts"
   },
   "files": [

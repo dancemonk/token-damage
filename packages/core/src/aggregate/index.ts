@@ -94,6 +94,8 @@ interface DayState extends DailyTotals {
 
 interface SessionState {
   times: number[];
+  /** Model calls: a record may stand for several (Grok: one record per turn). */
+  calls: number;
   agentKeys: Set<string>;
 }
 
@@ -139,13 +141,18 @@ export function aggregate(
     const key = modelKey(e);
     add(d.byModel, key, e);
     add((d.bySource[e.source] ??= {}), key, e);
-    d.calls++;
+    d.calls += e.calls ?? 1;
     d.firstCall = Math.min(d.firstCall ?? e.ts, e.ts);
     d.lastCall = Math.max(d.lastCall ?? e.ts, e.ts);
     d.sessionKeys.add(sessionId);
 
     let s = sessions.get(sessionId);
-    if (!s) sessions.set(sessionId, (s = { times: [], agentKeys: new Set() }));
+    if (!s)
+      sessions.set(
+        sessionId,
+        (s = { times: [], calls: 0, agentKeys: new Set() }),
+      );
+    s.calls += e.calls ?? 1;
     s.times.push(e.ts);
 
     if (agentKey) {
@@ -174,7 +181,7 @@ export function aggregate(
       sessionId,
       start: times[0] as number,
       end: times.at(-1) as number,
-      calls: times.length,
+      calls: s.calls,
       subagents: s.agentKeys.size,
       longestStretch: longestStretch(times),
     };

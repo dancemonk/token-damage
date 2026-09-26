@@ -26,6 +26,7 @@ describe("AGENTS", () => {
       gemini: "Gemini CLI",
       opencode: "OpenCode",
       antigravity: "Antigravity",
+      grok: "Grok Build",
     });
     expect(AGENT_SHORT).toEqual({
       "claude-code": "claude",
@@ -33,6 +34,7 @@ describe("AGENTS", () => {
       gemini: "gemini",
       opencode: "opencode",
       antigravity: "agy",
+      grok: "grok",
     });
   });
 
