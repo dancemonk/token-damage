@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Oracle: compares our daily token totals with ccusage on the same agent logs.
+// Oracle: compares our daily token totals with ccusage on the same agent logs. A second opinion, run on real
+// logs before every release; never in CI. The CI check is the hand-derived fixtures/*/expected.json.
 // Usage: pnpm oracle [--agent claude|codex|gemini|opencode] [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
 // --config-dir sets CLAUDE_CONFIG_DIR for claude, CODEX_HOME for codex, GEMINI_DATA_DIR for gemini and
 // OPENCODE_DATA_DIR for opencode.

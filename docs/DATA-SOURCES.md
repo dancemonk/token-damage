@@ -287,7 +287,8 @@ same tick that drives the rest of the pane (every 2 seconds), since WAL writes c
 Copilot CLI (ccusage parses it), Cursor (SQLite; needs a cloud token → opt-in only), ChatGPT/Claude.ai exports (no token counts; tokenize locally and label `≈`).
 
 ## Known divergences from ccusage
-Keep this list current. Check with `pnpm oracle` (local logs) and `pnpm oracle:fixtures` (CI).
+Keep this list current. Check with `pnpm oracle` on real logs before each release; `node scripts/oracle.mjs --fixtures
+[--agent <name>]` runs the same comparison on a fixture corpus.
 
 **None on token totals** as of ccusage 20.0.24 (2026-09-24): the fixture corpus matches exactly (348,051 tokens,
 2 days), and so did 24 days of real logs (3.79B tokens) in every field. ccusage has fixed #888 (first-seen

@@ -20,7 +20,8 @@ only the lines its case needs. `test/fixtures.test.ts` fails if any line is not 
 
 ## `expected.json`
 
-Aggregate of the deduped corpus in UTC. `pnpm oracle:fixtures` checks the same per-day totals against ccusage.
+Aggregate of the deduped corpus in UTC, asserted exactly by `aggregate.test.ts`. `node scripts/oracle.mjs --fixtures
+--agent codex` cross-checks the same per-day totals against ccusage (optional, not in CI).
 - 28 usage events are read; 7 more are dropped as replayed (3 copied from the parent, 4 in the burst).
   The archived copy's 4 dedupe away: 24 calls, 1,100,054 tokens.
 - Per day: 2025-09-06 10,500 + 15,400; 2026-05-10 14,537 + 14,838 + 14,910 + 14,867; 2026-07-10 6,221;

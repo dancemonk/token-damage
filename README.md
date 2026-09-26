@@ -113,7 +113,7 @@ After the receipt, `c` saves a 1080×1920 card and `s` makes a share link. Both 
 
 **Does it upload anything?** No. No network calls, no telemetry, no accounts. A share link keeps its numbers after the `#`, the part of a URL browsers never send to a server.
 
-**Why don't my numbers match another tool?** Claude Code deletes transcripts older than 30 days by default, so the receipt covers what survived and says so. Duplicate log lines are counted once. Daily totals match [ccusage](https://github.com/ryoppippi/ccusage) on every log we've tested; if yours don't, [open an issue](https://github.com/dancemonk/token-damage/issues/new?template=numbers.yml).
+**Why don't my numbers match another tool?** Claude Code deletes transcripts older than 30 days by default, so the receipt covers what survived and says so. Duplicate log lines are counted once. Every counted line is checked against hand-derived fixture totals, per day, and real logs are cross-checked against [ccusage](https://github.com/ryoppippi/ccusage) before each release; if your numbers look wrong, [open an issue](https://github.com/dancemonk/token-damage/issues/new?template=numbers.yml).
 
 ## Privacy
 

@@ -17,6 +17,11 @@ Every receipt is stamped `method v1 · prices as of <date>`.
 - model calls, sessions, active days, subagents ("interns"), first/last call of the day, longest session
 - words typed (see DATA-SOURCES §Words typed)
 - ratios shown as measured: tokens per typed word, cache-read share, output share
+- tokens per calendar day of the period (`measured.daily`): every day from start to end, oldest first, 0 on days
+  without calls; the days sum to the total
+- class progress (`damageClass.progress`): (total − the current class's floor) / (the next class's floor − the
+  current floor), clamped 0–1; 1 at the top of the scale, where `damageClass.next` is null. The live pane's `%` is
+  the same number × 100.
 
 ## Priced
 `prices.json` (in `core`), with an `asOf` date. Per model: `input`, `cacheWrite`, `cacheRead`, `output`

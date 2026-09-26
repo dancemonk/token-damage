@@ -63,12 +63,16 @@ WORDS YOU TYPED ......................... 14,690
 MODEL CALLS .............................. 7,480
 TOKENS READ BY AGENTS ............ 1,178,700,000
   re-read from cache ..................... 96.2%
+  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■··
 TOKENS WRITTEN BY AGENTS ............. 4,700,000
 ------------------------------------------------
 BY MODEL                TOKENS        LIST PRICE
   opus                  840.2M         ≡ $665.34
+  ■■■■■■■■■■■■■■■■■■■■■■■■■■■■············  71%
   sonnet                284.0M         ≡ $134.94
+  ■■■■■■■■■·······························  24%
   haiku                  59.2M           ≡ $9.37
+  ■■······································   5%
 ------------------------------------------------
 LIST-PRICE VALUE (API-EQUIV.) ........ ≡ $809.65
 YOUR PLAN ........................... $200.00/mo
@@ -84,11 +88,15 @@ LATEST CALL .................... 3:47 AM, SEP 18
 LONGEST SESSION ......................... 9h 14m
 INTERNS HIRED (SUBAGENTS) .................. 212
 MOST EXPENSIVE DAY .......... SEP 17 · ≡ $129.20
+BY DAY .......................... 1 day = 1 mark
+  ▃▃▃▃▃·▃▃▃▃▃▃·▃▃▃▃▃▂·▂▂▂█▂▂·▂▂▂
+                         ▲ sep 17
 ------------------------------------------------
 DAMAGE CLASS
           ┏━━━━━━━━━━━━━━━━━━━━━━━━━┓
           ┃   A C T   O F   G O D   ┃
           ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
+  ■·······················  4% to UNINSURABLE
 ------------------------------------------------
 ADJUSTER'S NOTE
   for every word you typed, the machine read
@@ -112,6 +120,16 @@ meanwhile, jan 2026: moltbook opened, a
    ≡ list-price equiv · ≈ estimate · ✶ satire
       method v1 · prices as of 2026-09-24
 ```
+
+Bars are measured facts, so they print in plain ink and never sit on a `≡`, `≈` or `✶` line. `■` is filled, `·`
+empty, `▪` a share too small for one square; every bar rounds down, so only a whole share fills it. Under
+`re-read from cache`: the cache share, 44 wide. Under each BY AGENT and BY MODEL row, when there are two or more:
+that row's share of the tokens, 40 wide, then the rounded percentage. BY DAY (periods of 2+ days): one mark per
+day, or per `k` days so it fits 44 marks, grouped from the newest day back; `·` is a day with no calls and `▲`
+names the tallest mark (its day, or its days), by tokens like the chart, not by price. Under the stamp: how far the total is into its class, 24 wide, and the class above,
+or `top of the scale`. `--json` carries the same facts as `measured.daily` and `damageClass.next` /
+`damageClass.progress`.
+
 The "YOUR PLAN" block appears only with `--plan` or a configured plan. With more than one agent in the period, a
 BY AGENT block (same columns, most tokens first) sits above BY MODEL. Model rows follow the name people pick:
 Claude models by family (`opus`, from any agent), other models by full name (`gpt-5.6-sol`,
@@ -139,6 +157,9 @@ The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 Codex home, a Gemini CLI home and an OpenCode data dir in one: `projects/`, `sessions/`, `tmp/`, `opencode/`),
 `--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>` (same as `CODEX_HOME`), `--gemini-dir
 <path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as `OPENCODE_DATA_DIR`).
+
+Colour: on in a terminal, off in a pipe. `FORCE_COLOR=1` colours a pipe too; `FORCE_COLOR=0`, `NO_COLOR` or
+`TERM=dumb` turn it off everywhere.
 
 Not built yet: `--keep-history 3650` (would offer to set `cleanupPeriodDays`; would ask first), `--audit`
 (would print every file read and every field stored) and `--forget` (would delete `~/.token-damage`).

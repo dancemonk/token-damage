@@ -7,6 +7,7 @@ import {
   aggregate,
   buildFacts,
   damageClass,
+  classProgress,
   damageFloor,
   dedupe,
   dedupePrompts,
@@ -165,6 +166,21 @@ describe("severity bands", () => {
     expect(damageFloor(0)).toBe(0);
     expect(damageFloor(38_200_000)).toBe(1e7);
     expect(damageFloor(6e9)).toBe(5e9);
+  });
+
+  it("knows how far through the current class a total is", () => {
+    expect(classProgress(0)).toEqual({
+      next: { name: "FENDER BENDER", at: 1e6 },
+      progress: 0,
+    });
+    // WATER DAMAGE runs 1e7 → 1e8: 38.2M is 31.3% of the way.
+    expect(classProgress(38_200_000).progress).toBeCloseTo(28.2 / 90, 10);
+    expect(classProgress(1e8 - 1).progress).toBeLessThan(1);
+    expect(classProgress(1e8)).toEqual({
+      next: { name: "ACT OF GOD", at: 1e9 },
+      progress: 0,
+    });
+    expect(classProgress(6e9)).toEqual({ next: null, progress: 1 });
   });
 
   it("inBand needs every metric known and inside [min, max]", () => {

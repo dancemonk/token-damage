@@ -132,8 +132,8 @@ backup of the settings file as `settings.json.token-damage.bak` (only if that ba
 **Failure mode:** on any error print one row, `token damage · (reading)`, and exit 0. Never a stack trace in
 the status bar. A hard 2-second guard prints what is known so far.
 
-**Not used:** Claude's `cost.total_cost_usd`. One price source (`prices.json`); ours must match ccusage, not
-Claude's field. It is a useful sanity check in tests only.
+**Not used:** Claude's `cost.total_cost_usd`. One price source (`prices.json`); ours is the receipt's own number,
+not Claude's field. It is a useful sanity check in tests only.
 
 **Later, separate task:** `subagentStatusLine` with one row per intern (`intern #2 · 301K read ≡ $0.49`).
 
@@ -142,7 +142,7 @@ Claude's field. It is a useful sanity check in tests only.
 ### Truth model
 
 - **Snapshot (authoritative):** the receipt's `aggregate()` over today's files. Identical numbers to
-  `token-damage --json --since <today>`, hence identical to ccusage.
+  `token-damage --json --since <today>` (`pnpm oracle:live` checks it).
 - **Delta (fast):** since the last snapshot, read only new bytes and push them through the existing per-agent
   `parseLine` and the shared deduper (`createDeduper()` keeps state across calls).
 - **Reconcile:** re-snapshot every 5 minutes and whenever a new file appears (Codex forks copy their parent's
