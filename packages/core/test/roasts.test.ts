@@ -291,6 +291,24 @@ describe("observations from session shapes", () => {
   });
 });
 
+describe("session-shape copy claims only what was measured", () => {
+  const texts = (id: string) =>
+    FAMILIES.find((f) => f.id === id)!.variants.map((v) => v.text);
+
+  it("model snob knows the flagship family, not the most expensive model", () => {
+    for (const t of texts("model-snob"))
+      expect(t).not.toMatch(/most expensive/i);
+  });
+
+  it("two agents share an hour; nothing says they overlapped", () => {
+    for (const t of texts("two-agents")) expect(t).not.toMatch(/overlap/i);
+  });
+
+  it("a speedrun session may hold more than one prompt", () => {
+    for (const t of texts("speedrun")) expect(t).not.toMatch(/a prompt,/);
+  });
+});
+
 describe("cooldown", () => {
   it("rotates the note on the next receipt and keeps no text in state", () => {
     const facts = customers[0]?.facts as Facts;

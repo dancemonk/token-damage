@@ -430,7 +430,7 @@ export const FAMILIES: Family[] = [
     strength: { metric: "snobOutput", lo: 500, hi: 0 },
     variants: [
       {
-        text: "You used the most expensive model available to produce {snobOutput} tokens. That's hiring an architect to hang a picture.",
+        text: "You used the flagship model to produce {snobOutput} tokens. That's hiring an architect to hang a picture.",
         tone: "absurd",
       },
       {
@@ -446,7 +446,7 @@ export const FAMILIES: Family[] = [
         tone: "bureaucratic",
       },
       {
-        text: "{snobOutput} tokens of output from the most expensive model on the list. It billed by the page and left a sticky note.",
+        text: "{snobOutput} tokens of output from the flagship model. It billed by the page and left a sticky note.",
         tone: "dry",
       },
     ],
@@ -467,7 +467,7 @@ export const FAMILIES: Family[] = [
         tone: "absurd",
       },
       {
-        text: "One session: a prompt, {speedrunTokens} tokens, done in {speedrunSeconds} seconds. The meter barely had time to spin.",
+        text: "One session, {speedrunTokens} tokens, done in {speedrunSeconds} seconds. The meter barely had time to spin.",
         tone: "dry",
       },
       {
@@ -529,7 +529,7 @@ export const FAMILIES: Family[] = [
         tone: "bureaucratic",
       },
       {
-        text: "{agentPair}, overlapping. A small consultancy has formed, and you are its only client.",
+        text: "{agentPair}, inside the same hour. A small consultancy has formed, and you are its only client.",
         tone: "absurd",
       },
       {
