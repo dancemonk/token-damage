@@ -169,6 +169,28 @@ describe("share link", () => {
     for (const value of [p.start, p.end, p.class, p.last ?? "", p.note ?? ""])
       expect(preview).toContain(value);
   });
+
+  it("names the agents, most tokens first, and marks a partly priced total", () => {
+    expect(sharePayload(receipt).agents).toEqual(["claude-code"]);
+    expect(sharePayload(receipt)).not.toHaveProperty("partly");
+    const mixed: Receipt = {
+      ...receipt,
+      byAgent: [
+        { ...receipt.byAgent[0]!, agent: "codex" },
+        receipt.byAgent[0]!,
+      ],
+      priced: { ...receipt.priced, partlyPriced: true },
+    };
+    const p = sharePayload(mixed);
+    expect(p.agents).toEqual(["codex", "claude-code"]);
+    expect(p.partly).toBe(true);
+    expect(decodeShare(shareUrl(p))).toEqual(p);
+    const preview = sharePreview(p).join("\n");
+    expect(preview).toContain("agents: codex, claude-code");
+    expect(preview).toContain(
+      "prices: partly (some models have no list price)",
+    );
+  });
 });
 
 describe("privacy", () => {

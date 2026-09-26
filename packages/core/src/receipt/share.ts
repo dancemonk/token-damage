@@ -26,6 +26,8 @@ export const SHARE_WHITELIST = [
   "dispute",
   "note",
   "last",
+  "agents",
+  "partly",
 ] as const;
 
 export interface SharePayload {
@@ -52,6 +54,10 @@ export interface SharePayload {
   note?: string;
   /** Latest call, 24-hour clock rounded to 5 minutes. */
   last?: string;
+  /** Agent ids (claude-code, codex, gemini, opencode), most tokens first. */
+  agents?: string[];
+  /** Present, and true, when some usage has no list price: the total is a floor. */
+  partly?: true;
 }
 
 export const EXCUSE_IDS: Record<Excuse, string> = {
@@ -113,6 +119,8 @@ export function sharePayload(
     }),
     ...(r.note && { note: `${r.note.family}.${r.note.variant}` }),
     ...(last && { last }),
+    ...(r.byAgent.length > 0 && { agents: r.byAgent.map((a) => a.agent) }),
+    ...(r.priced.partlyPriced && { partly: true as const }),
   };
 }
 
@@ -152,6 +160,9 @@ export function decodeShare(url: string): SharePayload | null {
 export function sharePreview(p: SharePayload): string[] {
   const rows: [string, string][] = [
     ["period", `${p.start} – ${p.end}`],
+    ...(p.agents
+      ? ([["agents", p.agents.join(", ")]] as [string, string][])
+      : []),
     [
       "tokens (input, cache write, cache read, output)",
       p.tokens.map((x) => x.toLocaleString("en-US")).join(", "),
@@ -162,6 +173,12 @@ export function sharePreview(p: SharePayload): string[] {
     ],
     ["subagents · words typed", `${p.subagents} · ${p.words}`],
     ["list price · cache saved", `$${p.list} · $${p.saved}`],
+    ...(p.partly
+      ? ([["prices", "partly (some models have no list price)"]] as [
+          string,
+          string,
+        ][])
+      : []),
     ...(p.plan !== undefined
       ? ([["plan multiple", `${p.plan}×`]] as [string, string][])
       : []),

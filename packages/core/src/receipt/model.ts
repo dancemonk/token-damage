@@ -1,3 +1,4 @@
+import { AGENT_NAMES } from "../agents.js";
 import type { Aggregate } from "../aggregate/index.js";
 
 import { energy } from "../metrics/energy.js";
@@ -18,13 +19,7 @@ import type { Facts } from "../roasts/facts.js";
 import type { Observations } from "../roasts/engine.js";
 import type { Source, TokenSums, Value } from "../types.js";
 
-/** Agent names as the card prints them; the 48-column receipt prints them in lower case. */
-export const AGENT_NAMES: Record<Source, string> = {
-  "claude-code": "Claude Code",
-  codex: "Codex",
-  gemini: "Gemini CLI",
-  opencode: "OpenCode",
-};
+export { AGENT_NAMES };
 
 /** Tokens and list price of some `byModel` keys. */
 export interface PriceRow {
