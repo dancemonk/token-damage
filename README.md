@@ -60,6 +60,12 @@ DAMAGE CLASS
           ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
   ■·······················  4% to UNINSURABLE
 ------------------------------------------------
+ACHIEVEMENTS
+  ONE LAST FIX ...... last model call at 3:47 am
+  CACHE LORD
+    over 95% of input from cache for a week
+  MIDDLE MANAGER ....... 12 subagents in one day
+------------------------------------------------
 ADJUSTER'S NOTE
   for every word you typed, the machine read
   80,558 tokens. that's the great gatsby,
