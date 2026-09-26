@@ -164,7 +164,8 @@ describe("one language per page", () => {
   // Names stay as they are in every language: the brand, the command, products, models, orgs, units.
   const NAMES = new Set(
     (
-      "TOKEN DAMAGE Token Damage npx token-damage GitHub Claude Code Codex Gemini CLI OpenCode Anthropic " +
+      "TOKEN DAMAGE Token Damage npx token-damage GitHub Claude Code Codex Gemini CLI OpenCode Antigravity " +
+      "Grok Build Anthropic " +
       "OpenAI Google Meta Berkeley Lab JavaScript DRAM RAM-X API LBNL TrendForce The Climate Brink Epoch AI " +
       "ChatGPT Mistral DOE EcoLogits ISO dev to Samsung Micron Crucial CO USD cookie I II III IV " +
       // Pool lines (docs/ROASTS.md §Pool): companies, products and places in the news.
