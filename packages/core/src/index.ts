@@ -4,6 +4,8 @@ export * from "./adapters/claude/index.js";
 export * from "./adapters/codex/index.js";
 export * from "./adapters/gemini/index.js";
 export * from "./adapters/opencode/index.js";
+export { ADAPTERS } from "./adapters/registry.js";
+export type { Adapter, LiveReading, Reader } from "./adapters/contract.js";
 export * from "./aggregate/index.js";
 export * from "./metrics/index.js";
 export * from "./roasts/index.js";
