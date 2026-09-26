@@ -612,6 +612,12 @@ a:hover {
   color: var(--muted);
   text-wrap: balance;
 }
+/* Under the price rows when the total is a floor: models with no list price are left out. */
+.r-partly {
+  margin: 2px 0 0;
+  font-size: calc(var(--fine-size) * var(--receipt-scale));
+  color: var(--muted);
+}
 .note {
   font-size: calc(var(--note-size) * var(--receipt-scale));
   line-height: 1.45;

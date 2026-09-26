@@ -171,6 +171,7 @@
     },
     "receipt.price": "≡ PRICE WITHOUT YOUR PLAN",
     "receipt.saved": "≡ YOU SAVED (CACHE CARD)",
+    "receipt.partly": "+ at least: models with no list price are left out",
     "receipt.electricity": "≈ ELECTRICITY",
     "receipt.kwh": "kWh",
     "receipt.ram": "✶ RAM SURCHARGE (GAMERS)",
