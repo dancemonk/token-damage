@@ -2,6 +2,8 @@
 
 Thanks for looking. Token Damage is small on purpose, and a few rules keep it honest.
 
+Working with a coding agent? Point it at [AGENTS.md](AGENTS.md): the rules, a code map, commands and the traps.
+
 ## Setup
 
 ```
