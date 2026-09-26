@@ -244,18 +244,18 @@ describe("arguments", () => {
     ).toEqual([2e7, 2e7, 2e7, 2e7, 1.2e9, 5e5, undefined, undefined]);
   });
 
-  it("reads a fixture corpus as both a Claude Code config dir and a Codex home", () => {
+  it("reads a fixture corpus as every agent's dir at once", () => {
     expect(parseOptions(["--fixtures", "f"])).toMatchObject({
-      configDir: "f",
-      codexHome: "f",
-      geminiDir: join("f", "tmp"),
+      dirs: {
+        "claude-code": "f",
+        codex: "f",
+        gemini: join("f", "tmp"),
+        opencode: join("f", "opencode"),
+      },
       fixtures: true,
     });
-    expect(parseOptions(["--gemini-dir", "g"]).geminiDir).toBe("g");
-    expect(parseOptions(["--codex-home", "c"])).toMatchObject({
-      configDir: undefined,
-      codexHome: "c",
-    });
+    expect(parseOptions(["--gemini-dir", "g"]).dirs.gemini).toBe("g");
+    expect(parseOptions(["--codex-home", "c"]).dirs).toEqual({ codex: "c" });
   });
 
   it("accepts the -- that pnpm passes through", () => {

@@ -181,6 +181,38 @@ describe("receipt for several agents", () => {
     expect(receiptSvg(receipt([solCall]))).toContain("30 days — Codex<");
     expect(imagePreview(both)[0]).toContain("(Codex + Claude Code)");
   });
+
+  it("fits the card's agents line on the paper, naming the rest as a count", () => {
+    const four = receipt(
+      [
+        claudeCall,
+        solCall,
+        call({
+          source: "gemini",
+          sessionId: "s3",
+          model: "gemini-3.5-flash",
+          input: 500,
+        }),
+        call({
+          source: "opencode",
+          sessionId: "s4",
+          model: "claude-opus-5",
+          input: 100,
+        }),
+      ],
+      { ...days("2026-08-25", "2026-09-23", 30), retentionDays: 20 },
+    );
+    expect(four.byAgent.map((a) => a.agent)).toEqual([
+      "codex",
+      "claude-code",
+      "gemini",
+      "opencode",
+    ]);
+    // All four names make 84 characters, three make 82, two make 69; the line holds 76.
+    expect(receiptSvg(four)).toContain(
+      "30 days — Codex + Claude Code + 2 more · Claude Code kept the last 20<",
+    );
+  });
 });
 
 describe("share card", () => {

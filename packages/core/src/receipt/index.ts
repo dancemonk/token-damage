@@ -11,6 +11,7 @@ export {
   decodeShare,
   EXCUSE_IDS,
   imagePreview,
+  MAX_LINK_AGENTS,
   SHARE_BASE,
   SHARE_WHITELIST,
   sharePayload,

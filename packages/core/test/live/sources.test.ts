@@ -15,7 +15,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { aggregate, createDeduper } from "../../src/index.js";
+import { ADAPTERS, aggregate, createDeduper } from "../../src/index.js";
 import {
   LiveSources,
   type LiveRecord,
@@ -55,13 +55,14 @@ async function claudeInto(root: string): Promise<void> {
   }
 }
 
+// Every agent at its place in a fixture corpus, so a new agent joins these tests on its own.
 function dirsOf(root: string): SourceDirs {
-  return {
-    claudeRoots: [root],
-    codexHomes: [root],
-    geminiDirs: [join(root, "tmp")],
-    opencodeDirs: [join(root, "opencode")],
-  };
+  return Object.fromEntries(
+    ADAPTERS.map((a) => [
+      a.id,
+      [a.fixtureDir ? join(root, a.fixtureDir) : root],
+    ]),
+  ) as SourceDirs;
 }
 
 function totals(records: LiveRecord[]) {
@@ -282,5 +283,34 @@ describe("LiveSources", () => {
       JSON.stringify({ messages: [] }),
     );
     expect((await geminiSources.poll()).newFiles).toBe(false);
+  });
+
+  it("finds nothing, warns about nothing and watches every agent's place in an empty home", async () => {
+    const empty = await mkdtemp(join(tmpdir(), "td-live-"));
+    const sources = new LiveSources(dirsOf(empty), { from: 0, hash });
+    expect(await sources.scanAll()).toEqual([]);
+    expect(sources.warnings()).toEqual([]);
+    expect(sources.watchRoots()).toEqual([
+      join(empty, "projects"),
+      join(empty, "sessions"),
+      join(empty, "archived_sessions"),
+      join(empty, "tmp"),
+      join(empty, "opencode"),
+    ]);
+  });
+
+  it("resumes from a saved state without rescanning anything", async () => {
+    const codexHome = join(FIXTURES, "codex");
+    const first = new LiveSources(dirsOf(codexHome), { from: 0, hash });
+    expect((await first.scanAll()).length).toBeGreaterThan(0);
+    const second = new LiveSources(dirsOf(codexHome), {
+      from: 0,
+      hash,
+      state: first.state(),
+    });
+    const polled = await second.poll();
+    expect(polled.records).toEqual([]);
+    expect(polled.pools).toEqual({});
+    expect(polled.newFiles).toBe(false);
   });
 });

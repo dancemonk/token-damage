@@ -211,6 +211,9 @@ function statementPeriod(p: Receipt["period"]): string {
     : `${monthDay(p.start)}, ${sy} – ${monthDay(p.end)}, ${ey}`;
 }
 
+// The agents line is 15 px IBM Plex Mono (0.6 em a character) across the paper's inner width: 76 characters.
+const KEPT_CHARS = Math.floor(INNER / (15 * 0.6));
+
 // The card has no BY AGENT block, so it names the agents unless Claude Code is the only one.
 // The only retention setting we read is Claude Code's, so the note is about Claude Code alone.
 function kept(r: Receipt): string {
@@ -222,7 +225,15 @@ function kept(r: Receipt): string {
       ? "all Claude Code kept"
       : `Claude Code kept the last ${retentionDays}`;
   if (claude && agents.length === 1) return `${days} days — ${retention}`;
-  return `${days} days — ${agents.join(" + ")}${claude ? ` · ${retention}` : ""}`;
+  const tail = claude ? ` · ${retention}` : "";
+  // As many names as fit, most tokens first; the rest become "+ N more".
+  for (let k = agents.length; k > 1; k--) {
+    const more = k < agents.length ? ` + ${agents.length - k} more` : "";
+    const line = `${days} days — ${agents.slice(0, k).join(" + ")}${more}${tail}`;
+    if (line.length <= KEPT_CHARS) return line;
+  }
+  const more = agents.length > 1 ? ` + ${agents.length - 1} more` : "";
+  return `${days} days — ${agents[0] ?? ""}${more}${tail}`;
 }
 
 /** The 1080×1920 share card. Pure: same receipt, same SVG. */

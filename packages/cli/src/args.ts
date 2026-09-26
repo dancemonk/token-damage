@@ -1,40 +1,40 @@
 import { join } from "node:path";
 import { parseArgs } from "node:util";
+import { ADAPTERS, type Source } from "@token-damage/core";
 
-const DIR_FLAGS = {
-  fixtures: { type: "string" },
-  "config-dir": { type: "string" },
-  "codex-home": { type: "string" },
-  "gemini-dir": { type: "string" },
-  "opencode-dir": { type: "string" },
-} as const;
+// `--fixtures <dir>` plus one `--<flag> <path>` per agent (--config-dir, --codex-home, …). Built from the
+// registry, so parseArgs' `values` does not type these keys; dirFlags reads them.
+const DIR_FLAGS = Object.fromEntries([
+  ["fixtures", { type: "string" }],
+  ...ADAPTERS.map((a) => [a.flag, { type: "string" }]),
+]) as Record<string, { type: "string" }>;
 
 export interface DirFlags {
-  configDir: string | undefined;
-  codexHome: string | undefined;
-  geminiDir: string | undefined;
-  opencodeDir: string | undefined;
+  /** A path given with an agent's flag, or the agent's place in a `--fixtures` corpus. */
+  dirs: Partial<Record<Source, string>>;
   fixtures: boolean;
 }
 
-// A fixture corpus is a Claude Code config dir, a Codex home, a Gemini CLI home (`tmp/`) and an OpenCode
-// data dir (`opencode/`) in one.
-function dirFlags(values: {
-  fixtures?: string | undefined;
-  "config-dir"?: string | undefined;
-  "codex-home"?: string | undefined;
-  "gemini-dir"?: string | undefined;
-  "opencode-dir"?: string | undefined;
-}): DirFlags {
-  const f = values.fixtures;
-  return {
-    configDir: f ?? values["config-dir"],
-    codexHome: f ?? values["codex-home"],
-    geminiDir: f !== undefined ? join(f, "tmp") : values["gemini-dir"],
-    opencodeDir: f !== undefined ? join(f, "opencode") : values["opencode-dir"],
-    fixtures: f !== undefined,
-  };
+// A fixture corpus holds every agent at once, each at its adapter's `fixtureDir` (`tmp/` for Gemini CLI, …).
+function dirFlags(values: { readonly [key: string]: unknown }): DirFlags {
+  const f = values.fixtures as string | undefined;
+  const dirs: Partial<Record<Source, string>> = {};
+  for (const a of ADAPTERS) {
+    const path =
+      f !== undefined
+        ? a.fixtureDir
+          ? join(f, a.fixtureDir)
+          : f
+        : (values[a.flag] as string | undefined);
+    if (path !== undefined) dirs[a.id] = path;
+  }
+  return { dirs, fixtures: f !== undefined };
 }
+
+/** The agents' flag lines in `--help`, descriptions aligned with the other options. */
+const DIR_HELP = ADAPTERS.map(
+  (a) => `${`  --${a.flag} <path>`.padEnd(23)} ${a.help}`,
+).join("\n");
 
 function clockFlag(value: string | undefined): number | undefined {
   if (value === undefined) return undefined;
@@ -70,7 +70,7 @@ export const LIVE_USAGE = `token-damage live: today's damage as it happens
   --once             print one JSON snapshot and exit
   --fixtures <dir>   read a fixture corpus instead of your logs (nothing is cached)
   --clock <iso>      pretend it is this time (demos, screenshots)
-  --config-dir, --codex-home, --gemini-dir, --opencode-dir <path>
+  ${ADAPTERS.map((a) => `--${a.flag}`).join(", ")} <path>
 
 q quits.`;
 
@@ -143,17 +143,12 @@ export function parseStatuslineOptions(argv: string[]): StatuslineOptions {
   };
 }
 
-export interface Options {
+export interface Options extends DirFlags {
   /** Days back from today, or a start date. */
   since: { days: number } | { date: string };
   planUsd: number | undefined;
   anim: boolean;
   json: boolean;
-  configDir: string | undefined;
-  codexHome: string | undefined;
-  geminiDir: string | undefined;
-  opencodeDir: string | undefined;
-  fixtures: boolean;
   strict: boolean;
   help: boolean;
   version: boolean;
@@ -170,10 +165,7 @@ usage: npx token-damage [options]
   --since <30d|date>    period to cover (default 30d) or a start date, YYYY-MM-DD
   --json                print the receipt as JSON
   --no-anim             print everything at once
-  --config-dir <path>   Claude Code config dir (default ~/.claude, or CLAUDE_CONFIG_DIR)
-  --codex-home <path>   Codex home (default ~/.codex, or CODEX_HOME)
-  --gemini-dir <path>   Gemini CLI data dir (default ~/.gemini/tmp, or GEMINI_DATA_DIR)
-  --opencode-dir <path> OpenCode data dir (default ~/.local/share/opencode, or OPENCODE_DATA_DIR)
+${DIR_HELP}
   --fixtures <dir>      read a fixture corpus instead of your own logs
   --strict              exit 3 if an agent is newer than anything tested
   -v, --version         print the version

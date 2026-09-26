@@ -1,24 +1,16 @@
 import { homedir } from "node:os";
-import {
-  claudeRoots,
-  codexHomes,
-  geminiDirs,
-  opencodeDirs,
-  type SourceDirs,
-} from "@token-damage/core";
-import type { DirFlags } from "./args.js";
+import { ADAPTERS, type Source, type SourceDirs } from "@token-damage/core";
 
+/** Each agent's roots: the path from its flag when given, else its environment variable or its defaults. */
 export function resolveDirs(
-  flags: Omit<DirFlags, "fixtures">,
+  flags: { dirs: Partial<Record<Source, string>> },
   env: NodeJS.ProcessEnv = process.env,
   home: string = homedir(),
 ): SourceDirs {
-  return {
-    claudeRoots: flags.configDir ? [flags.configDir] : claudeRoots(env, home),
-    codexHomes: flags.codexHome ? [flags.codexHome] : codexHomes(env, home),
-    geminiDirs: flags.geminiDir ? [flags.geminiDir] : geminiDirs(env, home),
-    opencodeDirs: flags.opencodeDir
-      ? [flags.opencodeDir]
-      : opencodeDirs(env, home),
-  };
+  return Object.fromEntries(
+    ADAPTERS.map((a) => {
+      const path = flags.dirs[a.id];
+      return [a.id, path ? [path] : a.roots(env, home)];
+    }),
+  ) as SourceDirs;
 }

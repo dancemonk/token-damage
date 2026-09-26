@@ -3,6 +3,7 @@
  * Nothing reachable from here may import `node:` modules; test/web.test.ts walks the graph.
  */
 export {
+  MAX_LINK_AGENTS,
   SHARE_BASE,
   SHARE_WHITELIST,
   decodeShare,

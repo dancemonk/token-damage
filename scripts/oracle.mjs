@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // Oracle: compares our daily token totals with ccusage on the same agent logs. A second opinion, run on real
 // logs before every release; never in CI. The CI check is the hand-derived fixtures/*/expected.json.
-// Usage: pnpm oracle [--agent claude|codex|gemini|opencode] [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
-// --config-dir sets CLAUDE_CONFIG_DIR for claude, CODEX_HOME for codex, GEMINI_DATA_DIR for gemini and
-// OPENCODE_DATA_DIR for opencode.
-// --live compares `token-damage live --once` against our own daily totals for today, all four agents, on
+// Usage: pnpm oracle [--all | --agent <ccusage command>] [--fixtures] [--config-dir <dir>] [--timezone <IANA zone>]
+// Agents come from the registry (packages/core/src/adapters/registry.ts); --config-dir sets the agent's own
+// variable (CLAUDE_CONFIG_DIR, CODEX_HOME, …). --all compares every agent at its default place.
+// --live compares `token-damage live --once` against our own daily totals for today, every agent, on
 // real logs only: exact equality, no tolerance.
 // Exits 1 when any day's field differs by more than 1%, 2 when ccusage cannot run.
 // Dev tool only: it fetches ccusage through npx. The CLI itself never touches the network.
@@ -18,12 +18,7 @@ export const TOLERANCE = 0.01;
 const FIELDS = ["input", "cacheWrite", "cacheRead", "output"];
 const ZERO = { input: 0, cacheWrite: 0, cacheRead: 0, output: 0 };
 const total = (t) => t.input + t.cacheWrite + t.cacheRead + t.output;
-const AGENTS = {
-  claude: { env: "CLAUDE_CONFIG_DIR", label: "Claude Code" },
-  codex: { env: "CODEX_HOME", label: "Codex" },
-  gemini: { env: "GEMINI_DATA_DIR", label: "Gemini CLI" },
-  opencode: { env: "OPENCODE_DATA_DIR", label: "OpenCode" },
-};
+const loadCore = () => import("../packages/core/dist/index.js");
 
 /** Per-day comparison. `ours`/`theirs`: Map<day, {input, cacheWrite, cacheRead, output}>. */
 export function compare(ours, theirs, tolerance = TOLERANCE) {
@@ -54,9 +49,10 @@ export function compare(ours, theirs, tolerance = TOLERANCE) {
     .filter((row) => row.ours > 0 || row.theirs > 0);
 }
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const args = {
-    agent: "claude",
+    agent: undefined,
+    all: false,
     fixtures: false,
     configDir: undefined,
     timeZone: undefined,
@@ -64,13 +60,20 @@ function parseArgs(argv) {
   };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--agent") args.agent = argv[++i];
+    else if (argv[i] === "--all") args.all = true;
     else if (argv[i] === "--fixtures") args.fixtures = true;
     else if (argv[i] === "--config-dir") args.configDir = argv[++i];
     else if (argv[i] === "--timezone") args.timeZone = argv[++i];
     else if (argv[i] === "--live") args.live = true;
     else throw new Error(`unknown argument: ${argv[i]}`);
   }
-  if (!AGENTS[args.agent]) throw new Error(`unknown agent: ${args.agent}`);
+  // `pnpm oracle` runs `--all`, and pnpm appends: `pnpm oracle --agent codex` compares Codex alone.
+  if (args.agent !== undefined) args.all = false;
+  if (args.all && args.configDir !== undefined)
+    throw new Error(
+      "--all compares every agent at its default place; name one with --agent to use --config-dir",
+    );
+  args.agent ??= "claude";
   return args;
 }
 
@@ -95,41 +98,20 @@ function fixtureConfigDir() {
   return dir;
 }
 
-// The Codex fixtures are already a Codex home, the Gemini fixtures a Gemini CLI data dir, the OpenCode
-// fixtures an OpenCode data dir.
-const codexFixtures = () =>
-  fileURLToPath(new URL("../packages/core/fixtures/codex/", import.meta.url));
-const geminiFixtures = () =>
+// Every agent but Claude Code keeps a ready data dir at fixtures/<command>/<fixtureDir>.
+const fixturesOf = (adapter) =>
   fileURLToPath(
-    new URL("../packages/core/fixtures/gemini/tmp/", import.meta.url),
-  );
-const opencodeFixtures = () =>
-  fileURLToPath(
-    new URL("../packages/core/fixtures/opencode/opencode/", import.meta.url),
+    new URL(
+      `../packages/core/fixtures/${adapter.oracle.command}/${adapter.fixtureDir}`,
+      import.meta.url,
+    ),
   );
 
-async function ourDaily(agent, env, timeZone) {
-  const core = await import("../packages/core/dist/index.js");
-  const records =
-    agent === "codex"
-      ? core.scanCodex(core.codexHomes(env, homedir()), core.emptyCodexStats())
-      : agent === "gemini"
-        ? core.scanGemini(
-            core.geminiDirs(env, homedir()),
-            core.emptyGeminiStats(),
-          )
-        : agent === "opencode"
-          ? core.scanOpenCode(
-              core.opencodeDirs(env, homedir()),
-              core.emptyOpenCodeStats(),
-            )
-          : core.scanClaude(core.claudeRoots(env, homedir()), {
-              ...core.emptyStats(),
-              files: 0,
-              subagentFiles: 0,
-            });
+async function ourDaily(adapter, env, timeZone) {
+  const core = await loadCore();
+  const reader = adapter.reader(adapter.roots(env, homedir()));
   const deduper = core.createDeduper();
-  for await (const record of records) deduper.add(record);
+  for await (const record of reader.scan()) deduper.add(record);
   const { daily } = core.aggregate({ usage: deduper.result() }, { timeZone });
   return new Map(
     daily.map((d) => [
@@ -157,12 +139,20 @@ function ccusage(args, env) {
   });
 }
 
-// For codex, inputTokens already excludes cached input, as ours does. For gemini and opencode, outputTokens
-// leaves out thinking (reasoning), which only totalTokens has; ours counts it as output, as it is billed.
-function theirDaily(agent, env, timeZone) {
+// For codex, inputTokens already excludes cached input, as ours does. For agents with `foldTotal` (Gemini CLI,
+// OpenCode), outputTokens leaves out thinking (reasoning), which only totalTokens has; ours counts it as
+// output, as it is billed.
+function theirDaily(adapter, env, timeZone) {
   const report = JSON.parse(
     ccusage(
-      [agent, "daily", "--json", "--offline", "--timezone", timeZone],
+      [
+        adapter.oracle.command,
+        "daily",
+        "--json",
+        "--offline",
+        "--timezone",
+        timeZone,
+      ],
       env,
     ),
   );
@@ -173,13 +163,12 @@ function theirDaily(agent, env, timeZone) {
         input: d.inputTokens,
         cacheWrite: d.cacheCreationTokens,
         cacheRead: d.cacheReadTokens,
-        output:
-          agent === "gemini" || agent === "opencode"
-            ? d.totalTokens -
-              d.inputTokens -
-              d.cacheCreationTokens -
-              d.cacheReadTokens
-            : d.outputTokens,
+        output: adapter.oracle.foldTotal
+          ? d.totalTokens -
+            d.inputTokens -
+            d.cacheCreationTokens -
+            d.cacheReadTokens
+          : d.outputTokens,
       },
     ]),
   );
@@ -190,8 +179,9 @@ const pct = (off) => (off === Infinity ? "∞" : `${(off * 100).toFixed(2)}%`);
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  const core = await loadCore();
   if (args.live) {
-    // Live snapshot vs our own daily totals for today, all four agents: exact equality, no tolerance.
+    // Live snapshot vs our own daily totals for today, every agent: exact equality, no tolerance.
     const timeZone =
       args.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
     const today = new Intl.DateTimeFormat("en-CA", { timeZone }).format(
@@ -207,9 +197,9 @@ async function main() {
       }),
     );
     const sum = { ...ZERO };
-    for (const agent of Object.keys(AGENTS)) {
+    for (const adapter of core.ADAPTERS) {
       const day =
-        (await ourDaily(agent, process.env, timeZone)).get(today) ?? ZERO;
+        (await ourDaily(adapter, process.env, timeZone)).get(today) ?? ZERO;
       for (const f of FIELDS) sum[f] += day[f];
     }
     const live = {
@@ -228,21 +218,29 @@ async function main() {
       );
     process.exit(bad.length ? 1 : 0);
   }
-  const agent = AGENTS[args.agent];
+  const chosen = args.all
+    ? core.ADAPTERS
+    : core.ADAPTERS.filter((a) => a.oracle.command === args.agent);
+  if (chosen.length === 0)
+    throw new Error(
+      `unknown agent: ${args.agent} (one of ${core.ADAPTERS.map((a) => a.oracle.command).join(", ")})`,
+    );
+  for (const [i, adapter] of chosen.entries()) {
+    if (i > 0) console.log();
+    await compareOne(adapter, args, core);
+  }
+}
+
+async function compareOne(adapter, args, core) {
   // Only the Claude fixtures are copied into a temporary config dir; that copy is removed at the end.
   const tempDir =
-    args.fixtures && args.agent === "claude" ? fixtureConfigDir() : undefined;
+    args.fixtures && adapter.id === "claude-code"
+      ? fixtureConfigDir()
+      : undefined;
   const configDir =
-    tempDir ??
-    (args.fixtures && args.agent === "codex"
-      ? codexFixtures()
-      : args.fixtures && args.agent === "gemini"
-        ? geminiFixtures()
-        : args.fixtures && args.agent === "opencode"
-          ? opencodeFixtures()
-          : args.configDir);
+    tempDir ?? (args.fixtures ? fixturesOf(adapter) : args.configDir);
   const env = configDir
-    ? { ...process.env, [agent.env]: configDir }
+    ? { ...process.env, [adapter.env]: configDir }
     : process.env;
   const timeZone =
     args.timeZone ??
@@ -251,7 +249,7 @@ async function main() {
     let version, theirs;
     try {
       version = ccusage(["--version"], env).trim();
-      theirs = theirDaily(args.agent, env, timeZone);
+      theirs = theirDaily(adapter, env, timeZone);
     } catch (error) {
       process.stderr.write(
         `ccusage failed: ${error.stderr || error.message}\n`,
@@ -259,9 +257,9 @@ async function main() {
       process.exitCode = 2;
       return;
     }
-    const rows = compare(await ourDaily(args.agent, env, timeZone), theirs);
+    const rows = compare(await ourDaily(adapter, env, timeZone), theirs);
     console.log(
-      `${version} · ${agent.label} · ${args.fixtures ? "fixture corpus" : "local logs"} · ${timeZone} · tolerance ${pct(TOLERANCE)}`,
+      `${version} · ${core.AGENT_NAMES[adapter.id]} · ${args.fixtures ? "fixture corpus" : "local logs"} · ${timeZone} · tolerance ${pct(TOLERANCE)}`,
     );
     console.log(
       `${"day".padEnd(12)}${"ours".padStart(16)}${"ccusage".padStart(16)}   worst field`,

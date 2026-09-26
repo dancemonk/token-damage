@@ -1,3 +1,4 @@
+import { AGENT_SHORT } from "../agents.js";
 import { formatUsd } from "../metrics/format.js";
 import { listPrice, priceFor } from "../metrics/pricing.js";
 import {
@@ -8,7 +9,7 @@ import {
   type Line,
 } from "../receipt/text.js";
 import { bar, sparkline } from "../receipt/glyphs.js";
-import type { Source, TokenSums } from "../types.js";
+import type { TokenSums } from "../types.js";
 import type { TapeEvent } from "./engine.js";
 import type { LiveSnapshot } from "./snapshot.js";
 import type { Turn } from "./turns.js";
@@ -26,14 +27,6 @@ export const IDLE_GAP_MS = 600_000;
 const STAMP_RED_MS = 60_000;
 /** The widest a glance-row bar gets, as the receipt's class progress bar. */
 const BAR_MAX = 24;
-
-// Short on purpose: the receipt's AGENT_NAMES ("claude code", "gemini cli") do not fit the 10-column agent cell.
-export const AGENT_SHORT: Record<Source, string> = {
-  "claude-code": "claude",
-  codex: "codex",
-  gemini: "gemini",
-  opencode: "opencode",
-};
 
 export const clip = (t: string, w: number) =>
   t.length <= w ? t : `${t.slice(0, Math.max(0, w - 1))}…`;

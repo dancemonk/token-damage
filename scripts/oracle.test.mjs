@@ -1,5 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { compare, TOLERANCE } from "./oracle.mjs";
+import { compare, parseArgs, TOLERANCE } from "./oracle.mjs";
+
+describe("parseArgs", () => {
+  it("defaults to Claude Code", () => {
+    expect(parseArgs([]).agent).toBe("claude");
+  });
+  it("reads every agent with --all, and lets an --agent after it (pnpm oracle --agent codex) narrow to one", () => {
+    expect(parseArgs(["--all"]).all).toBe(true);
+    expect(parseArgs(["--all", "--agent", "codex"])).toMatchObject({
+      all: false,
+      agent: "codex",
+    });
+    expect(
+      parseArgs(["--all", "--agent", "codex", "--config-dir", "/x"]),
+    ).toMatchObject({ all: false, agent: "codex", configDir: "/x" });
+  });
+  it("refuses one config dir for every agent", () => {
+    expect(() => parseArgs(["--all", "--config-dir", "/x"])).toThrow(/--all/);
+  });
+});
 
 const day = (input, cacheWrite, cacheRead, output) => ({
   input,

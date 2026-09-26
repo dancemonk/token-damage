@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { codexHomes } from "@token-damage/core";
+import { ADAPTERS, codexHomes } from "@token-damage/core";
 import {
   command,
+  LIVE_USAGE,
   parseLiveOptions,
   parseStatuslineOptions,
+  USAGE,
 } from "../src/args.js";
 import { resolveDirs } from "../src/dirs.js";
 
@@ -35,10 +37,12 @@ describe("parseLiveOptions", () => {
       "--once",
     ]);
     expect(o).toMatchObject({
-      configDir: "/x",
-      codexHome: "/x",
-      geminiDir: "/x/tmp",
-      opencodeDir: "/x/opencode",
+      dirs: {
+        "claude-code": "/x",
+        codex: "/x",
+        gemini: "/x/tmp",
+        opencode: "/x/opencode",
+      },
       fixtures: true,
       once: true,
       json: false,
@@ -74,17 +78,30 @@ describe("parseStatuslineOptions", () => {
 describe("resolveDirs", () => {
   it("uses flags when given and the defaults otherwise", () => {
     const d = resolveDirs(
-      {
-        configDir: "/c",
-        codexHome: undefined,
-        geminiDir: undefined,
-        opencodeDir: "/o",
-      },
+      { dirs: { "claude-code": "/c", opencode: "/o" } },
       {},
       "/h",
     );
-    expect(d.claudeRoots).toEqual(["/c"]);
-    expect(d.opencodeDirs).toEqual(["/o"]);
-    expect(d.codexHomes).toEqual(codexHomes({}, "/h"));
+    expect(d["claude-code"]).toEqual(["/c"]);
+    expect(d.opencode).toEqual(["/o"]);
+    expect(d.codex).toEqual(codexHomes({}, "/h"));
+  });
+  it("falls back to the defaults for an empty flag", () => {
+    const d = resolveDirs({ dirs: { codex: "" } }, {}, "/h");
+    expect(d.codex).toEqual(codexHomes({}, "/h"));
+  });
+});
+
+describe("agent flags", () => {
+  it("lets a fixture corpus win over an agent's own flag", () => {
+    expect(
+      parseLiveOptions(["--fixtures", "/f", "--codex-home", "/c"]).dirs.codex,
+    ).toBe("/f");
+  });
+  it("lists every agent's flag in both help texts", () => {
+    for (const a of ADAPTERS) {
+      expect(USAGE).toContain(`  --${a.flag} <path>`);
+      expect(LIVE_USAGE).toContain(`--${a.flag}`);
+    }
   });
 });
