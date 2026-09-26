@@ -1,5 +1,9 @@
 import { readFileSync } from "node:fs";
-import { SHARE_BASE, shareUrl } from "@token-damage/core/web";
+import {
+  ACHIEVEMENT_NAMES,
+  SHARE_BASE,
+  shareUrl,
+} from "@token-damage/core/web";
 import { describe, expect, it } from "vitest";
 import { translator, type Catalog } from "../src/i18n.js";
 import { shareNote } from "../src/notes.js";
@@ -197,6 +201,14 @@ describe.each(LANGS)("share links on /%s", (lang) => {
     expect(
       readShare(hashOf(shareUrl({ ...base, last: "23:55" }))),
     ).not.toBeNull();
+  });
+
+  it("names every achievement the CLI can earn", () => {
+    const base = readShare(hashOf(FROZEN_V1))!;
+    const ids = Object.keys(ACHIEVEMENT_NAMES);
+    const v = view({ ...base, ach: ids });
+    expect(v.achievements).toHaveLength(ids.length);
+    for (const name of v.achievements!) expect(name).not.toMatch(/^ach\./);
   });
 
   it("prints only achievements it knows, never an object's own machinery", () => {

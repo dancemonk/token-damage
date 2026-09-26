@@ -219,6 +219,13 @@ describe("share card SVG", () => {
     }
   });
 
+  it("has room for the achievements the sample earned", () => {
+    expect(receipt.achievements.length).toBeGreaterThan(0);
+    const svg = receiptSvg(receipt);
+    expect(svg).toContain(">ACHIEVEMENTS<");
+    for (const a of receipt.achievements) expect(svg).toContain(a.name);
+  });
+
   it("layout is frozen", () => {
     expect(receiptSvg(receipt)).toMatchSnapshot();
   });

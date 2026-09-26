@@ -320,6 +320,21 @@ export function receiptLines(r: Receipt): Line[] {
         : `  ${bar(1, 24)}  top of the scale`,
     },
   );
+  if (r.achievements.length > 0) {
+    out.push(rule("-"), { text: "ACHIEVEMENTS" });
+    for (const a of r.achievements) {
+      const name = `  ${a.name}`;
+      const why = a.trigger.toLowerCase();
+      // A leader when it fits with room for two dots; otherwise the reason goes on its own lines.
+      if (WIDTH - name.length - why.length - 2 >= 2)
+        out.push({ text: leader(name, why) });
+      else
+        out.push(
+          { text: name },
+          ...wrap(why, WIDTH - 4).map((t) => ({ text: `    ${t}` })),
+        );
+    }
+  }
   if (r.note) {
     out.push(
       rule("-"),

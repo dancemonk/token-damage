@@ -15,6 +15,12 @@ exports[`sample customers > 0041: output is frozen 1`] = `
       "name": "CACHE LORD",
       "trigger": "Over 95% of input from cache for a week",
     },
+    {
+      "hidden": false,
+      "id": "middle-manager",
+      "name": "MIDDLE MANAGER",
+      "trigger": "38 subagents in one day",
+    },
   ],
   "candidates": [
     {
@@ -156,6 +162,12 @@ exports[`sample customers > 0042: output is frozen 1`] = `
       "id": "one-last-fix",
       "name": "ONE LAST FIX",
       "trigger": "Last model call at 4:12 AM",
+    },
+    {
+      "hidden": false,
+      "id": "middle-manager",
+      "name": "MIDDLE MANAGER",
+      "trigger": "12 subagents in one day",
     },
   ],
   "candidates": [
@@ -407,6 +419,12 @@ exports[`sample customers > 0044: output is frozen 1`] = `
       "id": "long-goodbye",
       "name": "THE LONG GOODBYE",
       "trigger": "One session spanned 3 calendar days",
+    },
+    {
+      "hidden": false,
+      "id": "middle-manager",
+      "name": "MIDDLE MANAGER",
+      "trigger": "140 subagents in one day",
     },
   ],
   "candidates": [

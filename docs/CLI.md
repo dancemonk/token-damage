@@ -98,6 +98,12 @@ DAMAGE CLASS
           ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
   ■·······················  4% to UNINSURABLE
 ------------------------------------------------
+ACHIEVEMENTS
+  ONE LAST FIX ...... last model call at 3:47 am
+  CACHE LORD
+    over 95% of input from cache for a week
+  MIDDLE MANAGER ....... 12 subagents in one day
+------------------------------------------------
 ADJUSTER'S NOTE
   for every word you typed, the machine read
   80,558 tokens. that's the great gatsby,
@@ -129,6 +135,9 @@ day, or per `k` days so it fits 44 marks, grouped from the newest day back; `·`
 names the tallest mark (its day, or its days), by tokens like the chart, not by price. Under the stamp: how far the total is into its class, 24 wide, and the class above,
 or `top of the scale`. `--json` carries the same facts as `measured.daily` and `damageClass.next` /
 `damageClass.progress`.
+
+ACHIEVEMENTS lists what the period earned, each with its true reason: a dotted leader when it fits, otherwise
+the reason on its own lines under the name. The share card prints the names only, in one row.
 
 The "YOUR PLAN" block appears only with `--plan` or a configured plan. With more than one agent in the period, a
 BY AGENT block (same columns, most tokens first) sits above BY MODEL. Model rows follow the name people pick:
