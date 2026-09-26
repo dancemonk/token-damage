@@ -1,4 +1,5 @@
 import type { Adapter } from "../contract.js";
+import { noSqliteWarning } from "../sqlite.js";
 import { findDatabase, opencodeDirs } from "./discover.js";
 import { scanOpenCode } from "./index.js";
 import { emptyOpenCodeStats } from "./parse.js";
@@ -17,12 +18,7 @@ export const opencodeAdapter: Adapter = {
       // One database per data dir: always read whole.
       scan: () => scanOpenCode(dirs, stats),
       found: () => stats.databases + stats.files,
-      warnings: () =>
-        stats.noSqlite > 0
-          ? [
-              `opencode needs node 22.13 or newer to read its database (this is ${process.versions.node}); skipped.`,
-            ]
-          : [],
+      warnings: () => (stats.noSqlite > 0 ? [noSqliteWarning("opencode")] : []),
     };
   },
   // The database and its write-ahead log; SQLite applies the log on open.

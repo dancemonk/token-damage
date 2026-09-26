@@ -1,5 +1,6 @@
 import { readFile, stat } from "node:fs/promises";
 import type { PromptEvent, UsageEvent } from "../../types.js";
+import { columns, readSqlite, rows, type Database } from "../sqlite.js";
 import { fileStem, findDatabase, legacyMessageFiles } from "./discover.js";
 import {
   createdAt,
@@ -18,39 +19,6 @@ export {
   type OpenCodeStats,
 } from "./parse.js";
 
-type Sqlite = typeof import("node:sqlite");
-type Database = InstanceType<Sqlite["DatabaseSync"]>;
-type Row = Record<string, unknown>;
-
-let sqlite: Promise<Sqlite | undefined> | undefined;
-
-/**
- * `node:sqlite`, or undefined on a Node without it (before 22.13 it needed a flag). Loading it prints an
- * ExperimentalWarning on some versions; that one warning is not shown.
- */
-function loadSqlite(): Promise<Sqlite | undefined> {
-  sqlite ??= (async () => {
-    const emit = process.emitWarning;
-    process.emitWarning = function (warning: string | Error, ...rest) {
-      const text = typeof warning === "string" ? warning : warning.message;
-      if (/sqlite/i.test(text)) return;
-      return (emit as (...args: unknown[]) => void).call(
-        process,
-        warning,
-        ...rest,
-      );
-    } as typeof process.emitWarning;
-    try {
-      return await import("node:sqlite");
-    } catch {
-      return undefined;
-    } finally {
-      process.emitWarning = emit;
-    }
-  })();
-  return sqlite;
-}
-
 const text = (v: unknown): string | undefined =>
   typeof v === "string" && v !== "" ? v : undefined;
 const positive = (v: unknown): number | undefined =>
@@ -59,23 +27,6 @@ const positive = (v: unknown): number | undefined =>
     : typeof v === "bigint" && v > 0n
       ? Number(v)
       : undefined;
-
-function columns(db: Database, table: string): Set<string> {
-  return new Set(
-    db
-      .prepare(`PRAGMA table_info(${table})`)
-      .all()
-      .map((r) => String(r.name)),
-  );
-}
-
-// One row at a time where this Node can (22.13+), so a large database is never held in memory at once.
-function rows(db: Database, sql: string, ...params: string[]): Iterable<Row> {
-  const statement = db.prepare(sql);
-  return typeof statement.iterate === "function"
-    ? statement.iterate(...params)
-    : statement.all(...params);
-}
 
 interface Session {
   /** The session a subagent's session was started from, followed to the top. */
@@ -205,25 +156,14 @@ async function openDatabase(
   path: string,
   stats: OpenCodeStats,
 ): Promise<DatabaseRead | undefined> {
-  const mod = await loadSqlite();
-  if (!mod) {
-    stats.noSqlite++;
-    return undefined;
-  }
-  let db: Database | undefined;
-  try {
-    db = new mod.DatabaseSync(path, { readOnly: true });
-    // OpenCode may be writing; wait for its lock rather than fail.
-    db.exec("PRAGMA busy_timeout = 2000");
-    const read = readDatabase(db);
+  const read = await readSqlite(path, readDatabase);
+  if (read.ok) {
     stats.databases++;
-    return read;
-  } catch {
-    stats.unreadable++;
-    return undefined;
-  } finally {
-    db?.close();
+    return read.value;
   }
+  if (read.reason === "no-sqlite") stats.noSqlite++;
+  else stats.unreadable++;
+  return undefined;
 }
 
 /**
