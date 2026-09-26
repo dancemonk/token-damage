@@ -176,3 +176,38 @@ describe("receipt for several agents", () => {
     expect(imagePreview(both)[0]).toContain("(Codex + Claude Code)");
   });
 });
+
+describe("receipt facts for bars", () => {
+  it("lists every day of the period, oldest first, with zero for quiet days", () => {
+    const r = receipt([claudeCall, solCall]);
+    expect(r.measured.daily).toHaveLength(30);
+    expect(r.measured.daily[0]?.day).toBe("2026-08-25");
+    expect(r.measured.daily.at(-1)?.day).toBe("2026-09-23");
+    const busy = r.measured.daily.find((d) => d.day === "2026-09-20");
+    expect(busy?.tokens).toEqual({ value: 10_500 + 11_500, tier: "measured" });
+    expect(r.measured.daily.filter((d) => d.tokens.value === 0)).toHaveLength(
+      29,
+    );
+  });
+
+  it("daily tokens add up to every token on the receipt", () => {
+    const r = receipt([claudeCall, solCall, reviewCall, unknownCall]);
+    const b = r.measured.byType;
+    expect(r.measured.daily.reduce((sum, d) => sum + d.tokens.value, 0)).toBe(
+      b.input.value + b.cacheWrite.value + b.cacheRead.value + b.output.value,
+    );
+  });
+
+  it("says how far through its damage class the receipt is", () => {
+    expect(receipt([claudeCall]).damageClass).toMatchObject({
+      name: "PAPER CUT",
+      next: { name: "FENDER BENDER", at: 1e6 },
+      progress: 10_500 / 1e6,
+    });
+    expect(receipt([call({ cacheRead: 6e9 })]).damageClass).toMatchObject({
+      name: "UNINSURABLE",
+      next: null,
+      progress: 1,
+    });
+  });
+});

@@ -79,7 +79,8 @@
         "tokensWritten",
         "latestCall",
         "latestCallDay",
-        "longestSessionMinutes"
+        "longestSessionMinutes",
+        "daily"
       ],
       "properties": {
         "words": {
@@ -173,6 +174,22 @@
               "$ref": "#/$defs/measured"
             }
           ]
+        },
+        "daily": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["day", "tokens"],
+            "properties": {
+              "day": {
+                "$ref": "#/$defs/day"
+              },
+              "tokens": {
+                "$ref": "#/$defs/measured"
+              }
+            }
+          }
         }
       }
     },
@@ -349,7 +366,7 @@
     "damageClass": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "finePrint"],
+      "required": ["name", "finePrint", "next", "progress"],
       "properties": {
         "name": {
           "enum": [
@@ -363,6 +380,38 @@
         },
         "finePrint": {
           "type": "string"
+        },
+        "next": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "at"],
+              "properties": {
+                "name": {
+                  "enum": [
+                    "FENDER BENDER",
+                    "WATER DAMAGE",
+                    "STRUCTURAL",
+                    "ACT OF GOD",
+                    "UNINSURABLE"
+                  ]
+                },
+                "at": {
+                  "type": "number",
+                  "minimum": 1
+                }
+              }
+            }
+          ]
+        },
+        "progress": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     },

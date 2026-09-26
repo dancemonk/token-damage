@@ -12,6 +12,7 @@ import {
   type PriceTable,
 } from "../metrics/pricing.js";
 import { ramX } from "../metrics/satire.js";
+import { classProgress } from "../roasts/classes.js";
 import type { Achievement } from "../roasts/achievements.js";
 import type { Facts } from "../roasts/facts.js";
 import type { Observations } from "../roasts/engine.js";
@@ -74,6 +75,8 @@ export interface Receipt {
     /** Local calendar day of the latest call. */
     latestCallDay: string | null;
     longestSessionMinutes: Value | null;
+    /** Every calendar day of the period, oldest first; 0 tokens on days without calls. */
+    daily: { day: string; tokens: Value }[];
   };
   /** Every agent with usage in the period, most tokens first. */
   byAgent: ({ agent: Source } & PriceRow)[];
@@ -97,7 +100,14 @@ export interface Receipt {
     typingShare: Value;
   };
   satire: { ramX: Value };
-  damageClass: { name: string; finePrint: string };
+  damageClass: {
+    name: string;
+    finePrint: string;
+    /** The class above this one and the token count where it starts; null at the top. */
+    next: { name: string; at: number } | null;
+    /** How far through this class the total is, 0–1; 1 at the top of the scale. */
+    progress: number;
+  };
   note: { family: string; variant: number; text: string } | null;
   achievements: Achievement[];
   jokes: string[];
@@ -121,6 +131,18 @@ export interface ReceiptInput {
 const measured = (value: number): Value => ({ value, tier: "measured" });
 const FAMILIES = ["fable", "mythos", "opus", "sonnet", "haiku"];
 const total = (t: TokenSums) => t.input + t.cacheWrite + t.cacheRead + t.output;
+
+/** Every YYYY-MM-DD from `start` to `end`, inclusive. */
+function eachDay(start: string, end: string): string[] {
+  const days: string[] = [];
+  for (
+    let ms = Date.parse(`${start}T00:00:00Z`);
+    ms <= Date.parse(`${end}T00:00:00Z`);
+    ms += 86_400_000
+  )
+    days.push(new Date(ms).toISOString().slice(0, 10));
+  return days;
+}
 
 function priceRow(
   models: Record<string, TokenSums>,
@@ -214,6 +236,12 @@ export function buildReceipt({
     }
   }
   const all = total(t);
+  const tokensByDay = new Map(
+    daily.map((d) => [
+      d.day,
+      Object.values(d.byModel).reduce((sum, m) => sum + total(m), 0),
+    ]),
+  );
   return {
     version: 1,
     trans,
@@ -245,6 +273,10 @@ export function buildReceipt({
         facts.longestSessionMin === null
           ? null
           : measured(facts.longestSessionMin),
+      daily: eachDay(period.start, period.end).map((day) => ({
+        day,
+        tokens: measured(tokensByDay.get(day) ?? 0),
+      })),
     },
     byAgent: byAgent(totals.bySource, prices),
     byModel: byFamily(totals.byModel, prices),
@@ -283,7 +315,10 @@ export function buildReceipt({
       },
     },
     satire: { ramX: ramX(all) },
-    damageClass: observations.damageClass,
+    damageClass: {
+      ...observations.damageClass,
+      ...classProgress(facts.tokens),
+    },
     note: observations.note && {
       family: observations.note.family,
       variant: observations.note.variant,
