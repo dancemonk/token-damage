@@ -27,8 +27,11 @@ you guessed 20,000,000. actual: 1,183,400,000.
 you were off by 59×.
 
 dispute this charge?
- [1] it was research   [2] the agent did it by itself   [3] it was one last fix
- [4] i was learning    [5] everyone does it             [6] i accept the damage
+ [1] it was research       [2] the agent did it by itself
+ [3] it was one last fix   [4] i was learning
+ [5] everyone does it      [6] the docs were wrong
+ [7] it was a demo         [8] i was refactoring
+ [9] the machines did it   [10] i accept the damage
 › 3
 CLAIM #0041 · "it was one last fix" · DENIED
 11 sessions started after midnight. that's not one.

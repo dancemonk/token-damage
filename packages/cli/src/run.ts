@@ -362,8 +362,14 @@ export async function run(options: Options, io: Io): Promise<number> {
     io.out("dispute this charge?");
     const label = (i: number) =>
       `[${i + 1}] ${(EXCUSES[i] ?? "").toLowerCase()}`;
-    io.out(` ${label(0).padEnd(19)}${label(1).padEnd(33)}${label(2)}`);
-    io.out(` ${label(3).padEnd(19)}${label(4).padEnd(33)}${label(5)}`);
+    // Two columns, filled row by row, so the menu stays well inside 80 columns however many excuses there are.
+    const left =
+      Math.max(...EXCUSES.map((_, i) => (i % 2 === 0 ? label(i).length : 0))) +
+      3;
+    for (let i = 0; i < EXCUSES.length; i += 2)
+      io.out(
+        ` ${label(i).padEnd(left)}${i + 1 < EXCUSES.length ? label(i + 1) : ""}`.trimEnd(),
+      );
     let disputed: { excuse: Excuse; verdict: Verdict } | undefined;
     const excuse = EXCUSES[Number(await ask("› ")) - 1] as Excuse | undefined;
     if (excuse) {

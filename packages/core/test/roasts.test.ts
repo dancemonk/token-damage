@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  type Excuse,
   type Detected,
   aggregate,
   buildFacts,
@@ -353,6 +354,58 @@ describe("dispute", () => {
   it("does not deny what the logs don't show", () => {
     expect(dispute("It was one last fix", c41.facts).status).toBe("DENIED");
     expect(dispute("It was one last fix", c43.facts).status).toBe("APPROVED");
+  });
+
+  it("rules on the new excuses with the period's own numbers", () => {
+    const f = c41.facts as Facts;
+    const v = (excuse: Excuse, over: Partial<Facts> = {}) =>
+      dispute(excuse, { ...f, ...over });
+    // cacheShare = cacheRead / (input + cacheWrite + cacheRead)
+    expect(
+      v("The docs were wrong", { input: 0, cacheWrite: 50, cacheRead: 950 }),
+    ).toEqual({
+      status: "DENIED",
+      text: "DENIED. 95% of the reading was re-reading. The docs didn't change; the questions did.",
+    });
+    expect(
+      v("The docs were wrong", { input: 0, cacheWrite: 500, cacheRead: 500 })
+        .status,
+    ).toBe("APPROVED");
+    expect(v("It was a demo", { sessions: 1 })).toEqual({
+      status: "APPROVED",
+      text: "APPROVED. One session. A demo. Sure.",
+    });
+    expect(v("It was a demo", { sessions: 94 })).toEqual({
+      status: "DENIED",
+      text: "DENIED. 94 sessions. Demos end.",
+    });
+    expect(v("I was refactoring", { tokens: 1000, output: 4 }).text).toBe(
+      "DENIED. Output was 0.4% of the total. Refactoring usually changes something.",
+    );
+    expect(v("I was refactoring", { tokens: 1000, output: 300 }).status).toBe(
+      "APPROVED",
+    );
+    expect(v("The machines did it", { unpromptedShare: 0.6 })).toEqual({
+      status: "APPROVED",
+      text: "APPROVED, partly. 60% of the tokens were read in sessions you never typed into. The rest were you.",
+    });
+    expect(v("The machines did it", { unpromptedShare: 0.1 })).toEqual({
+      status: "DENIED",
+      text: "DENIED. 10% was unprompted. The rest has your name on it.",
+    });
+    // Without prompt data the logs can't say who typed what, so no denial.
+    expect(v("The machines did it", { unpromptedShare: null }).status).toBe(
+      "APPROVED",
+    );
+  });
+
+  it("never prints NaN or undefined, even for facts built before a field existed", () => {
+    for (const c of customers)
+      for (const excuse of EXCUSES)
+        expect(
+          dispute(excuse, c.facts as Facts).text,
+          `${c.trans} ${excuse}`,
+        ).not.toMatch(/NaN|undefined|Infinity/);
   });
 
   it("stamps the claim", () => {

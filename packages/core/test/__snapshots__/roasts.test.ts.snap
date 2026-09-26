@@ -149,6 +149,10 @@ exports[`sample customers > 0041: output is frozen 1`] = `
     "CLAIM #0041 · "It was one last fix" · DENIED | DENIED. 11 sessions started after midnight. That's not one.",
     "CLAIM #0041 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
     "CLAIM #0041 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
+    "CLAIM #0041 · "The docs were wrong" · DENIED | DENIED. 97% of the reading was re-reading. The docs didn't change; the questions did.",
+    "CLAIM #0041 · "It was a demo" · DENIED | DENIED. 94 sessions. Demos end.",
+    "CLAIM #0041 · "I was refactoring" · DENIED | DENIED. Output was 0.4% of the total. Refactoring usually changes something.",
+    "CLAIM #0041 · "The machines did it" · APPROVED | APPROVED, provisionally. These logs don't say who typed what.",
     "CLAIM #0041 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
   ],
 }
@@ -297,6 +301,10 @@ exports[`sample customers > 0042: output is frozen 1`] = `
     "CLAIM #0042 · "It was one last fix" · DENIED | DENIED. 2 sessions started after midnight. That's not one.",
     "CLAIM #0042 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
     "CLAIM #0042 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
+    "CLAIM #0042 · "The docs were wrong" · DENIED | DENIED. 97% of the reading was re-reading. The docs didn't change; the questions did.",
+    "CLAIM #0042 · "It was a demo" · DENIED | DENIED. 3 sessions. Demos end.",
+    "CLAIM #0042 · "I was refactoring" · DENIED | DENIED. Output was 0.33% of the total. Refactoring usually changes something.",
+    "CLAIM #0042 · "The machines did it" · APPROVED | APPROVED, provisionally. These logs don't say who typed what.",
     "CLAIM #0042 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
   ],
 }
@@ -400,6 +408,10 @@ exports[`sample customers > 0043: output is frozen 1`] = `
     "CLAIM #0043 · "It was one last fix" · APPROVED | APPROVED. Nothing started after midnight. We believe you.",
     "CLAIM #0043 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
     "CLAIM #0043 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
+    "CLAIM #0043 · "The docs were wrong" · DENIED | DENIED. 91% of the reading was re-reading. The docs didn't change; the questions did.",
+    "CLAIM #0043 · "It was a demo" · APPROVED | APPROVED. Two sessions. A demo. Sure.",
+    "CLAIM #0043 · "I was refactoring" · DENIED | DENIED. Output was 0.62% of the total. Refactoring usually changes something.",
+    "CLAIM #0043 · "The machines did it" · APPROVED | APPROVED, provisionally. These logs don't say who typed what.",
     "CLAIM #0043 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
   ],
 }
@@ -562,6 +574,10 @@ exports[`sample customers > 0044: output is frozen 1`] = `
     "CLAIM #0044 · "It was one last fix" · DENIED | DENIED. 40 sessions started after midnight. That's not one.",
     "CLAIM #0044 · "I was learning" · APPROVED | APPROVED. Learning is allowed. Damage reduced by $0.00.",
     "CLAIM #0044 · "Everyone does it" · DENIED | DENIED. True, but only you are on this receipt.",
+    "CLAIM #0044 · "The docs were wrong" · DENIED | DENIED. 97% of the reading was re-reading. The docs didn't change; the questions did.",
+    "CLAIM #0044 · "It was a demo" · DENIED | DENIED. 610 sessions. Demos end.",
+    "CLAIM #0044 · "I was refactoring" · DENIED | DENIED. Output was 0.4% of the total. Refactoring usually changes something.",
+    "CLAIM #0044 · "The machines did it" · APPROVED | APPROVED, provisionally. These logs don't say who typed what.",
     "CLAIM #0044 · "I accept the damage" · SIGNED | Respect. Sign here: ______",
   ],
 }
