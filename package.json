@@ -12,7 +12,7 @@
     "test": "pnpm build && pnpm -r --if-present test && vitest run --dir scripts",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "format": "prettier --write .",
-    "oracle": "pnpm -F @token-damage/core build && node scripts/oracle.mjs && node scripts/oracle.mjs --agent codex && node scripts/oracle.mjs --agent gemini && node scripts/oracle.mjs --agent opencode",
+    "oracle": "pnpm -F @token-damage/core build && node scripts/oracle.mjs --all",
     "pool:age": "pnpm -F @token-damage/core build && node scripts/pool-age.mjs",
     "oracle:live": "pnpm build && pnpm -F token-damage build && node scripts/oracle.mjs --live",
     "build": "pnpm -F @token-damage/core build",

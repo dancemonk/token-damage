@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { compare, TOLERANCE } from "./oracle.mjs";
+import { compare, parseArgs, TOLERANCE } from "./oracle.mjs";
+
+describe("parseArgs", () => {
+  it("defaults to Claude Code", () => {
+    expect(parseArgs([]).agent).toBe("claude");
+  });
+  it("reads every agent with --all, and refuses a single agent's options beside it", () => {
+    expect(parseArgs(["--all"]).all).toBe(true);
+    expect(() => parseArgs(["--all", "--agent", "codex"])).toThrow(/--all/);
+    expect(() => parseArgs(["--all", "--config-dir", "/x"])).toThrow(/--all/);
+  });
+});
 
 const day = (input, cacheWrite, cacheRead, output) => ({
   input,
