@@ -169,8 +169,7 @@ trapB.prepare("INSERT INTO steps VALUES (?, ?)").run(
   ]),
 );
 trapB.close();
-// trap 6: an empty database
-writeFileSync(join(OUT, "conversations", "trap-empty.db"), "");
+// No empty database here: ccusage fails its whole Antigravity load on one (test/antigravity/scan.test.ts has it).
 
 const kept: string[] = [];
 for (const line of readFileSync(history, "utf8").split("\n")) {

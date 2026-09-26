@@ -19,8 +19,7 @@ argument count), `workspace` by `/p/a`.
 | 3 placeholder model id 1050, no id, no time | `trap-a.db` gen 1 | `model_placeholder_m50` (not priced); time from the trajectory (09:00 UTC) |
 | 4 no tokens | `trap-a.db` gen 2 | nothing |
 | 5 same response id as trap 1 | `trap-b.db` step 0 | merges with 1: input 1,200, output 100, cache read 9,000, model gemini-3.8-flash, session `trap-a` |
-| 6 empty database | `trap-empty.db` | skipped |
 | History | `history.jsonl`, conversation `trap-a` | three prompts: 3 + 2 (slash-command arguments) + 2 (shell) words; a bare `/x`, a row without a conversation and an unknown type add nothing |
 
-A malformed blob is not in the corpus: ccusage fails a whole database on one, which would break
-`oracle --fixtures`. `test/antigravity/scan.test.ts` covers it.
+A malformed blob and an empty (zero-byte) database are not in the corpus: ccusage fails on either, which would
+break `oracle --fixtures`. `test/antigravity/scan.test.ts` covers both.

@@ -215,10 +215,11 @@ describe("exit codes", () => {
     const run = cli("--fixtures", join(dir, "empty"), "--no-anim");
     expect(run.status).toBe(2);
     expect(run.stdout).toContain(
-      "no claude code, codex, gemini cli or opencode sessions found",
+      "no claude code, codex, gemini cli, opencode or antigravity sessions found",
     );
     expect(run.stdout).toContain(join(dir, "empty", "tmp"));
     expect(run.stdout).toContain(join(dir, "empty", "opencode"));
+    expect(run.stdout).toContain(join(dir, "empty", "antigravity"));
     expect(run.stdout).toContain(join(dir, "empty", "archived_sessions"));
     expect(run.stdout).toContain("CLAUDE_CODE_SKIP_PROMPT_HISTORY");
   });

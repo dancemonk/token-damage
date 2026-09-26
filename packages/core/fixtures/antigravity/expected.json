@@ -1,0 +1,241 @@
+{
+  "timeZone": "UTC",
+  "totals": {
+    "tokens": {
+      "input": 556474,
+      "cacheWrite": 0,
+      "cacheWrite1h": 0,
+      "cacheRead": 5478399,
+      "output": 48977
+    },
+    "byModel": {
+      "gemini-3.5-flash": {
+        "input": 554293,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 5469399,
+        "output": 48827
+      },
+      "model_placeholder_m50": {
+        "input": 781,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 0,
+        "output": 20
+      },
+      "gemini-3.8-flash": {
+        "input": 1400,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cacheRead": 9000,
+        "output": 130
+      }
+    },
+    "bySource": {
+      "antigravity": {
+        "gemini-3.5-flash": {
+          "input": 554293,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 5469399,
+          "output": 48827
+        },
+        "model_placeholder_m50": {
+          "input": 781,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 20
+        },
+        "gemini-3.8-flash": {
+          "input": 1400,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 9000,
+          "output": 130
+        }
+      }
+    },
+    "calls": 101,
+    "sessions": 3,
+    "activeDays": 3,
+    "subagents": 0,
+    "prompts": 13,
+    "wordsTyped": 270,
+    "firstCall": "2026-07-03T17:48:56.862Z",
+    "lastCall": "2026-07-07T03:44:40.237Z",
+    "longestSession": {
+      "start": "2026-07-04T09:00:00.000Z",
+      "end": "2026-07-04T10:00:00.000Z"
+    }
+  },
+  "daily": [
+    {
+      "day": "2026-07-03",
+      "byModel": {
+        "gemini-3.5-flash": {
+          "input": 222827,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 1324983,
+          "output": 11590
+        },
+        "model_placeholder_m50": {
+          "input": 40,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 4
+        }
+      },
+      "bySource": {
+        "antigravity": {
+          "gemini-3.5-flash": {
+            "input": 222827,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 1324983,
+            "output": 11590
+          },
+          "model_placeholder_m50": {
+            "input": 40,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 4
+          }
+        }
+      },
+      "calls": 34,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 2,
+      "wordsTyped": 7,
+      "firstCall": "2026-07-03T17:48:56.862Z",
+      "lastCall": "2026-07-03T17:50:16.032Z"
+    },
+    {
+      "day": "2026-07-04",
+      "byModel": {
+        "model_placeholder_m50": {
+          "input": 300,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 10
+        },
+        "gemini-3.8-flash": {
+          "input": 1400,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 9000,
+          "output": 130
+        }
+      },
+      "bySource": {
+        "antigravity": {
+          "model_placeholder_m50": {
+            "input": 300,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 10
+          },
+          "gemini-3.8-flash": {
+            "input": 1400,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 9000,
+            "output": 130
+          }
+        }
+      },
+      "calls": 3,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 3,
+      "wordsTyped": 7,
+      "firstCall": "2026-07-04T09:00:00.000Z",
+      "lastCall": "2026-07-04T10:00:00.000Z"
+    },
+    {
+      "day": "2026-07-07",
+      "byModel": {
+        "gemini-3.5-flash": {
+          "input": 331466,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 4144416,
+          "output": 37237
+        },
+        "model_placeholder_m50": {
+          "input": 441,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheRead": 0,
+          "output": 6
+        }
+      },
+      "bySource": {
+        "antigravity": {
+          "gemini-3.5-flash": {
+            "input": 331466,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 4144416,
+            "output": 37237
+          },
+          "model_placeholder_m50": {
+            "input": 441,
+            "cacheWrite": 0,
+            "cacheWrite1h": 0,
+            "cacheRead": 0,
+            "output": 6
+          }
+        }
+      },
+      "calls": 64,
+      "sessions": 1,
+      "subagents": 0,
+      "prompts": 8,
+      "wordsTyped": 256,
+      "firstCall": "2026-07-07T03:40:45.921Z",
+      "lastCall": "2026-07-07T03:44:40.237Z"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "8b1fbaa8-4b2a-48cb-8304-78f1f1593cc2",
+      "start": "2026-07-03T17:48:56.862Z",
+      "end": "2026-07-03T17:50:16.032Z",
+      "calls": 34,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-07-03T17:48:56.862Z",
+        "end": "2026-07-03T17:50:16.032Z"
+      }
+    },
+    {
+      "sessionId": "trap-a",
+      "start": "2026-07-04T09:00:00.000Z",
+      "end": "2026-07-04T10:00:00.000Z",
+      "calls": 3,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-07-04T09:00:00.000Z",
+        "end": "2026-07-04T10:00:00.000Z"
+      }
+    },
+    {
+      "sessionId": "d66d9ec2-d548-4ff4-8dba-75641c68e76b",
+      "start": "2026-07-07T03:40:45.921Z",
+      "end": "2026-07-07T03:44:40.237Z",
+      "calls": 64,
+      "subagents": 0,
+      "longestStretch": {
+        "start": "2026-07-07T03:40:45.921Z",
+        "end": "2026-07-07T03:44:40.237Z"
+      }
+    }
+  ]
+}
