@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { parentEnv } from "./env.js";
 
 const CLI = fileURLToPath(new URL("../dist/index.js", import.meta.url));
 const CLOCK = "2026-09-24T12:00:00Z";
@@ -65,7 +66,7 @@ function status(
     input,
     encoding: "utf8",
     env: {
-      ...process.env,
+      ...parentEnv(),
       TZ: "UTC",
       NO_COLOR: "1",
       HOME: join(dir, "home"),

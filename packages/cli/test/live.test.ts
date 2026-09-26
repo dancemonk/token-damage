@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { writeSampleMonth } from "../../core/scripts/sample-month.js";
+import { parentEnv } from "./env.js";
 
 const CLI = fileURLToPath(new URL("../dist/index.js", import.meta.url));
 let dir = "";
@@ -23,7 +24,7 @@ const run = (args: string[], env: Record<string, string> = {}) =>
   spawnSync(process.execPath, [CLI, ...args], {
     encoding: "utf8",
     env: {
-      ...process.env,
+      ...parentEnv(),
       TZ: "UTC",
       NO_COLOR: "1",
       HOME: join(dir, "home"),

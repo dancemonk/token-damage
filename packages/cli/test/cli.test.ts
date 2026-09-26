@@ -9,6 +9,7 @@ import { writeSampleMonth } from "../../core/scripts/sample-month.js";
 import { parseGuess, parseOptions } from "../src/args.js";
 import { VERSION } from "../src/version.js";
 import { validate } from "./schema.js";
+import { parentEnv } from "./env.js";
 
 const CLI = fileURLToPath(new URL("../dist/index.js", import.meta.url));
 const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
@@ -45,7 +46,7 @@ function cli(...args: string[]) {
   return spawnSync(process.execPath, [CLI, ...args], {
     encoding: "utf8",
     env: {
-      ...process.env,
+      ...parentEnv(),
       TZ: "UTC",
       NO_COLOR: "1",
       HOME: join(dir, "home"),
@@ -84,7 +85,7 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
 
   it("colours piped output when FORCE_COLOR asks for it", () => {
     const env: NodeJS.ProcessEnv = {
-      ...process.env,
+      ...parentEnv(),
       TZ: "UTC",
       HOME: join(dir, "home"),
       TOKEN_DAMAGE_NOW: "2026-09-23T12:00:00Z",
