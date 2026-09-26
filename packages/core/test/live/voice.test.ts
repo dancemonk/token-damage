@@ -133,21 +133,23 @@ describe("detect", () => {
     ).not.toContain("quiet");
   });
 
-  it("speedrun: a million tokens read within two minutes of the prompt", () => {
+  it("speedrun: a turn that closed within two minutes of its prompt, a million tokens read", () => {
     const p = [prompt({ ts: T0 - 90_000, words: 40 })];
     const calls = (gap: number) =>
       [0, 1, 2].map((i) =>
         usage({ ts: T0 - 90_000 + 5_000 + i * gap, cacheRead: 400_000 }),
       );
-    const fired = (u: ReturnType<typeof usage>[]) =>
+    // prev: the turn is still open; next: five quiet minutes later it has closed.
+    const fired = (u: ReturnType<typeof usage>[], later: number) =>
       families(
-        detect(snap([], p, T0 - 89_000), snap(u, p, T0), { timeZone: tz }),
+        detect(snap(u, p, T0), snap(u, p, T0 + later), { timeZone: tz }),
       );
-    expect(fired(calls(40_000))).toContain("speedrun");
-    expect(fired(calls(70_000))).not.toContain("speedrun");
+    expect(fired(calls(40_000), min(6))).toContain("speedrun");
+    expect(fired(calls(40_000), min(1))).not.toContain("speedrun");
+    expect(fired(calls(70_000), min(6))).not.toContain("speedrun");
   });
 
-  it("snob: the flagship model reads a lot and writes almost nothing, so far", () => {
+  it("snob: a closed flagship turn that read a lot and wrote almost nothing", () => {
     const p = [prompt({ ts: T0 - min(3), words: 40 })];
     const calls = (model: string) =>
       [0, 1, 2].map((i) =>
@@ -158,12 +160,13 @@ describe("detect", () => {
           model,
         }),
       );
-    const fired = (u: ReturnType<typeof usage>[]) =>
+    const fired = (u: ReturnType<typeof usage>[], later: number) =>
       families(
-        detect(snap([], p, T0 - min(2.5)), snap(u, p, T0), { timeZone: tz }),
+        detect(snap(u, p, T0), snap(u, p, T0 + later), { timeZone: tz }),
       );
-    expect(fired(calls("claude-opus-4-7"))).toContain("snob");
-    expect(fired(calls("claude-sonnet-4-6"))).not.toContain("snob");
+    expect(fired(calls("claude-opus-4-7"), min(6))).toContain("snob");
+    expect(fired(calls("claude-opus-4-7"), min(1))).not.toContain("snob");
+    expect(fired(calls("claude-sonnet-4-6"), min(6))).not.toContain("snob");
   });
 
   it("second-opinion: a second agent working within the hour", () => {

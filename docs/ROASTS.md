@@ -33,6 +33,11 @@ tokens within 10–120 s of the first prompt), churn (≥ 6 typed sessions start
 the same conversation read ≥ 100K of, ≤ 4 minutes earlier, reading under half of it), unprompted (≥ 25% of tokens in
 sessions with no typed prompt). Weights ≤ 0.6, so they rarely beat the headline notes.
 
+Known limit: a share link carries the note's id, and the site re-renders the line from the link's own numbers.
+Session-shape facts are not in the link, so `/r` shows no adjuster's note for these six families (as already for
+the commit-based ones). Follow-up: when the receipt's note can't be rendered from a link, share the best candidate
+that can.
+
 Waiting for data: compactions (rare in real logs), personal records and quiet week vs history (needs
 `history.json`), revert and commit subjects (need the git reader). Commits are an optional input until then.
 Callbacks (§Architecture 4) are not built yet.

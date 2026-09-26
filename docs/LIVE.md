@@ -232,9 +232,9 @@ least five variants:
 |---|---|
 | stamped | class upgrade; prints the event rule; exempt from cooldown |
 | library | open turn with ≤ 10 words and ≥ 5M read |
-| speedrun | a fresh turn with ≥ 3 calls and ≥ 1M read, within two minutes of its prompt (worded "so far") |
+| speedrun | a turn that closed with ≥ 3 calls and ≥ 1M read, within two minutes of its prompt |
 | swarm | ≥ 3 interns on one turn |
-| snob | a fresh turn with ≥ 3 calls, ≥ 1M read and < 200 written, on flagship models only (opus, fable, mythos) |
+| snob | a turn that closed with ≥ 3 calls, ≥ 1M read and < 200 written, on flagship models only (opus, fable, mythos) |
 | re-read | three consecutive turns in a session with cache-read share > 95% |
 | second opinion | two or more agents with turns in the last hour, one of them fresh; once a day per pair |
 | back | a call after more than 60 minutes idle |

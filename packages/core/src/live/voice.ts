@@ -55,11 +55,11 @@ export const LIVE_LINES: Record<VoiceFamily, readonly string[]> = {
     "a speedrun. the adjuster timed it and put the stopwatch away.",
   ],
   snob: [
-    "the expensive model has read a library and written a postcard. so far.",
-    "premium reading, short answer. so far.",
-    "the flagship is doing the reading. the writing is still a sticky note.",
-    "a lot of expensive attention for very few words.",
-    "top-shelf model, bottom-shelf word count. so far.",
+    "the flagship read a library and wrote a postcard.",
+    "premium reading, short answer.",
+    "the flagship did the reading. the writing was a sticky note.",
+    "a lot of flagship attention for very few words.",
+    "top-shelf model, bottom-shelf word count.",
   ],
   "second-opinion": [
     "two agents within the hour. the adjuster counts that as a meeting.",
@@ -169,9 +169,16 @@ export function detect(
         key: `swarm:${cleanId(t.sessionId)}:${t.start}`,
       });
 
-  // Shapes worth a remark while the turn runs: a fast library, an expensive model writing almost nothing.
+  // Shapes judged when a turn closes (its session's next prompt, or five quiet minutes): a fast library, a
+  // flagship model that read a lot and wrote almost nothing. Turns already closed when the pane opens don't replay.
+  const wasOpen = new Set(
+    (prev?.turns ?? [])
+      .filter((t) => t.open)
+      .map((t) => `${t.sessionId}|${t.start}`),
+  );
   for (const t of next.turns) {
-    if (!fresh(t) || t.calls < 3 || t.read < 1e6) continue;
+    if (t.open || !wasOpen.has(`${t.sessionId}|${t.start}`)) continue;
+    if (t.calls < 3 || t.read < 1e6) continue;
     if (t.end - t.start <= 120_000)
       out.push({
         family: "speedrun",
