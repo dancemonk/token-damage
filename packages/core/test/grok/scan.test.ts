@@ -43,6 +43,22 @@ describe("scanGrok on the fixture", () => {
 });
 
 describe("Grok prices", () => {
+  it("price every model on xAI's page exactly, Grok Build's own included", () => {
+    for (const [model, input, cached, output] of [
+      ["grok-build-0.1", 1, 0.2, 2],
+      ["grok-4.20-0309-reasoning", 1.25, 0.2, 2.5],
+      ["grok-4.20-0309-non-reasoning", 1.25, 0.2, 2.5],
+      ["grok-4.20-multi-agent-0309", 1.25, 0.2, 2.5],
+    ] as const) {
+      const match = priceFor(model);
+      expect(match?.isFallback, model).toBe(false);
+      expect(
+        [match?.price.input, match?.price.cacheRead, match?.price.output],
+        model,
+      ).toEqual([input, cached, output]);
+    }
+  });
+
   it("price the real turn at exactly what Grok recorded it cost", () => {
     const match = priceFor("grok-4.7");
     expect(match?.isFallback).toBe(false);
