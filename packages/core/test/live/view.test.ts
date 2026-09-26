@@ -69,9 +69,13 @@ const view = (width: number, height: number) =>
   liveLines(snap, tape, { width, height, timeZone: tz });
 
 describe("liveLines", () => {
-  it("prints the five glance rows", () => {
-    const [cls, today, now, rate, lim] = view(64, 30).map((l) => l.text);
-    expect(cls).toMatch(/^WATER DAMAGE {3}next STRUCTURAL at 100M ·+ \d+%$/);
+  it("prints the glance rows", () => {
+    const [cls, today, now, rate, lim5, lim7] = view(64, 30).map((l) => l.text);
+    // The leader is the class progress bar: 21 columns wide here.
+    const filled = Math.floor((snap.damage.pct / 100) * 21);
+    expect(cls).toBe(
+      `WATER DAMAGE   next STRUCTURAL at 100M ${"■".repeat(filled)}${"·".repeat(21 - filled)} ${Math.floor(snap.damage.pct)}%`,
+    );
     expect(today).toMatch(
       /^today {3}47 words → 38\.5M read +≡ \$[\d,]+\.\d\d$/,
     );
@@ -81,7 +85,12 @@ describe("liveLines", () => {
     expect(rate).toMatch(
       /^rate {4}[\d.]+[KM]?\/min [▁▂▃▄▅▆▇█]{10} {3}● printing$/,
     );
-    expect(lim).toBe("limits  5h 58% resets 16:00 · 7d 21% resets mon");
+    expect(lim5).toBe(
+      `limits  5h ${"■".repeat(13)}${"·".repeat(11)}  58%  resets 16:00`,
+    );
+    expect(lim7).toBe(
+      `        7d ${"■".repeat(5)}${"·".repeat(19)}  21%  resets mon`,
+    );
     expect(view(64, 30)[0]?.style).toBe("bold");
     expect(view(64, 30)[2]?.style).toBe("bold");
   });
@@ -119,6 +128,23 @@ describe("liveLines", () => {
       if (height >= 12) expect(lines).toHaveLength(height);
       for (const l of lines) expect(l.text.length).toBeLessThanOrEqual(width);
     }
+  });
+
+  it("caps the class and limit bars at 24 on a wide pane", () => {
+    const rows = view(120, 30).map((l) => l.text);
+    const cls = rows[0];
+    const lim5 = rows.find((l) => l.startsWith("limits"));
+    expect(cls).toMatch(/ [■▪·]{24} \d+%$/);
+    expect(lim5).toMatch(/^limits {2}5h [■▪·]{24} {2}58% {2}resets 16:00$/);
+  });
+
+  it("falls back to plain limits when the bars would be under 5 wide", () => {
+    const stale = { ...snap, now: T0 + min(20) };
+    const lim = liveLines(stale, [], { width: 46, height: 30, timeZone: tz })
+      .map((l) => l.text)
+      .find((l) => l.startsWith("limits"));
+    expect(lim).toMatch(/^limits {2}5h 58% resets 16:00 · 7d 21%/);
+    expect(lim).not.toMatch(/[■▪]/);
   });
 
   it("drops the price column below 50 columns and the sparkline below 45", () => {

@@ -7,7 +7,7 @@ import {
   wrap,
   type Line,
 } from "../receipt/text.js";
-import { sparkline } from "../receipt/glyphs.js";
+import { bar, sparkline } from "../receipt/glyphs.js";
 import type { Source, TokenSums } from "../types.js";
 import type { TapeEvent } from "./engine.js";
 import type { LiveSnapshot } from "./snapshot.js";
@@ -24,6 +24,8 @@ export const MIN_WIDTH = 40;
 export const FULL_HEIGHT = 12;
 export const IDLE_GAP_MS = 600_000;
 const STAMP_RED_MS = 60_000;
+/** The widest a glance-row bar gets, as the receipt's class progress bar. */
+const BAR_MAX = 24;
 
 // Short on purpose: the receipt's AGENT_NAMES ("claude code", "gemini cli") do not fit the 10-column agent cell.
 export const AGENT_SHORT: Record<Source, string> = {
@@ -130,9 +132,10 @@ function glance(s: LiveSnapshot, o: ViewOptions, cols: Cols): Line[] {
     const left = `${d.name}   next ${d.next.name} at ${threshold(d.next.at)} `;
     const right = ` ${Math.floor(d.pct)}%`;
     const dots = w - left.length - right.length;
+    // The leader is the progress bar, as on the receipt; capped so a wide pane does not get a 150-glyph bar.
     cls =
       dots >= 2
-        ? left + "·".repeat(dots) + right
+        ? left + bar(d.pct / 100, Math.min(dots, BAR_MAX)) + right
         : clip(`${d.name} · ${Math.floor(d.pct)}% to ${d.next.name}`, w);
   }
   const today = fit(
@@ -176,6 +179,31 @@ function glance(s: LiveSnapshot, o: ViewOptions, cols: Cols): Line[] {
   ];
   const l = s.limits;
   if (l && (l.fiveHour || l.sevenDay)) {
+    const stale =
+      s.now - l.asOf > 60_000 ? ` · as of ${clock(l.asOf, o.timeZone)}` : "";
+    // One row per window, bars the same width so they line up; plain text when they would be under 5 wide.
+    const windows = (
+      [
+        ["5h", l.fiveHour],
+        ["7d", l.sevenDay],
+      ] as const
+    ).flatMap(([name, x]) => (x ? [{ name, x }] : []));
+    const tails = windows.map(
+      ({ x }, i) =>
+        `  resets ${resetLabel(x.resetsAt, s.now, o.timeZone)}${i === 0 ? stale : ""}`,
+    );
+    const size = Math.min(
+      BAR_MAX,
+      w - 11 - 5 - Math.max(...tails.map((t) => t.length)),
+    );
+    if (size >= 5) {
+      windows.forEach(({ name, x }, i) =>
+        rows.push({
+          text: `${i === 0 ? "limits  " : "        "}${name} ${bar(x.usedPct / 100, size)} ${`${Math.round(x.usedPct)}%`.padStart(4)}${tails[i]}`,
+        }),
+      );
+      return rows;
+    }
     const parts: string[] = [];
     if (l.fiveHour)
       parts.push(
@@ -185,8 +213,6 @@ function glance(s: LiveSnapshot, o: ViewOptions, cols: Cols): Line[] {
       parts.push(
         `7d ${Math.round(l.sevenDay.usedPct)}% resets ${resetLabel(l.sevenDay.resetsAt, s.now, o.timeZone)}`,
       );
-    const stale =
-      s.now - l.asOf > 60_000 ? ` · as of ${clock(l.asOf, o.timeZone)}` : "";
     rows.push({ text: clip(`limits  ${parts.join(" · ")}${stale}`, w) });
   }
   return rows;

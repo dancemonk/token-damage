@@ -87,10 +87,10 @@ describe("statuslineRows", () => {
       timeZone: tz,
     }).map((l) => l.text);
     expect(one).toMatch(
-      /^▸ 4 words → 9\.8M read ≡ \$[\d,.]+ · \+3 interns · ctx 41%$/,
+      /^▸ 4 words → 9\.8M read ≡ \$[\d,.]+ · \+3 interns · ctx ■■··· 41%$/,
     );
     expect(two).toMatch(
-      /^WATER DAMAGE · today 38\.2M ≡ \$[\d,.]+ · 5h 58% resets 16:00 · 7d 21%$/,
+      /^WATER DAMAGE · today 38\.2M ≡ \$[\d,.]+ · 5h ■■··· 58% resets 16:00 · 7d 21%$/,
     );
   });
 
@@ -101,7 +101,7 @@ describe("statuslineRows", () => {
       ),
     ).toEqual([
       expect.stringMatching(
-        /^WATER DAMAGE · ▸ 4 words → 9\.8M ≡ \$[\d,.]+ · 5h 58%$/,
+        /^WATER DAMAGE · ▸ 4 words → 9\.8M ≡ \$[\d,.]+ · 5h ■■··· 58%$/,
       ),
     ]);
     const three = statuslineRows(s, input, note, {
@@ -125,12 +125,22 @@ describe("statuslineRows", () => {
     expect(
       statuslineRows(idle, input, [], { rows: 2, width: 80, timeZone: tz })[0]
         ?.text,
-    ).toMatch(/^▸ idle 15 min · last turn ≡ \$[\d,.]+ · ctx 41%$/);
+    ).toMatch(/^▸ idle 15 min · last turn ≡ \$[\d,.]+ · ctx ■■··· 41%$/);
     const stranger = { ...input, sessionId: "never-seen" };
     expect(
       statuslineRows(s, stranger, [], { rows: 2, width: 80, timeZone: tz })[0]
         ?.text,
-    ).toBe("▸ nothing yet in this session · ctx 41%");
+    ).toBe("▸ nothing yet in this session · ctx ■■··· 41%");
+  });
+
+  it("prints a row without its bars rather than cut one off", () => {
+    const [, two] = statuslineRows(s, input, note, {
+      rows: 2,
+      width: 60,
+      timeZone: tz,
+    }).map((l) => l.text);
+    expect(two).toMatch(/^WATER DAMAGE · today 38\.2M ≡ \$[\d,.]+ · 5h 58%/);
+    expect(two).not.toMatch(/[■▪]/);
   });
 
   it("fits the width and leaves out limits Claude did not send", () => {
