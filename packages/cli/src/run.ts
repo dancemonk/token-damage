@@ -234,6 +234,7 @@ export async function run(options: Options, io: Io): Promise<number> {
   const opencodeStats = emptyOpenCodeStats();
   // One deduper for every agent: their dedupe keys never collide.
   const deduper = createDeduper();
+  const earlier = new Map<string, Source>();
   for (const scan of [
     scanClaude(roots, claudeStats),
     scanCodex(homes, codexStats),
@@ -242,6 +243,9 @@ export async function run(options: Options, io: Io): Promise<number> {
   ]) {
     for await (const record of scan) {
       if (record.ts >= p.from && record.ts < p.to) deduper.add(record);
+      // A session typed into before the period still counts as typed; keep its id and agent, never the text.
+      else if (record.kind === "prompt" && record.ts < p.from)
+        earlier.set(record.sessionId, record.source);
     }
   }
   const usage: UsageEvent[] = deduper.result();
@@ -273,6 +277,10 @@ export async function run(options: Options, io: Io): Promise<number> {
     aggregate: agg,
     usage,
     prompts,
+    earlierPrompts: [...earlier].map(([sessionId, source]) => ({
+      sessionId,
+      source,
+    })),
     planUsd: options.planUsd,
   });
   const loaded = await loadState();

@@ -147,10 +147,18 @@ function rebuilds(usage: readonly UsageEvent[]): number {
   return count;
 }
 
-/** Everything above for one period. Prompt-dependent facts are null when the caller has no prompts. */
+/** A prompt from before the period: which session was typed into, and by which agent. Never text. */
+export type EarlierPrompt = Pick<PromptEvent, "sessionId" | "source">;
+
+/**
+ * Everything above for one period. Prompt-dependent facts are null when the caller has no prompts. `earlier`
+ * names sessions typed into before the period: they count as typed, but they did not start here, so they are
+ * neither speedruns nor churn.
+ */
 export function detect(
   usage: readonly UsageEvent[],
   prompts?: readonly PromptEvent[],
+  earlier: readonly EarlierPrompt[] = [],
 ): Detected {
   const roots = groupBy(usage, rootOf);
   const both = agents(usage);
@@ -164,23 +172,34 @@ export function detect(
       cacheRebuilds,
       unpromptedShare: null,
     };
+  const before = new Set(earlier.map((p) => p.sessionId));
+  // First prompt per session that started in this period.
   const firstPrompt = new Map<string, number>();
   for (const p of prompts)
-    firstPrompt.set(
-      p.sessionId,
-      Math.min(p.ts, firstPrompt.get(p.sessionId) ?? Infinity),
-    );
-  const typed = new Set(firstPrompt.keys());
-  const all = usage.reduce((s, e) => s + tokensOf(e), 0);
-  const unprompted = usage
-    .filter((e) => !typed.has(rootOf(e)))
-    .reduce((s, e) => s + tokensOf(e), 0);
+    if (!before.has(p.sessionId))
+      firstPrompt.set(
+        p.sessionId,
+        Math.min(p.ts, firstPrompt.get(p.sessionId) ?? Infinity),
+      );
+  const typed = new Set([...prompts.map((p) => p.sessionId), ...before]);
+  // Only agents that record prompts at all can tell a typed session from an unprompted one.
+  const voiced = new Set<Source>([
+    ...prompts.map((p) => p.source),
+    ...earlier.map((p) => p.source),
+  ]);
+  let all = 0;
+  let unprompted = 0;
+  for (const e of usage) {
+    if (!voiced.has(e.source)) continue;
+    all += tokensOf(e);
+    if (!typed.has(rootOf(e))) unprompted += tokensOf(e);
+  }
   return {
     snobSession: snob(roots, typed),
     speedrun: speedrun(roots, firstPrompt),
     burstSessions: burst(firstPrompt),
     ...both,
     cacheRebuilds,
-    unpromptedShare: all > 0 ? unprompted / all : 0,
+    unpromptedShare: voiced.size === 0 ? null : all > 0 ? unprompted / all : 0,
   };
 }

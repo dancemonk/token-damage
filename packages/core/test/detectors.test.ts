@@ -8,11 +8,12 @@ import {
 import { T0, min, prompt, usage } from "./live/support.js";
 
 const sec = (n: number) => n * 1000;
-const facts = (u: UsageEvent[], p?: PromptEvent[]) =>
+const facts = (u: UsageEvent[], p?: PromptEvent[], earlier?: PromptEvent[]) =>
   buildFacts({
     aggregate: aggregate({ usage: u, prompts: p ?? [] }, { timeZone: "UTC" }),
     usage: u,
     ...(p && { prompts: p }),
+    ...(earlier && { earlierPrompts: earlier }),
     timeZone: "UTC",
   });
 
@@ -164,5 +165,49 @@ describe("scale", () => {
       usage({ ts: T0 + i * 1000, messageId: `big${i}`, dedupeKey: `big${i}` }),
     );
     expect(() => facts(many, [prompt({ ts: T0 - 1000 })])).not.toThrow();
+  });
+});
+
+describe("sessions that started before the period", () => {
+  const before = [prompt({ ts: T0 - min(60 * 24) })];
+
+  it("count as typed, not unprompted", () => {
+    const f = facts([usage({ ts: T0, input: 1000 })], [], before);
+    expect(f.unpromptedShare).toBe(0);
+  });
+
+  it("can't be a speedrun: they didn't start here", () => {
+    const run = [0, 40, 80].map((s) =>
+      usage({ ts: T0 + sec(s), cacheRead: 400_000 }),
+    );
+    expect(facts(run, [prompt({ ts: T0 })], before).speedrun).toBeNull();
+    expect(facts(run, [prompt({ ts: T0 })]).speedrun).not.toBeNull();
+  });
+});
+
+describe("agents that never record prompts", () => {
+  it("are left out of the unprompted share", () => {
+    const f = facts(
+      [
+        usage({ ts: T0, input: 1000, output: 0 }),
+        usage({
+          ts: T0,
+          source: "opencode",
+          sessionId: "o1",
+          input: 9000,
+          output: 0,
+        }),
+      ],
+      [prompt({ ts: T0 - 1000 })],
+    );
+    expect(f.unpromptedShare).toBe(0);
+  });
+
+  it("make the share unknown when no agent recorded any prompt", () => {
+    const f = facts(
+      [usage({ ts: T0, source: "opencode", sessionId: "o1" })],
+      [],
+    );
+    expect(f.unpromptedShare).toBeNull();
   });
 });

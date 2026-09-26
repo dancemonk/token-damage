@@ -7,7 +7,7 @@ import {
   type PriceTable,
 } from "../metrics/pricing.js";
 import type { PromptEvent, UsageEvent } from "../types.js";
-import { detect, type Detected } from "./detectors.js";
+import { detect, type Detected, type EarlierPrompt } from "./detectors.js";
 
 /** Measured, priced and estimated facts the observation engine may cite. Aggregates only, never text. */
 export interface Facts extends Detected {
@@ -54,6 +54,8 @@ export interface FactsInput {
   usage: readonly UsageEvent[];
   /** Typed prompts; without them the facts that need to know who typed what stay unknown. */
   prompts?: readonly PromptEvent[];
+  /** Prompts from before the period (session and agent only), so carried-over sessions count as typed. */
+  earlierPrompts?: readonly EarlierPrompt[];
   timeZone?: string;
   planUsd?: number;
   commits?: number;
@@ -94,6 +96,7 @@ export function buildFacts({
   aggregate,
   usage,
   prompts,
+  earlierPrompts,
   timeZone,
   planUsd,
   commits,
@@ -188,7 +191,7 @@ export function buildFacts({
     planUsd: planUsd ?? null,
     kwh: kwh && { low: kwh.low ?? kwh.value, high: kwh.high ?? kwh.value },
     commits: commits ?? null,
-    ...detect(usage, prompts),
+    ...detect(usage, prompts, earlierPrompts),
   };
 }
 
