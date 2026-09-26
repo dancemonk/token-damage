@@ -6,8 +6,11 @@ import { OPEN_WINDOW_MS, type Turn } from "./turns.js";
 export type VoiceFamily =
   | "window"
   | "library"
+  | "speedrun"
   | "swarm"
+  | "snob"
   | "re-read"
+  | "second-opinion"
   | "one-last-fix"
   | "back"
   | "quiet";
@@ -27,11 +30,16 @@ export const emptyVoice = (): VoiceState => ({
   next: {},
 });
 export const COOLDOWN_MS = 600_000;
+/** The priciest tier, whose tiny answers are worth a remark. */
+const FLAGSHIP = /opus|fable|mythos/i;
 const PRIORITY: VoiceFamily[] = [
   "window",
   "library",
+  "speedrun",
   "swarm",
+  "snob",
   "re-read",
+  "second-opinion",
   "one-last-fix",
   "back",
   "quiet",
@@ -39,6 +47,27 @@ const PRIORITY: VoiceFamily[] = [
 
 /** docs/ROASTS.md voice: dry, measured, no digits (numbers only as words), no exclamation marks. */
 export const LIVE_LINES: Record<VoiceFamily, readonly string[]> = {
+  speedrun: [
+    "under two minutes and already through a library.",
+    "a million tokens before the kettle boiled.",
+    "fast. the reading list did not slow it down.",
+    "the meter blinked and nearly missed it.",
+    "a speedrun. the adjuster timed it and put the stopwatch away.",
+  ],
+  snob: [
+    "the expensive model has read a library and written a postcard. so far.",
+    "premium reading, short answer. so far.",
+    "the flagship is doing the reading. the writing is still a sticky note.",
+    "a lot of expensive attention for very few words.",
+    "top-shelf model, bottom-shelf word count. so far.",
+  ],
+  "second-opinion": [
+    "two agents within the hour. the adjuster counts that as a meeting.",
+    "a second agent has joined. both are billing.",
+    "second opinion requested. the first opinion is still reading.",
+    "two agents, one hour. neither was told about the other.",
+    "a small committee has formed. minutes will not be taken.",
+  ],
   library: [
     "{words} in. a library out. the usual.",
     "you wrote {words}. it went and read the archives.",
@@ -140,6 +169,35 @@ export function detect(
         key: `swarm:${cleanId(t.sessionId)}:${t.start}`,
       });
 
+  // Shapes worth a remark while the turn runs: a fast library, an expensive model writing almost nothing.
+  for (const t of next.turns) {
+    if (!fresh(t) || t.calls < 3 || t.read < 1e6) continue;
+    if (t.end - t.start <= 120_000)
+      out.push({
+        family: "speedrun",
+        key: `speedrun:${cleanId(t.sessionId)}:${t.start}`,
+      });
+    const models = Object.keys(t.byModel);
+    if (
+      t.written < 200 &&
+      models.length > 0 &&
+      models.every((m) => FLAGSHIP.test(m))
+    )
+      out.push({
+        family: "snob",
+        key: `snob:${cleanId(t.sessionId)}:${t.start}`,
+      });
+  }
+  // Two agents at work within the same hour; once per day per pair.
+  const lastHour = next.turns.filter(
+    (t) => t.calls > 0 && next.now - t.end <= HOUR_MS,
+  );
+  const sources = [...new Set(lastHour.map((t) => t.source))].sort();
+  if (sources.length >= 2 && next.turns.some(fresh))
+    out.push({
+      family: "second-opinion",
+      key: `second:${next.day}:${sources.join("+")}`,
+    });
   const bySession = new Map<string, Turn[]>();
   for (const t of next.turns)
     if (t.calls > 0)
