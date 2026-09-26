@@ -32,15 +32,16 @@ wears its tier, red means joke or fire, no engagement bait. Zero new dependencie
 
 ## Surface 1: the pane (`token-damage live`)
 
-Fills the pane width (minimum 50 columns), any height. Five glance rows on top, the tape below, a legend
+Fills the pane width (minimum 50 columns), any height. Glance rows on top (six with both limit windows), the tape below, a legend
 footer. Short panes (< 12 rows) show the glance rows only. One design, not two modes.
 
 ```
- WATER DAMAGE   next STRUCTURAL at 100M ······ 38%
+ WATER DAMAGE   next STRUCTURAL at 100M ■■···· 38%
  today   1,212 words → 38.2M read          ≡ $41.20
  now     claude+3 · 4 words → 9.8M ▸        ≡ $7.10
  rate    1.4M/min ▁▂▃▅█▇▅▃▂▁   ● printing
- limits  5h 58% resets 16:00 · 7d 21% resets mon
+ limits  5h ■■■■■■■■■■■········  58%  resets 16:00
+         7d ■■■················  21%  resets mon
  ─────────────────────────────────────────────────
  time   agent       you typed → it read       list
  13:05  ━━━━━━━━━ stamped WATER DAMAGE ━━━━━━━━━━━
@@ -55,7 +56,8 @@ footer. Short panes (< 12 rows) show the glance rows only. One design, not two m
 Rows:
 
 1. **Class** — today's damage class (`ROASTS.md` thresholds on today's tokens), bold ink, never red. Then the
-   distance to the next class as a dotted leader and a linear percentage of the next threshold, measured from
+   distance to the next class as a bar on the leader (`receipt/glyphs.ts`, at most 24 wide) and a linear
+   percentage of the next threshold, measured from
    the current class's floor (`roasts/classes.ts`'s one threshold table, shared with the receipt).
 2. **Today** — words typed, tokens read (input + cache write + cache read), list price. Written tokens are left
    off the glance (small, not the story; they are on the receipt).
@@ -63,8 +65,10 @@ Rows:
    place. When nothing is open: `now     idle 14 min · last turn ≡ $0.90`. Always meaningful.
 4. **Rate** — tokens per minute over the last 30 minutes, ten 3-minute buckets as a sparkline, then a state
    glyph: `● printing` (a call in the last 60 s) or `● idle 14 min`. Static, no blink.
-5. **Limits** — only when data exists (see Engine → Plan limits): 5-hour and 7-day used percent and reset
-   times in local words (`16:00`, `mon`). Labeled `limits as of 14:02` once the data is older than a minute.
+5. **Limits** — only when data exists (see Engine → Plan limits): one row per window (5-hour, 7-day), each a
+   bar, the used percent and the reset time in local words (`16:00`, `mon`). Both bars share one width, at most
+   24; when that would be under 5, one plain row instead (`5h 58% resets 16:00 · 7d 21% resets mon`). The first
+   row ends `· as of 14:02` once the data is older than a minute. Plain ink at any percent: a limit is a fact.
 
 Tape: closed turns, newest at the bottom, with a header row (`time agent you typed → it read list`). Events
 print between turns:
@@ -100,17 +104,19 @@ anywhere), `context_window.used_percentage`, `rate_limits` and `model`. We print
 Default two rows, capped at 80 columns:
 
 ```
-▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx 41%
-WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
+▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx ■■··· 41%
+WATER DAMAGE · today 38.2M ≡ $41.20 · 5h ■■··· 58% resets 16:00 · 7d 21%
 ```
 
 - Row 1 — **this session**: its open turn (words → read, list price, interns) and `ctx`, the context window
   percent as Claude reports it. Idle: `▸ idle 14 min · last turn ≡ $0.90`.
 - Row 2 — **today, all agents**: class, tokens, list price, plan limits from Claude's own `rate_limits`
   (only when present).
-- `--rows 1`: `WATER DAMAGE · ▸ 4 words → 9.8M ≡ $7.10 · 5h 58%`.
+- `--rows 1`: `WATER DAMAGE · ▸ 4 words → 9.8M ≡ $7.10 · 5h ■■··· 58%`.
 - `--rows 3`: adds the last adjuster line, persistent until the next event. Claude's docs warn that multi-row
   output with escape codes gets flaky, so 2 is the default.
+- `ctx` and `5h` carry a 5-glyph bar (`■■··· 58%`); `7d` stays text. A row whose bars would pass the width prints
+  without them, never with a bar cut off.
 - `--width N` overrides the 80-column cap. `NO_COLOR` honored; red only on `✶`.
 
 **Speed budget:** under 100 ms typical on a warm cache (Node itself is ~50 ms). The first run of a day reads

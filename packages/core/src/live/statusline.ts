@@ -1,3 +1,4 @@
+import { bar } from "../receipt/glyphs.js";
 import { compactTokens, n, type Line } from "../receipt/text.js";
 import type { TapeEvent } from "./engine.js";
 import type { LimitWindow, Limits, LiveSnapshot } from "./snapshot.js";
@@ -63,9 +64,16 @@ const join = (parts: (string | false | null | undefined)[]) =>
   parts.filter(Boolean).join(" · ");
 const wordsOf = (t: Turn) => `${t.words === null ? "—" : n(t.words)} words`;
 
-function sessionRow(s: LiveSnapshot, input: StatusInput): string {
-  const ctx =
-    input.contextPct !== null && `ctx ${Math.round(input.contextPct)}%`;
+/** `5h 58%`, or with `bars` a 5-glyph bar before the number: `5h ■■··· 58%`. */
+const pctOf = (label: string, pct: number, bars: boolean) =>
+  `${label} ${bars ? `${bar(pct / 100, 5)} ` : ""}${Math.round(pct)}%`;
+
+function sessionRow(
+  s: LiveSnapshot,
+  input: StatusInput,
+  bars: boolean,
+): string {
+  const ctx = input.contextPct !== null && pctOf("ctx", input.contextPct, bars);
   const mine = s.turns.filter((t) => t.sessionId === input.sessionId);
   const open = mine.find((t) => t.open);
   if (open) {
@@ -89,12 +97,13 @@ function sessionRow(s: LiveSnapshot, input: StatusInput): string {
 function limitsText(
   l: Limits | null,
   withResets: boolean,
+  bars: boolean,
   timeZone?: string,
 ): string | false {
   if (!l) return false;
   const five =
     l.fiveHour &&
-    `5h ${Math.round(l.fiveHour.usedPct)}%${withResets ? ` resets ${clock(l.fiveHour.resetsAt, timeZone)}` : ""}`;
+    `${pctOf("5h", l.fiveHour.usedPct, bars)}${withResets ? ` resets ${clock(l.fiveHour.resetsAt, timeZone)}` : ""}`;
   const seven =
     withResets && l.sevenDay && `7d ${Math.round(l.sevenDay.usedPct)}%`;
   return join([five, seven]) || false;
@@ -107,6 +116,11 @@ export function statuslineRows(
   events: readonly TapeEvent[],
   o: StatusOptions,
 ): Line[] {
+  // A row with bars that would not fit prints without them, never with a bar cut in half.
+  const fit = (row: (bars: boolean) => string) => {
+    const withBars = row(true);
+    return withBars.length <= o.width ? withBars : clip(row(false), o.width);
+  };
   if (o.rows === 1) {
     const open = s.turns.find((t) => t.sessionId === input.sessionId && t.open);
     const turn = open
@@ -114,27 +128,25 @@ export function statuslineRows(
       : `today ${compactTokens(s.total)} ${todayPrice(s)}`;
     return [
       {
-        text: clip(
+        text: fit((bars) =>
           join([
             s.damage.name,
             turn,
-            limitsText(input.limits, false, o.timeZone),
+            limitsText(input.limits, false, bars, o.timeZone),
           ]),
-          o.width,
         ),
       },
     ];
   }
   const rows: Line[] = [
-    { text: clip(sessionRow(s, input), o.width) },
+    { text: fit((bars) => sessionRow(s, input, bars)) },
     {
-      text: clip(
+      text: fit((bars) =>
         join([
           s.damage.name,
           `today ${compactTokens(s.total)} ${todayPrice(s)}`,
-          limitsText(input.limits, true, o.timeZone),
+          limitsText(input.limits, true, bars, o.timeZone),
         ]),
-        o.width,
       ),
     },
   ];

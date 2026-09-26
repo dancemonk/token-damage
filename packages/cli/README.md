@@ -79,7 +79,7 @@ npx token-damage live
 A calm pane to keep next to your agent. The top rows are today; the one that counts up is the prompt running right now.
 
 ```
- WATER DAMAGE   next STRUCTURAL at 100M ······ 38%
+ WATER DAMAGE   next STRUCTURAL at 100M ■■···· 38%
  today   1,212 words → 38.2M read          ≡ $41.20
  now     claude+3 · 4 words → 9.8M ▸        ≡ $7.10
  rate    1.4M/min ▁▂▃▅█▇▅▃▂▁   ● printing
@@ -100,8 +100,8 @@ token-damage statusline --install
 ```
 
 ```
-▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx 41%
-WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
+▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx ■■··· 41%
+WATER DAMAGE · today 38.2M ≡ $41.20 · 5h ■■··· 58% resets 16:00 · 7d 21%
 ```
 
 ## Share it

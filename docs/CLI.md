@@ -173,11 +173,12 @@ npx token-damage live
 ```
 Needs a real terminal (pipe `--json` instead in a script or a tmux bar).
 ```
- WATER DAMAGE   next STRUCTURAL at 100M ······ 38%
+ WATER DAMAGE   next STRUCTURAL at 100M ■■···· 38%
  today   1,212 words → 38.2M read          ≡ $41.20
  now     claude+3 · 4 words → 9.8M ▸        ≡ $7.10
  rate    1.4M/min ▁▂▃▅█▇▅▃▂▁   ● printing
- limits  5h 58% resets 16:00 · 7d 21% resets mon
+ limits  5h ■■■■■■■■■■■········  58%  resets 16:00
+         7d ■■■················  21%  resets mon
  ─────────────────────────────────────────────────
  time   agent       you typed → it read       list
  13:05  ━━━━━━━━━ stamped WATER DAMAGE ━━━━━━━━━━━
@@ -214,8 +215,8 @@ per-refresh call, and it may touch the network) and asks for a global install in
 Claude Code then runs the command after each event and on a timer, with session JSON on stdin. Default two
 rows, capped at 80 columns:
 ```
-▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx 41%
-WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
+▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx ■■··· 41%
+WATER DAMAGE · today 38.2M ≡ $41.20 · 5h ■■··· 58% resets 16:00 · 7d 21%
 ```
 Row 1 is this session: its open turn and the context-window percent Claude reports. Row 2 is today, all
 agents: the damage class, tokens, list price, and Claude's own plan-limit numbers when it reports them.
