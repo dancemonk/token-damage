@@ -68,11 +68,16 @@ function speedrun(
   for (const [root, events] of roots) {
     const prompted = firstPrompt.get(root);
     if (prompted === undefined || events.length < 3) continue;
-    const tokens = events.reduce((s, e) => s + tokensOf(e), 0);
-    const times = events.map((e) => e.ts);
-    const seconds = Math.round(
-      (Math.max(...times) - Math.min(prompted, ...times)) / 1000,
-    );
+    // Loops, not Math.max(...times): one long session can hold more calls than a spread may pass.
+    let tokens = 0;
+    let first = prompted;
+    let last = -Infinity;
+    for (const e of events) {
+      tokens += tokensOf(e);
+      if (e.ts < first) first = e.ts;
+      if (e.ts > last) last = e.ts;
+    }
+    const seconds = Math.round((last - first) / 1000);
     if (tokens < 1e6 || seconds < 10 || seconds > 120) continue;
     if (!best || tokens > best.tokens) best = { tokens, seconds };
   }

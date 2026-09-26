@@ -157,3 +157,12 @@ describe("unprompted share", () => {
     expect(f.speedrun).toBeNull();
   });
 });
+
+describe("scale", () => {
+  it("handles one session with hundreds of thousands of calls", () => {
+    const many = Array.from({ length: 300_000 }, (_, i) =>
+      usage({ ts: T0 + i * 1000, messageId: `big${i}`, dedupeKey: `big${i}` }),
+    );
+    expect(() => facts(many, [prompt({ ts: T0 - 1000 })])).not.toThrow();
+  });
+});
