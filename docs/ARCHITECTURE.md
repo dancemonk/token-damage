@@ -10,6 +10,8 @@ token-damage/
     src/adapters/codex/    discovery, rollout parser, replay filter
     src/adapters/gemini/   discovery, chat parser (JSONL and older JSON)
     src/adapters/opencode/ discovery, SQLite reader (node:sqlite), legacy message files
+    src/adapters/antigravity/ discovery, protobuf reader, SQLite rows, id merge, prompt history
+    src/adapters/sqlite.ts the shared read-only SQLite helper
     src/aggregate/         events → daily totals, sessions
     src/metrics/           prices.json, pricing, energy, satire
     src/roasts/            facts, note families, scoring, achievements, disputes

@@ -1,3 +1,4 @@
+import { antigravityAdapter } from "./antigravity/adapter.js";
 import { claudeAdapter } from "./claude/adapter.js";
 import { codexAdapter } from "./codex/adapter.js";
 import type { Adapter } from "./contract.js";
@@ -10,4 +11,5 @@ export const ADAPTERS: readonly Adapter[] = [
   codexAdapter,
   geminiAdapter,
   opencodeAdapter,
+  antigravityAdapter,
 ];

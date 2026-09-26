@@ -25,12 +25,14 @@ describe("AGENTS", () => {
       codex: "Codex",
       gemini: "Gemini CLI",
       opencode: "OpenCode",
+      antigravity: "Antigravity",
     });
     expect(AGENT_SHORT).toEqual({
       "claude-code": "claude",
       codex: "codex",
       gemini: "gemini",
       opencode: "opencode",
+      antigravity: "agy",
     });
   });
 

@@ -275,6 +275,59 @@ The whole database (and its WAL) is rescanned whenever either file's modificatio
 per-row delta for SQLite here. The rescan replaces OpenCode's whole pool in the live engine, checked on the
 same tick that drives the rest of the pane (every 2 seconds), since WAL writes can slip past a file watcher.
 
+## Antigravity
+
+Rules below match ccusage 20.0.24 (`rust/adapters/antigravity/src/`), checked with `pnpm oracle --agent antigravity`.
+Code: `packages/core/src/adapters/antigravity/`. Fixtures: `packages/core/fixtures/antigravity/antigravity/` (a data
+dir).
+
+### Where
+`$ANTIGRAVITY_DATA_DIR` (comma-separated; when set at all, nothing else is read), else five roots:
+`~/.gemini/antigravity`, `~/.gemini/antigravity-cli`, `~/.gemini/antigravity-ide`, `~/.gemini/antigravity-backup`,
+`~/.config/antigravity`. In each root, every `*.db` under `conversations/` (or under the root when there is no
+`conversations/`), one path per real file. One database is one conversation; its file name is the conversation
+id. Databases are SQLite in WAL mode, opened read-only with `node:sqlite` (Node 22.13+) inside one transaction, so
+a conversation Antigravity is writing reads as one snapshot. The CLI keeps its conversations in
+`antigravity-cli/conversations/`; the IDE's encrypted `.pb` conversations are not read (ccusage does not read them
+either). `conversation_summaries.db` sits beside `conversations/` and is not read.
+
+### Structure
+Metadata rows are protobuf blobs with no schema; fields are read by number.
+- `gen_metadata(idx, data)`: `data.1` is the chat model message: `.4` usage, `.17[]` retries (each `.2` usage),
+  `.9.4` time, `.19`/`.21` model name, `.3` model id.
+- `steps(idx, metadata)`: `.9` usage, `.28[]` retries, `.24` model info (`.12`/`.8` name, `.1` id), `.8` or `.1`
+  time.
+- `trajectory_metadata_blob(data)`: the first row's `.2` is the conversation's time.
+- Usage: `.2` input, `.3` total output, `.4` cache write, `.5` cache read, `.9` reasoning, `.10` visible output,
+  `.1` model id, `.11` response id, `.12` provider message id, `.7` message id. Time: `.1` seconds, `.2` nanos.
+- Blobs can hold prompt and response text in other fields: only the fields above are ever decoded.
+
+### Per-call usage
+- A call is recorded twice or more (its step, its generation, a retry copy, another database): every
+  token-bearing usage becomes a record, and records sharing any id merge, each number taking the larger value, as
+  ccusage does. Records without an id never merge. 3,769 calls from 11,258 records on real logs.
+- Output = the larger of total output and visible output + reasoning: reasoning is billed as output.
+- Time: the row's own, else one already seen for the same id in that database, else the conversation's, else the
+  file's mtime. A merge keeps the better-ranked time, then the earlier.
+- Model names follow ccusage's table (numeric ids, display names like "Gemini 3.8 Flash (High)", Antigravity's
+  `model_placeholder_m<n>`); a Gemini thinking level is dropped (`gemini-3.8-flash-high` → gemini-3.8-flash) since
+  it does not change the price. Placeholders ccusage cannot map stay as they are and are not priced. Antigravity
+  runs Gemini, Claude and GPT-OSS models; long-context prices follow the model.
+
+### Words typed and sessions
+`<root>/history.jsonl` rows `{conversationId, display, timestamp (ms), type, workspace}`: a row without `type` is
+a typed prompt, `shell` a command the user typed (both count whole), `slash_command` counts only its arguments (a
+bare `/clear` is no prompt), other types are skipped. A row without `conversationId` cannot be tied to a session
+and is skipped. `workspace` (a path) is never read. Session = conversation id.
+
+### Live reading
+Every database, its WAL and `history.jsonl` are watched; a change rescans all databases, but one whose file and
+WAL kept their mtime and size is not decoded again (the owner's 111 MB decode in ~0.4 s).
+
+### Traps
+Retry copies, the same call in a step and a generation, copies across databases, zero-byte databases (skipped),
+malformed blobs (the row is skipped and counted), placeholder model ids.
+
 ## Tested versions
 | Tool | Versions | Fixtures |
 | --- | --- | --- |
@@ -282,6 +335,7 @@ same tick that drives the rest of the pane (every 2 seconds), since WAL writes c
 | Codex | 0.130.0, 0.143.0, 0.144.0-alpha.4, 0.147.0-alpha.6.5, 0.153.4, 0.155.1 (real logs 0.130.0–0.155.1, 275 rollouts) | `packages/core/fixtures/codex/` |
 | Gemini CLI | 0.42.0 (13 real chats; chats carry no version, so no check) | `packages/core/fixtures/gemini/` |
 | OpenCode | 1.17.15, 1.17.18 (one real database, 6 sessions, 152 messages) | `packages/core/fixtures/opencode/` |
+| Antigravity | CLI conversations 2026-07-03 – 09-22 (10 real databases; no version in the data, so no check) | `packages/core/fixtures/antigravity/` |
 
 ## Later sources
 Copilot CLI (ccusage parses it), Cursor (SQLite; needs a cloud token → opt-in only), ChatGPT/Claude.ai exports (no token counts; tokenize locally and label `≈`).
@@ -315,6 +369,13 @@ we never use OpenCode's stored `cost` (ccusage prefers it when above 0), so mode
 table (e.g. glm-5.2, kimi-k2.7-code, qwen3.7-plus on OpenCode Go) are "not priced" where ccusage shows OpenCode's
 figure; session aggregates (`session.tokens_*`), which ccusage uses only in session reports for sessions without
 message usage, are never read.
+
+Antigravity (`ccusage antigravity daily`, 2026-09-26): the fixture corpus matches exactly (6,083,850 tokens, 3 days),
+and so did 7 days of real logs (519,227,745 tokens) in every field, with reasoning counted as output on both sides
+(as for Gemini CLI). Differences by design, none present in real logs: a malformed blob skips its row and a
+zero-byte database is skipped (ccusage fails its whole Antigravity report on either); a Gemini thinking level is
+dropped from the model name (ccusage keeps `gemini-3.8-flash-high`); prompts come from `history.jsonl`, which
+ccusage does not read.
 
 Not compared, because ccusage does not report them: words typed and prompts. A day with prompts but no model
 call exists only on our side, with zero tokens; the oracle skips all-zero days.

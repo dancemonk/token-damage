@@ -94,13 +94,14 @@ describe.each(LANGS)("share links on /%s", (lang) => {
     const open = (agents: string[]) =>
       readShare(hashOf(shareUrl({ ...base, agents })));
     expect(view(open(["cursor", "codex"])!).agents).toBe("CODEX");
+    expect(view(open(["antigravity"])!).agents).toBe("ANTIGRAVITY");
     // A newer CLI may know more agents than this site: five or more ids still open the receipt.
     const five = open([
       "claude-code",
       "codex",
       "gemini",
       "opencode",
-      "antigravity",
+      "future-agent",
     ]);
     expect(five).not.toBeNull();
     expect(view(five!).agents).toBe(

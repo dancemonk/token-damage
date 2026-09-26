@@ -11,6 +11,7 @@ scanning ~/.claude/projects …
 scanning ~/.codex/sessions, ~/.codex/archived_sessions …
 scanning ~/.gemini/tmp …
 scanning ~/.local/share/opencode …
+scanning ~/.gemini/antigravity, ~/.gemini/antigravity-cli, ~/.gemini/antigravity-ide, ~/.gemini/antigravity-backup, ~/.config/antigravity …
   ✓ 94 sessions · 26 active days · 212 subagent transcripts
   ✓ 7,480 model calls · 612 prompts you actually typed
   ! claude code already deleted everything older than 30 days.
@@ -166,9 +167,10 @@ The footer date is `asOf` in `packages/core/src/metrics/prices.json`.
 ## Flags
 `--since 30d|YYYY-MM-DD`, `--plan 20|100|200|<usd>`, `--no-anim`, `--no-sound` (reserved), `--json` (schema in
 `schema/receipt.schema.json`; tiers included on every value), `--fixtures <dir>` (a Claude Code config dir, a
-Codex home, a Gemini CLI home and an OpenCode data dir in one: `projects/`, `sessions/`, `tmp/`, `opencode/`),
-`--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>` (same as `CODEX_HOME`), `--gemini-dir
-<path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as `OPENCODE_DATA_DIR`).
+Codex home, a Gemini CLI home, an OpenCode data dir and an Antigravity data dir in one: `projects/`, `sessions/`,
+`tmp/`, `opencode/`, `antigravity/`), `--config-dir <path>` (same as `CLAUDE_CONFIG_DIR`), `--codex-home <path>`
+(same as `CODEX_HOME`), `--gemini-dir <path>` (same as `GEMINI_DATA_DIR`), `--opencode-dir <path>` (same as
+`OPENCODE_DATA_DIR`), `--antigravity-dir <path>` (same as `ANTIGRAVITY_DATA_DIR`).
 
 Colour: on in a terminal, off in a pipe. `FORCE_COLOR=1` colours a pipe too; `FORCE_COLOR=0`, `NO_COLOR` or
 `TERM=dumb` turn it off everywhere.
@@ -211,7 +213,7 @@ the sparkline. `q` quits; Ctrl-C works.
 Flags: `--no-anim` (no opening count-up), `--json` (one NDJSON snapshot per change, for tmux bars and other
 tools), `--once` (print one JSON snapshot and exit — what `pnpm oracle:live` compares against the receipt),
 `--fixtures <dir>` (nothing is cached), `--clock <iso>` (pretend it is this time, for demos and screenshots),
-plus the usual `--config-dir`, `--codex-home`, `--gemini-dir`, `--opencode-dir`.
+plus the usual `--config-dir`, `--codex-home`, `--gemini-dir`, `--opencode-dir`, `--antigravity-dir`.
 
 ## `token-damage statusline`
 

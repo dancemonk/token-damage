@@ -116,7 +116,9 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
     flow[5] = (flow[5] ?? "").replaceAll("~/.codex", corpus);
     flow[6] = (flow[6] ?? "").replace("~/.gemini", corpus);
     flow[7] = (flow[7] ?? "").replace("~/.local/share", corpus);
-    for (const i of [1, 2, 4, 5, 6, 7, 8, 9, 10])
+    // The doc lists Antigravity's five default roots; the corpus holds one.
+    flow[8] = `scanning ${join(corpus, "antigravity")} …`;
+    for (const i of [1, 2, 4, 5, 6, 7, 8, 9, 10, 11])
       expect(out, flow[i]).toContain(
         (flow[i] ?? "").replace(/\s+\(only when.*$/, ""),
       );
@@ -215,10 +217,11 @@ describe("exit codes", () => {
     const run = cli("--fixtures", join(dir, "empty"), "--no-anim");
     expect(run.status).toBe(2);
     expect(run.stdout).toContain(
-      "no claude code, codex, gemini cli or opencode sessions found",
+      "no claude code, codex, gemini cli, opencode or antigravity sessions found",
     );
     expect(run.stdout).toContain(join(dir, "empty", "tmp"));
     expect(run.stdout).toContain(join(dir, "empty", "opencode"));
+    expect(run.stdout).toContain(join(dir, "empty", "antigravity"));
     expect(run.stdout).toContain(join(dir, "empty", "archived_sessions"));
     expect(run.stdout).toContain("CLAUDE_CODE_SKIP_PROMPT_HISTORY");
   });

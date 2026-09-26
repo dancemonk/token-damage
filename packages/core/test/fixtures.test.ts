@@ -12,6 +12,8 @@ const INVENTED_TEXT = new Set([
   "claude/2.1.281/words-typed.jsonl",
   "codex/sessions/2026/09/22/rollout-2026-09-22T10-00-00-01a0c5f0-0000-7000-8000-000000000001.jsonl",
   "gemini/tmp/p3/chats/session-2025-10-03T10-00-7a0c0de2.jsonl",
+  // Filler prose; its privacy is pinned by test/antigravity/fixture.test.ts.
+  "antigravity/antigravity/history.jsonl",
 ]);
 const files = readdirSync(root, { recursive: true, encoding: "utf8" }).filter(
   (f) =>

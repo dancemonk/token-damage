@@ -25,6 +25,7 @@ describe("ADAPTERS", () => {
       ["codex-home", "CODEX_HOME", ""],
       ["gemini-dir", "GEMINI_DATA_DIR", "tmp"],
       ["opencode-dir", "OPENCODE_DATA_DIR", "opencode"],
+      ["antigravity-dir", "ANTIGRAVITY_DATA_DIR", "antigravity"],
     ]);
   });
 
@@ -41,6 +42,7 @@ describe("ADAPTERS", () => {
       codex: ["/r/sessions", "/r/archived_sessions"],
       gemini: ["/r"],
       opencode: ["/r"],
+      antigravity: ["/r"],
     });
   });
 
