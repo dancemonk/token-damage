@@ -15,6 +15,7 @@ import {
   stepMeta,
   trajectoryTs,
 } from "../../src/adapters/antigravity/parse.js";
+import { priceFor } from "../../src/metrics/pricing.js";
 import { encode, type Message } from "../../scripts/antigravity-proto.js";
 
 const T = 1_788_000_000; // seconds
@@ -61,6 +62,17 @@ describe("Antigravity models", () => {
     );
     expect(normalizeModel("model_placeholder_m26")).toBe("claude-opus-4-6");
     expect(normalizeModel("  ")).toBeUndefined();
+  });
+  it("names Claude models the way the price table does, so they price exactly", () => {
+    for (const [id, name] of [
+      [281, "claude-sonnet-4"],
+      [290, "claude-opus-4"],
+      [333, "claude-sonnet-4-5"],
+      [340, "claude-haiku-4-5"],
+    ] as const) {
+      expect(modelNameFromId(id)).toBe(name);
+      expect(priceFor(name)?.isFallback, name).toBe(false);
+    }
   });
   it("prices a thinking level as its base model", () => {
     expect(withoutEffort("gemini-3.8-flash-high")).toBe("gemini-3.8-flash");

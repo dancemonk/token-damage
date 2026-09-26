@@ -1,5 +1,6 @@
 // Model names as ccusage 20.0.24 resolves them (rust/adapters/antigravity/src/parser.rs): numeric ids, display
-// names and Antigravity's placeholders. Keep in step with it; the oracle compares tokens, not names.
+// names and Antigravity's placeholders. Keep in step with it; the oracle compares tokens, not names. Claude ids
+// take Anthropic's names (ccusage writes `claude-4.5-sonnet`), so they match the price table exactly.
 
 const BY_ID: Record<number, string> = {
   246: "gemini-2.5-pro",
@@ -7,14 +8,14 @@ const BY_ID: Record<number, string> = {
   313: "gemini-2.5-flash-thinking",
   329: "gemini-2.5-flash-thinking",
   330: "gemini-2.5-flash-lite",
-  281: "claude-4-sonnet",
-  282: "claude-4-sonnet",
-  290: "claude-4-opus",
-  291: "claude-4-opus",
-  333: "claude-4.5-sonnet",
-  334: "claude-4.5-sonnet",
-  340: "claude-4.5-haiku",
-  341: "claude-4.5-haiku",
+  281: "claude-sonnet-4",
+  282: "claude-sonnet-4",
+  290: "claude-opus-4",
+  291: "claude-opus-4",
+  333: "claude-sonnet-4-5",
+  334: "claude-sonnet-4-5",
+  340: "claude-haiku-4-5",
+  341: "claude-haiku-4-5",
   342: "model_openai_gpt_oss_120b_medium",
   1318: "gemini-3.8-flash-high",
   1319: "gemini-3.8-flash-medium",
