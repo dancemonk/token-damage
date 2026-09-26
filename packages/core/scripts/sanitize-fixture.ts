@@ -50,7 +50,13 @@ const KEEP = new Set([
   "sessionID",
   "messageID",
   "parentID",
+  // Grok Build session updates and summaries
+  "sessionUpdate",
+  "eventId",
+  "current_model_id",
 ]);
+// Grok's per-model usage is keyed by model id ("grok-4.7"): those keys stay; any other dotted key is renamed.
+const MODEL_KEYED = new Set(["modelUsage"]);
 // Subtrees holding tool inputs and outputs: arbitrary user data, so nothing in them is kept.
 const SCRUB = new Set(["input", "wireToolInputs", "toolUseResult"]);
 const SAFE_VALUE = /^[A-Za-z0-9_.:<>+-]{1,80}$/;
@@ -67,7 +73,9 @@ function sanitizeValue(value: unknown, key: string, scrub: boolean): unknown {
     let renamed = 0;
     return Object.fromEntries(
       Object.entries(value).map(([k, v]) => [
-        SAFE_KEY.test(k) ? k : `k${renamed++}`,
+        SAFE_KEY.test(k) || (MODEL_KEYED.has(key) && SAFE_VALUE.test(k))
+          ? k
+          : `k${renamed++}`,
         sanitizeValue(v, k, scrub || SCRUB.has(k)),
       ]),
     );

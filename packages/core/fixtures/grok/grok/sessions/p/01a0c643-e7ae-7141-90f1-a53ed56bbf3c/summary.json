@@ -1,0 +1,22 @@
+{
+  "info": { "id": "01a0c643-e7ae-7141-90f1-a53ed56bbf3c", "cwd": "/p/a" },
+  "agent_id": "x",
+  "attempt_id": "x",
+  "session_summary": "x",
+  "created_at": "x",
+  "updated_at": "x",
+  "num_messages": 3,
+  "num_chat_messages": 3,
+  "current_model_id": "grok-4.7",
+  "next_trace_turn": 0,
+  "chat_format_version": 1,
+  "git_root_dir": "x",
+  "git_remotes": ["x"],
+  "head_commit": "x",
+  "head_branch": "x",
+  "grok_home": "x",
+  "last_active_at": "x",
+  "agent_name": "x",
+  "sandbox_profile": "x",
+  "reasoning_effort": "x"
+}
