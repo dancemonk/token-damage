@@ -69,6 +69,17 @@ const event = (ts: number, over: Partial<UsageEvent> = {}): UsageEvent => ({
 });
 
 describe("aggregate", () => {
+  it("counts a record's model calls, not the record (Grok: one record per turn)", () => {
+    const t = Date.UTC(2026, 8, 22, 12);
+    const a = aggregate(
+      { usage: [event(t, { calls: 13 }), event(t + 1000)] },
+      { timeZone: "UTC" },
+    );
+    expect(a.daily[0]?.calls).toBe(14);
+    expect(a.totals.calls).toBe(14);
+    expect(a.sessions[0]?.calls).toBe(14);
+  });
+
   it("fixture corpus totals equal the hand-computed expected JSON", async () => {
     const { timeZone, ...expected } = JSON.parse(
       readFileSync(`${FIXTURES}expected.json`, "utf8"),

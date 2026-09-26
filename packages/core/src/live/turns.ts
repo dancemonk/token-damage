@@ -75,7 +75,7 @@ export function buildTurns(
     turn.end = Math.max(turn.end, e.ts);
     turn.read += e.input + e.cacheWrite + e.cacheRead;
     turn.written += e.output;
-    turn.calls++;
+    turn.calls += e.calls ?? 1;
     if (e.parentSessionId !== undefined)
       turn.agents.add(e.agentId ?? e.sessionId);
     const key = modelKey(e);

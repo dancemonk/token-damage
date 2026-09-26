@@ -36,6 +36,23 @@ describe("model snob", () => {
     expect(f.snobSession).toEqual({ output: 212, read: 2_500_000, calls: 5 });
   });
 
+  it("counts a record's model calls toward the five-call floor", () => {
+    const f = facts(
+      [
+        usage({
+          ts: T0,
+          sessionId: "s1",
+          cacheRead: 2_500_000,
+          input: 0,
+          output: 212,
+          calls: 5,
+        }),
+      ],
+      [prompt({ ts: T0 - 1000 })],
+    );
+    expect(f.snobSession).toEqual({ output: 212, read: 2_500_000, calls: 5 });
+  });
+
   it("ignores cheaper models, fewer calls, more output and untyped sessions", () => {
     const typed = [prompt({ ts: T0 - 1000 })];
     expect(
