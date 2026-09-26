@@ -67,9 +67,11 @@ export function parseArgs(argv) {
     else if (argv[i] === "--live") args.live = true;
     else throw new Error(`unknown argument: ${argv[i]}`);
   }
-  if (args.all && (args.agent !== undefined || args.configDir !== undefined))
+  // `pnpm oracle` runs `--all`, and pnpm appends: `pnpm oracle --agent codex` compares Codex alone.
+  if (args.agent !== undefined) args.all = false;
+  if (args.all && args.configDir !== undefined)
     throw new Error(
-      "--all compares every agent at its default place; drop --agent and --config-dir",
+      "--all compares every agent at its default place; name one with --agent to use --config-dir",
     );
   args.agent ??= "claude";
   return args;
