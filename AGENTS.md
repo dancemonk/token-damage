@@ -28,7 +28,8 @@ Code), and tokendamage.com (a static site that opens share links). Nothing is up
   - `src/agents.ts`: each agent's name, short name and provider scope (pure; the website imports it)
   - `src/adapters/registry.ts`: `ADAPTERS`, one `Adapter` per agent (`contract.ts`); the CLI, the live pane and
     the oracle loop over it
-  - `src/adapters/{claude,codex,gemini,opencode}`: find and parse logs into `UsageEvent` / `PromptEvent`
+  - `src/adapters/{claude,codex,gemini,opencode,antigravity}`: find and parse logs into `UsageEvent` /
+    `PromptEvent`; `sqlite.ts` is the shared read-only SQLite helper
   - `src/aggregate`: dedupe, daily and session totals
   - `src/metrics`: prices (`prices.json`), energy, satire
   - `src/roasts`: `facts.ts` + `detectors.ts` → note families, achievements, dispute, pool

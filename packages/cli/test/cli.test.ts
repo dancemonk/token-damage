@@ -116,7 +116,9 @@ describe("token-damage --fixtures sample-month --no-anim --plan 200", () => {
     flow[5] = (flow[5] ?? "").replaceAll("~/.codex", corpus);
     flow[6] = (flow[6] ?? "").replace("~/.gemini", corpus);
     flow[7] = (flow[7] ?? "").replace("~/.local/share", corpus);
-    for (const i of [1, 2, 4, 5, 6, 7, 8, 9, 10])
+    // The doc lists Antigravity's five default roots; the corpus holds one.
+    flow[8] = `scanning ${join(corpus, "antigravity")} …`;
+    for (const i of [1, 2, 4, 5, 6, 7, 8, 9, 10, 11])
       expect(out, flow[i]).toContain(
         (flow[i] ?? "").replace(/\s+\(only when.*$/, ""),
       );
