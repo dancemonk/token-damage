@@ -215,8 +215,8 @@ per-refresh call, and it may touch the network) and asks for a global install in
 Claude Code then runs the command after each event and on a timer, with session JSON on stdin. Default two
 rows, capped at 80 columns:
 ```
-▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx ■■··· 41%
-WATER DAMAGE · today 38.2M ≡ $41.20 · 5h ■■··· 58% resets 16:00 · 7d 21%
+▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx 41%
+WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
 ```
 Row 1 is this session: its open turn and the context-window percent Claude reports. Row 2 is today, all
 agents: the damage class, tokens, list price, and Claude's own plan-limit numbers when it reports them.

@@ -100,8 +100,8 @@ token-damage statusline --install
 ```
 
 ```
-▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx ■■··· 41%
-WATER DAMAGE · today 38.2M ≡ $41.20 · 5h ■■··· 58% resets 16:00 · 7d 21%
+▸ 4 words → 9.8M read ≡ $7.10 · +3 interns · ctx 41%
+WATER DAMAGE · today 38.2M ≡ $41.20 · 5h 58% resets 16:00 · 7d 21%
 ```
 
 ## Share it
