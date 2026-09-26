@@ -220,7 +220,17 @@ describe("severity bands", () => {
 });
 
 describe("templates", () => {
-  const full = { ...(customers[0]?.facts as Facts), commits: 3 };
+  const full: Facts = {
+    ...(customers[0]?.facts as Facts),
+    commits: 3,
+    snobSession: { output: 212, read: 3_000_000, calls: 7 },
+    speedrun: { tokens: 1_300_000, seconds: 94 },
+    burstSessions: 11,
+    agentsInOneHour: 2,
+    agentPair: ["claude-code", "codex"],
+    cacheRebuilds: 4,
+    unpromptedShare: 0.41,
+  };
 
   it("every family has at least 5 variants and every variant renders", () => {
     for (const family of FAMILIES) {
@@ -235,6 +245,48 @@ describe("templates", () => {
       expect(v.text).not.toMatch(/!/);
       expect(v.text).not.toMatch(/\p{Extended_Pictographic}/u);
     }
+  });
+});
+
+describe("observations from session shapes", () => {
+  const base = customers[2]?.facts as Facts;
+  const families = (over: Partial<Facts>) =>
+    observe({ ...base, ...over }).candidates.map((c) => c.family);
+
+  it.each([
+    [
+      "model-snob",
+      { snobSession: { output: 212, read: 3e6, calls: 7 } },
+      { snobSession: { output: 212, read: 1.9e6, calls: 7 } },
+    ],
+    [
+      "speedrun",
+      { speedrun: { tokens: 1.3e6, seconds: 94 } },
+      { speedrun: { tokens: 1.3e6, seconds: 5 } },
+    ],
+    ["churn", { burstSessions: 6 }, { burstSessions: 5 }],
+    [
+      "two-agents",
+      { agentsInOneHour: 2, agentPair: ["claude-code", "codex"] },
+      { agentsInOneHour: 1, agentPair: null },
+    ],
+    ["cache-rebuild", { cacheRebuilds: 3 }, { cacheRebuilds: 2 }],
+    ["unprompted", { unpromptedShare: 0.25 }, { unpromptedShare: 0.24 }],
+  ] as [string, Partial<Facts>, Partial<Facts>][])(
+    "%s fires on data that earns it, and not just below",
+    (id, hit, miss) => {
+      expect(families(hit)).toContain(id);
+      expect(families(miss)).not.toContain(id);
+    },
+  );
+
+  it("names the two agents in plain words", () => {
+    const note = observe({
+      ...base,
+      agentsInOneHour: 2,
+      agentPair: ["claude-code", "codex"],
+    }).candidates.find((c) => c.family === "two-agents");
+    expect(note?.text).toMatch(/^Claude Code and Codex/);
   });
 });
 

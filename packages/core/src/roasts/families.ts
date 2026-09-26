@@ -421,4 +421,179 @@ export const FAMILIES: Family[] = [
       },
     ],
   },
+  // Session shapes (roasts/detectors.ts): all measured, all from events the logs already hold.
+  {
+    id: "model-snob",
+    weight: 0.55,
+    tier: "measured",
+    band: { snobOutput: [0, 499], snobRead: [2e6, ANY] },
+    strength: { metric: "snobOutput", lo: 500, hi: 0 },
+    variants: [
+      {
+        text: "You used the most expensive model available to produce {snobOutput} tokens. That's hiring an architect to hang a picture.",
+        tone: "absurd",
+      },
+      {
+        text: "{snobRead} tokens read on the flagship model, {snobOutput} written. The rest was a very expensive silence.",
+        tone: "dry",
+      },
+      {
+        text: "Premium model, {snobRead} tokens of reading, {snobOutput} tokens of answer. A sommelier tasted the cellar and said fine.",
+        tone: "absurd",
+      },
+      {
+        text: "The flagship model read {snobRead} tokens to write {snobOutput}. Filed under consulting.",
+        tone: "bureaucratic",
+      },
+      {
+        text: "{snobOutput} tokens of output from the most expensive model on the list. It billed by the page and left a sticky note.",
+        tone: "dry",
+      },
+    ],
+  },
+  {
+    id: "speedrun",
+    weight: 0.6,
+    tier: "measured",
+    band: { speedrunTokens: [1e6, ANY], speedrunSeconds: [10, 120] },
+    strength: { metric: "speedrunTokens", lo: 1e6, hi: 1e8, log: true },
+    variants: [
+      {
+        text: "A {speedrunSeconds}-second session consumed {speedrunTokens} tokens. It read the codebase, understood it, and left. Honestly, respect.",
+        tone: "absurd",
+      },
+      {
+        text: "{speedrunTokens} tokens in {speedrunSeconds} seconds. Speedrun, any%, no commentary.",
+        tone: "absurd",
+      },
+      {
+        text: "One session: a prompt, {speedrunTokens} tokens, done in {speedrunSeconds} seconds. The meter barely had time to spin.",
+        tone: "dry",
+      },
+      {
+        text: "Session duration: {speedrunSeconds} seconds. Tokens consumed: {speedrunTokens}. The form has no box for this.",
+        tone: "bureaucratic",
+      },
+      {
+        text: "In {speedrunSeconds} seconds the agent read {speedrunTokens} tokens. Some PDFs take longer to open.",
+        tone: "dry",
+      },
+    ],
+  },
+  {
+    id: "churn",
+    weight: 0.5,
+    tier: "measured",
+    band: { burstSessions: [6, ANY] },
+    strength: { metric: "burstSessions", lo: 6, hi: 30, log: true },
+    variants: [
+      {
+        text: "{BurstSessions} sessions in forty minutes. That's not iteration, that's a slot machine.",
+        tone: "absurd",
+      },
+      {
+        text: "{BurstSessions} fresh sessions inside forty minutes. Each one started from zero.",
+        tone: "dry",
+      },
+      {
+        text: "{BurstSessions} sessions opened in forty minutes. The agent has been introduced to this project more often than a new hire.",
+        tone: "absurd",
+      },
+      {
+        text: "{BurstSessions} sessions in one forty-minute window. Filed as a single incident with several openings.",
+        tone: "bureaucratic",
+      },
+      {
+        text: "{BurstSessions} sessions in forty minutes. Turning it off and on again, at scale.",
+        tone: "absurd",
+      },
+    ],
+  },
+  {
+    id: "two-agents",
+    weight: 0.5,
+    tier: "measured",
+    band: { agentsInOneHour: [2, ANY] },
+    strength: { metric: "agentsInOneHour", lo: 2, hi: 4 },
+    variants: [
+      {
+        text: "{agentPair} in the same hour. A second opinion is healthy. Two at once is a committee.",
+        tone: "dry",
+      },
+      {
+        text: "{agentPair} worked the same hour. Neither was told about the other.",
+        tone: "absurd",
+      },
+      {
+        text: "Two agents, one hour: {agentPair}. The adjuster has opened a claim for each.",
+        tone: "bureaucratic",
+      },
+      {
+        text: "{agentPair}, overlapping. A small consultancy has formed, and you are its only client.",
+        tone: "absurd",
+      },
+      {
+        text: "{agentPair} inside one hour. Getting a second quote is prudent. Paying for both is also a choice.",
+        tone: "dry",
+      },
+    ],
+  },
+  {
+    id: "cache-rebuild",
+    weight: 0.45,
+    tier: "measured",
+    band: { cacheRebuilds: [3, ANY] },
+    strength: { metric: "cacheRebuilds", lo: 3, hi: 50, log: true },
+    variants: [
+      {
+        text: "Your cache was rebuilt {cacheRebuilds} times mid-session, minutes after it was read. Something upstream keeps changing. We're not saying what.",
+        tone: "dry",
+      },
+      {
+        text: "A warm cache was thrown out and rebuilt {cacheRebuilds} times. Somebody keeps moving the furniture.",
+        tone: "absurd",
+      },
+      {
+        text: "Cache rebuilds with no idle gap: {cacheRebuilds}. Each one is billed as new reading.",
+        tone: "bureaucratic",
+      },
+      {
+        text: "A warm cache, rewritten anyway, {cacheRebuilds} times. The discount card was in the other jacket.",
+        tone: "absurd",
+      },
+      {
+        text: "The cache was rebuilt {cacheRebuilds} times within minutes of being read. Caching works best when nothing changes. Something did.",
+        tone: "dry",
+      },
+    ],
+  },
+  {
+    id: "unprompted",
+    weight: 0.55,
+    tier: "measured",
+    band: { unpromptedShare: [0.25, 1] },
+    strength: { metric: "unpromptedShare", lo: 0.25, hi: 0.9 },
+    variants: [
+      {
+        text: "{unpromptedShare} of the reading happened in sessions you never typed into. The machines are talking among themselves.",
+        tone: "absurd",
+      },
+      {
+        text: "{unpromptedShare} of these tokens came from sessions with no prompt from you. Automation works around the clock. So does the meter.",
+        tone: "dry",
+      },
+      {
+        text: "Nobody typed into the sessions behind {unpromptedShare} of the tokens. The policyholder is still you.",
+        tone: "bureaucratic",
+      },
+      {
+        text: "{unpromptedShare} of the reading ran without a single prompt from you. The staff has started holding meetings without you.",
+        tone: "absurd",
+      },
+      {
+        text: "Of every token here, {unpromptedShare} was read in sessions with no typed prompt. The rest you can explain.",
+        tone: "dry",
+      },
+    ],
+  },
 ];

@@ -118,6 +118,14 @@ describe("Russian notes", () => {
     weekendShare: "62%",
     duration: "7 ч 40 мин",
     plan: "200 $",
+    snobOutput: "212",
+    snobRead: "3 млн",
+    speedrunTokens: "1,3 млн",
+    speedrunSeconds: "94",
+    BurstSessions: "Одиннадцать",
+    agentPair: "Claude Code и Codex",
+    cacheRebuilds: "четыре",
+    unpromptedShare: "41%",
   };
 
   it("are written for every core note", () => {
@@ -127,7 +135,10 @@ describe("Russian notes", () => {
   it.each(NOTE_IDS)("%s renders as clean Russian", (id) => {
     const text = render(ru.notes[id]!, s);
     expect(text).toBeDefined();
-    expect(text).not.toMatch(/\{|\.\.(?!\.)|\s[.,]|[A-Za-z]{4,}/);
+    // Agent names are products and stay in English; any other Latin word is untranslated copy.
+    expect(
+      text!.replace(/Claude Code|Codex|Gemini CLI|OpenCode/g, "агент"),
+    ).not.toMatch(/\{|\.\.(?!\.)|\s[.,]|[A-Za-z]{4,}/);
   });
 });
 
